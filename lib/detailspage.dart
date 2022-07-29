@@ -338,22 +338,6 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ),
                   ]),
-                  Row(children: <Widget> [
-                    const Text(
-                      "  Github commits (7d): ",
-                      style: TextStyle(
-                          height: 2,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      TopCryptos[widget.passedIndex].commits,
-                      style: const TextStyle(
-                        height: 2.2,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ]),
                 ]),
               )),
             ]),

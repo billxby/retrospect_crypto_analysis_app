@@ -52,11 +52,15 @@ Future<void> main() async {
   for (int tries = 0; tries < maxFetchTries; tries++) {
     try {
       final response =
-          await http.get(Uri.parse('http://192.168.1.24:5000/analyze'));
+          await http.get(Uri.parse('http://3.142.236.93:5000/'));
       data = await jsonDecode(response.body);
       if (response.statusCode != 200) {
         throw Exception('Could not fetch data!');
       }
+      if (data.contains('refreshing_data')) {
+        throw Exception('Updating data');
+      }
+
 
       Sort["⬆A-Z"] = [];
       Sort["⬇A-Z"] = [];
@@ -86,6 +90,8 @@ Future<void> main() async {
           continue;
         }
       } else {
+        print('Updating data');
+        print('Trying again in 10 seconds');
         exit(0);
       }
     }

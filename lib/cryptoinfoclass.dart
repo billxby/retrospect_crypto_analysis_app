@@ -24,7 +24,6 @@ class CryptoInfo {
   final String prediction;
   final String marketView;
   final String tweets;
-  final String commits;
 
   CryptoInfo({
     required this.market_cap_rank,
@@ -43,7 +42,6 @@ class CryptoInfo {
     required this.prediction,
     required this.marketView,
     required this.tweets,
-    required this.commits,
   });
 
   factory CryptoInfo.fromJson(Map<String, dynamic> json) {
@@ -55,6 +53,20 @@ class CryptoInfo {
     String twentyFourHours = json['price_change_percentage_24h'].toString();
     String id = json['id'].toString();
     String prediction = json['prediction'].toString();
+    String marketView = json['marketView'].toString();
+    String tweets = json['tweets'].toString();
+    if (prediction?.isEmpty ?? true ) {
+      prediction = "updating database";
+    }
+    if (prediction?.isEmpty ?? true) {
+      prediction = "updating database";
+    }
+    if (marketView?.isEmpty ?? true) {
+      marketView = "updating database";
+    }
+    if (tweets?.isEmpty ?? true) {
+      tweets = "updating database";
+    }
 
     if (marketCap.contains(".")) {
       marketCap = marketCap.substring(0, marketCap.indexOf(".")) +
@@ -105,9 +117,8 @@ class CryptoInfo {
       total_supply: json['total_supply'].toString(),
       price_change_precentage_24h: twentyFourHours,
       prediction: prediction,
-      marketView: json['marketView'].toString(),
-      tweets: json['tweets'].toString(),
-      commits: json['commits'].toString(),
+      marketView: marketView,
+      tweets: tweets,
     );
   }
 }
