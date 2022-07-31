@@ -24,6 +24,8 @@ class CryptoInfo {
   final String prediction;
   final String marketView;
   final String tweets;
+  final String commits;
+  final String score;
 
   CryptoInfo({
     required this.market_cap_rank,
@@ -42,6 +44,8 @@ class CryptoInfo {
     required this.prediction,
     required this.marketView,
     required this.tweets,
+    required this.commits,
+    required this.score,
   });
 
   factory CryptoInfo.fromJson(Map<String, dynamic> json) {
@@ -55,17 +59,26 @@ class CryptoInfo {
     String prediction = json['prediction'].toString();
     String marketView = json['marketView'].toString();
     String tweets = json['tweets'].toString();
-    if (prediction?.isEmpty ?? true ) {
-      prediction = "updating database";
-    }
-    if (prediction?.isEmpty ?? true) {
-      prediction = "updating database";
-    }
-    if (marketView?.isEmpty ?? true) {
-      marketView = "updating database";
-    }
-    if (tweets?.isEmpty ?? true) {
-      tweets = "updating database";
+    String commits = json['commits'].toString();
+    String score = json['score'].toString();
+
+    if (prediction != "updating database") {
+      double pred = double.parse(prediction);
+      if (pred == 0) {
+        prediction = "Neutral";
+      } else if (pred > 0 && pred <= 5) {
+        prediction = "Somewhat Bullish";
+      } else if (pred > 5 && pred <= 10) {
+        prediction = "Bullish";
+      } else if (pred > 10) {
+        prediction = "Very Bullish";
+      } else if (pred >= -5 && pred < 0) {
+        prediction = "Somewhat Bearish";
+      } else if (pred >= -10 && pred < -5) {
+        prediction = "Bearish";
+      } else if (pred < -10) {
+        prediction = "Very Bearish";
+      }
     }
 
     if (marketCap.contains(".")) {
@@ -119,6 +132,8 @@ class CryptoInfo {
       prediction: prediction,
       marketView: marketView,
       tweets: tweets,
+      commits: commits,
+      score: score,
     );
   }
 }

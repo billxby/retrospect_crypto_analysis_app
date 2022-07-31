@@ -16,6 +16,7 @@ import 'package:flutter_splash_screen/flutter_splash_screen.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
 import 'cryptoinfoclass.dart';
+import 'information.dart';
 import 'updatelog.dart';
 
 //Program Settings
@@ -44,6 +45,7 @@ const TextStyle cryptosListStyle =
 //Settings variables
 bool darkTheme = true;
 String sortBy = "⬆A-Z";
+bool worked = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +63,7 @@ Future<void> main() async {
         throw Exception('Updating data');
       }
 
+      worked = true;
 
       Sort["⬆A-Z"] = [];
       Sort["⬇A-Z"] = [];
@@ -92,9 +95,14 @@ Future<void> main() async {
       } else {
         print('Updating data');
         print('Trying again in 10 seconds');
-        exit(0);
+        await Future.delayed(const Duration(seconds: 10), () {});
+        continue;
       }
     }
+  }
+
+  if (worked == false) {
+    exit(0);
   }
 
   // Sort cryptos by marketCap and Change
@@ -327,7 +335,7 @@ class _MainPagesState extends State<MainPages> {
                               style: cryptosListStyle,
                             ),
                             Text(
-                              TopCryptos[Sort[sortBy]![index]].market_cap,
+                              TopCryptos[Sort[sortBy]![index]].total_volume,
                               style: const TextStyle(
                                 height: 2.2,
                                 fontSize: 14,
@@ -389,9 +397,19 @@ class _MainPagesState extends State<MainPages> {
               title: const Text('Information'),
               tiles: <SettingsTile>[
                 SettingsTile.navigation(
+                    leading: Icon(Icons.edit_note),
+                    title: Text('Information'),
+                    value: Text('What do metrics mean???'),
+                    onPressed: (context) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Information()),
+                      );
+                    }),
+                SettingsTile.navigation(
                   leading: Icon(Icons.language),
                   title: Text('App Version'),
-                  value: Text('0.1.1'),
+                  value: Text('1.0.3'),
                 ),
                 SettingsTile.navigation(
                     leading: Icon(Icons.edit_note),

@@ -19,7 +19,11 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     Color twentyFourColor = Colors.green;
+    Color scoreColor = Colors.green;
     Color predictionColor = Colors.green;
+    Color tweetsColor = Colors.green;
+    Color commitsColor = Colors.green;
+    Color marketViewColor = Colors.green;
     if (TopCryptos[widget.passedIndex].price_change_precentage_24h != null) {
       if (TopCryptos[widget.passedIndex]
           .price_change_precentage_24h
@@ -28,7 +32,27 @@ class _DetailsPageState extends State<DetailsPage> {
     if (TopCryptos[widget.passedIndex].prediction != null) {
       if (TopCryptos[widget.passedIndex]
           .prediction
-          .contains("-")) predictionColor = Colors.red;
+          .contains("Bearish")) predictionColor = Colors.red;
+    }
+    if (TopCryptos[widget.passedIndex].score != null) {
+      if (TopCryptos[widget.passedIndex]
+          .score
+          .contains("-")) scoreColor = Colors.red;
+    }
+    if (TopCryptos[widget.passedIndex].tweets != null) {
+      if (TopCryptos[widget.passedIndex]
+          .tweets
+          .contains("-")) tweetsColor = Colors.red;
+    }
+    if (TopCryptos[widget.passedIndex].commits != null) {
+      if (TopCryptos[widget.passedIndex]
+          .commits
+          .contains("-")) commitsColor = Colors.red;
+    }
+    if (TopCryptos[widget.passedIndex].marketView != null) {
+      if (TopCryptos[widget.passedIndex]
+          .marketView
+          .contains("-")) marketViewColor = Colors.red;
     }
     return Scaffold(
       appBar: AppBar(
@@ -280,26 +304,18 @@ class _DetailsPageState extends State<DetailsPage> {
                   Row(
                     children: <Widget>[
                       const Text(
-                        "Predicted 24h Change: ",
+                        "RETRO-SCORE©: ",
                         style: TextStyle(
                             height: 2,
                             fontSize: 15,
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        TopCryptos[widget.passedIndex].prediction,
+                        TopCryptos[widget.passedIndex].score,
                         style: TextStyle(
                           height: 2.2,
                           fontSize: 14,
-                          color: predictionColor,
-                        ),
-                      ),
-                      Text(
-                        "%",
-                        style: TextStyle(
-                          height: 2.2,
-                          fontSize: 14,
-                          color: predictionColor,
+                          color: scoreColor,
                         ),
                       ),
                     ],
@@ -307,7 +323,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   Row(
                     children: <Widget>[
                       const Text(
-                        "  MarketView score (x/100): ",
+                        "  MarketView score: ",
                         style: TextStyle(
                             height: 2,
                             fontSize: 15,
@@ -318,23 +334,59 @@ class _DetailsPageState extends State<DetailsPage> {
                         style: TextStyle(
                           height: 2.2,
                           fontSize: 14,
+                          color: marketViewColor,
                         ),
                       ),
                     ],
                   ),
                   Row(children: <Widget>[
                     const Text(
-                      "  Tweets count (7d): ",
+                      "  Tweets count (Change 7d): ",
                       style: TextStyle(
                           height: 2,
                           fontSize: 14,
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      TopCryptos[widget.passedIndex].tweets,
-                      style: const TextStyle(
+                      "${TopCryptos[widget.passedIndex].tweets} %",
+                      style: TextStyle(
                         height: 2.2,
                         fontSize: 14,
+                        color: tweetsColor,
+                      ),
+                    ),
+                  ]),
+                  Row(children: <Widget>[
+                    const Text(
+                      "  Commit count (Change 7d): ",
+                      style: TextStyle(
+                          height: 2,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "${TopCryptos[widget.passedIndex].commits} %",
+                      style: TextStyle(
+                        height: 2.2,
+                        fontSize: 14,
+                        color: commitsColor,
+                      ),
+                    ),
+                  ]),
+                  Row(children: <Widget>[
+                    const Text(
+                      "  Predicted change (24h): ",
+                      style: TextStyle(
+                          height: 2,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      TopCryptos[widget.passedIndex].prediction,
+                      style: TextStyle(
+                        height: 2.2,
+                        fontSize: 14,
+                        color: predictionColor,
                       ),
                     ),
                   ]),
