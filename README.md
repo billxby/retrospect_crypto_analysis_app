@@ -74,7 +74,7 @@
 
 <div align="center">
   <a href="https://i.postimg.cc/kGrjYf6B/project-thumb.png">
-    <img src="https://i.postimg.cc/kGrjYf6B/project-thumb.png" alt="Logo" width="200" height="200">
+    <img src="https://i.postimg.cc/kGrjYf6B/project-thumb.png" alt="Logo" width="440" height="348">
   </a>
 </div>
 
