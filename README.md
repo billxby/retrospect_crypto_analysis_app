@@ -159,10 +159,10 @@ Project Link: [https://github.com/bx07/Retrospect]([https://github.com/your_user
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[contributors-shield]: https://img.shields.io/github/contributors/bx07/Retrospect.svg?style=for-the-badge
+[contributors-url]: https://github.com/bx07/Retrospect/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/bx07/Retrospect.svg?style=for-the-badge
+[stars-url]: https://github.com/bx07/Retrospect/stargazers
+[issues-shield]: https://img.shields.io/github/issues/bx07/Retrospect.svg?style=for-the-badge
+[issues-url]: https://github.com/bx07/Retrospect/issues
 [product-screenshot]: images/screenshot.png
