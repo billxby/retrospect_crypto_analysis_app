@@ -150,8 +150,7 @@ Distributed under the Attribution-ShareAlike 4.0 International License. See `LIC
 
 Bill Xu - xubill0707@gmail.com
 
-Project Link: [https://github.com/bx07/Retrospect]([https://github.com/your_username/repo_name](https://github.com/bx07/Retrospect))
-[https://bx07.github.io/]([https://bx07.github.io/])
+Project Link: https://bx07.github.io
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
