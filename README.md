@@ -92,8 +92,8 @@ Key analysis metrics:
 
 ### Built With
 
-* ![Dart](https://img.shields.io/badge/Dart-Blue?style=for-the-badge&logo=dart&logoColor=white)[https://dart.dev/]
-* ![Flutter](https://img.shields.io/badge/Flutter-Blue?style=for-the-badge&logo=flutter&logoColor=white)[https://flutter.dev/]
+* ![Dart](https://img.shields.io/badge/Dart-0000FF?style=for-the-badge&logo=dart&logoColor=white)[https://dart.dev/]
+* ![Flutter](https://img.shields.io/badge/Flutter-0000FF?style=for-the-badge&logo=flutter&logoColor=white)[https://flutter.dev/]
 * ![Python](https://img.shields.io/badge/Python-Yellow?style=for-the-badge&logo=python&logoColor=white)[https://www.python.org/]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
