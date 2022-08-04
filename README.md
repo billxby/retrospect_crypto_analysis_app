@@ -27,7 +27,7 @@
 <br />
 <div align="center">
   <a href="https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png">
-    <img src="https://bx07.github.io/" alt="Logo" width="80" height="80">
+    <img src="https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Retrospect</h3>
