@@ -29,8 +29,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://bx07.github.io">
-    <img src="https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png" alt="Logo" width="80" height="80">
+  <a href="https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png">
+    <img src="https://bx07.github.io/" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Retrospect</h3>
@@ -75,7 +75,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://i.postimg.cc/kGrjYf6B/project-thumb.png)
+[![Product Name Screen Shot][https://i.postimg.cc/kGrjYf6B/project-thumb.png]](https://i.postimg.cc/kGrjYf6B/project-thumb.png)
 
 This is Retrospect, a mobile application that conducts cryptocurrency analysis through social metrics. 
 
