@@ -72,7 +72,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![Product Name Screen Shot](https://i.postimg.cc/kGrjYf6B/project-thumb.png)
+<div align="center">
+  <a href="https://i.postimg.cc/kGrjYf6B/project-thumb.png">
+    <img src="https://i.postimg.cc/kGrjYf6B/project-thumb.png" alt="Logo" width="200" height="200">
+  </a>
+</div>
 
 This is Retrospect, a mobile application that conducts cryptocurrency analysis through social metrics. 
 
