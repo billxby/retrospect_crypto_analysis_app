@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto_app/intropage.dart';
 import 'package:crypto_app/updatelog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -12,6 +13,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_splash_screen/flutter_splash_screen.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
@@ -50,6 +52,8 @@ bool worked = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await Firebase.initializeApp();
+  await GetStorage.init();
+  final introdata = GetStorage();
 
   for (int tries = 0; tries < maxFetchTries; tries++) {
     try {
@@ -95,6 +99,7 @@ Future<void> main() async {
       } else {
         print('Updating data');
         print('Trying again in 10 seconds');
+        print(e);
         await Future.delayed(const Duration(seconds: 10), () {});
         continue;
       }
@@ -128,6 +133,11 @@ Future<void> main() async {
     Sort["⬆24h"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
+  introdata.writeIfNull("displayed", false);
+  introdata.writeIfNull("darkTheme", true);
+
+  darkTheme = introdata.read("darkTheme");
+
   // copy.sort((a,b) => (int.tryParse(a.total_volume.substring(0, a.total_volume.length-1)) ?? 0).compareTo(int.tryParse(b.total_volume.substring(0, b.total_volume.length-1)) ?? 0));
   // for (CryptoInfo crypto in copy) {
   //   Sort["⬆Vol"]?.add(CryptosIndex![crypto.id] ?? 0);
@@ -138,7 +148,7 @@ Future<void> main() async {
   //   Sort["⬇Vol"]?.add(CryptosIndex![crypto.id] ?? 0);
   // }
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 Future<CryptoInfo> getData(int index) async {
@@ -147,17 +157,23 @@ Future<CryptoInfo> getData(int index) async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+
+  final introdata = GetStorage();
 
   @override
   Widget build(BuildContext context) {
-    Get.changeTheme(ThemeData.dark());
+
+    // introdata.write("displayed", false);
+    if (darkTheme == true) {
+      Get.changeTheme(ThemeData.dark());
+    }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Crypto App',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: const MainPages(),
+      home: introdata.read("displayed") ? const MainPages() : IntroPage(),
     );
   }
 }
@@ -171,6 +187,7 @@ class MainPages extends StatefulWidget {
 
 class _MainPagesState extends State<MainPages> {
   int _selectedIndex = 0;
+  final introdata = GetStorage();
 
   @override
   void initState() {
@@ -216,8 +233,9 @@ class _MainPagesState extends State<MainPages> {
                   sortBy = newValue!;
                 });
               },
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
+                color: darkTheme ? Colors.white : Colors.black,
               ),
             ),
             actions: [
@@ -383,6 +401,7 @@ class _MainPagesState extends State<MainPages> {
                   onToggle: (value) {
                     setState(() {
                       darkTheme = value;
+                      introdata.write("darkTheme", value);
                     });
                     if (darkTheme) {
                       Get.changeTheme(ThemeData.dark());
@@ -409,7 +428,7 @@ class _MainPagesState extends State<MainPages> {
                 SettingsTile.navigation(
                   leading: Icon(Icons.language),
                   title: Text('App Version'),
-                  value: Text('1.0.3'),
+                  value: Text('1.0.5'),
                 ),
                 SettingsTile.navigation(
                     leading: Icon(Icons.edit_note),

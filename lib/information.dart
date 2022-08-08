@@ -30,7 +30,7 @@ class Information extends StatelessWidget {
               ),
               Center(
                 child: Container(
-                    height: 90,
+                    height: 120,
                     width: 350,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +49,7 @@ class Information extends StatelessWidget {
                               ),
                             ]),
                           Text(
-                            "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The score ranges from -100 to 100.",
+                            "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The score ranges from the higher the better. Anything above 100 is excellent, and below -100 is horrible.",
                             style: TextStyle(
                               fontSize: 15,
                             ),
@@ -107,7 +107,7 @@ class Information extends StatelessWidget {
               ),
               Center(
                 child: Image.network(
-                  'https://i.postimg.cc/fZbm9zjs/Retro-Spect-Text-Transparent-Background.png'
+                  'https://i.postimg.cc/vT8WhZ52/Retrospect-Text-Outline.png'
                 ),
               )
             ]),

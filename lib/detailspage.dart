@@ -290,10 +290,6 @@ class _DetailsPageState extends State<DetailsPage> {
                   child: Container(
                 height: 230,
                 width: 350,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: darkTheme ? Colors.white : Colors.black),
-                ),
                 child: Column(children: <Widget>[
                   const Center(child: Text(
                     "Analysis",

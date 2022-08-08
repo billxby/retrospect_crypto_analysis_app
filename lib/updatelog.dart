@@ -30,6 +30,29 @@ class UpdateLog extends StatelessWidget {
               ),
               Center(
                 child: Container(
+                    height: 50,
+                    width: 350,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const <Widget>[
+                          Text(
+                            "08.03.2022",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "- Added Intro Screen",
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ])),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Center(
+                child: Container(
                     height: 70,
                     width: 350,
                     child: Column(

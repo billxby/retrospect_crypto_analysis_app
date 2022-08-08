@@ -57,10 +57,10 @@ class CryptoInfo {
     String twentyFourHours = json['price_change_percentage_24h'].toString();
     String id = json['id'].toString();
     String prediction = json['prediction'].toString();
-    String marketView = json['marketView'].toString();
-    String tweets = json['tweets'].toString();
-    String commits = json['commits'].toString();
-    String score = json['score'].toString();
+    String marketView = json['marketView'].toString() == "updating database" ? "0" : json['marketView'].toString();
+    String tweets = json['tweets'].toString() == "updating database" ? "0" : json['tweets'].toString();
+    String commits = json['commits'].toString() == "updating database" ? "0" : json['commits'].toString();
+    String score = json['score'].toString() == "updating database" ? "0" : json['score'].toString();
 
     if (prediction != "updating database") {
       double pred = double.parse(prediction);
