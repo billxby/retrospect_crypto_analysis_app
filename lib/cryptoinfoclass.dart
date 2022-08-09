@@ -57,10 +57,11 @@ class CryptoInfo {
     String twentyFourHours = json['price_change_percentage_24h'].toString();
     String id = json['id'].toString();
     String prediction = json['prediction'].toString();
-    String marketView = json['marketView'].toString() == "updating database" ? "0" : json['marketView'].toString();
-    String tweets = json['tweets'].toString() == "updating database" ? "0" : json['tweets'].toString();
-    String commits = json['commits'].toString() == "updating database" ? "0" : json['commits'].toString();
-    String score = json['score'].toString() == "updating database" ? "0" : json['score'].toString();
+    String marketView = json['marketView'].toString();
+    String tweets = json['tweets'].toString() == "updating database" ? '0' : json['tweets'].toString();
+    String commits = json['commits'].toString() == "updating database" ? '0' : json['commits'].toString();
+    String score = json['score'].toString();
+    String totalSupply = json['total_supply'].toString();
 
     if (prediction != "updating database") {
       double pred = double.parse(prediction);
@@ -127,7 +128,7 @@ class CryptoInfo {
       last_updated: json['last_updated'].toString(),
       id: id,
       image: json['image'].toString(),
-      total_supply: json['total_supply'].toString(),
+      total_supply: totalSupply,
       price_change_precentage_24h: twentyFourHours,
       prediction: prediction,
       marketView: marketView,

@@ -37,27 +37,53 @@ class Information extends StatelessWidget {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              Image.network(
-                                'https://i.postimg.cc/sDw49xXG/Retro-Spect-Trans.png',
-                                height: 20,
-                                width: 20,
+                              Container(
+                                child: Image.network(
+                                  'https://i.postimg.cc/sDw49xXG/Retro-Spect-Trans.png',
+                                  height: 40,
+                                  width: 40,
+                                  fit: BoxFit.cover,
+                                ),
+                                height: 40,
+                                width: 30,
                               ),
-                              Text(
-                                "RETRO-SCORE©",
+                              const Text(
+                                "ETRO",
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                  height: 2,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.lightBlue,
+                                ),
                               ),
-                            ]),
-                          Text(
-                            "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The score ranges from the higher the better. Anything above 100 is excellent, and below -100 is horrible.",
-                            style: TextStyle(
-                              fontSize: 15,
+                              const Text(
+                                "-SCORE©: ",
+                                style: TextStyle(
+                                  height: 2,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          RichText(
+                            text: const TextSpan(
+                              text: "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The higher the better. Anything above ",
+                              children: <TextSpan>[
+                                TextSpan(text: '100 is excellent', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.greenAccent)),
+                                TextSpan(text: ', and below '),
+                                TextSpan(text: '-100 is horrible.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                              ],
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
                             ),
+                            textAlign: TextAlign.justify,
                           ),
                         ])),
               ),
               const SizedBox(
-                height: 30,
+                height: 10,
               ),
               Center(
                 child: Container(
@@ -65,17 +91,40 @@ class Information extends StatelessWidget {
                     width: 350,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const <Widget>[
-                          Text(
-                            "MarketView Score",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                        children: <Widget>[
+                          Row(
+                            children: const <Widget>[
+                              Text(
+                                "Market ",
+                                style: TextStyle(
+                                    height: 2,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "View ",
+                                style: TextStyle(
+                                  height: 2,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.lightBlue,
+                                ),
+                              ),
+                              Text(
+                                "score: ",
+                                style: TextStyle(
+                                    height: 2,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
-                          Text(
-                            "A metric indicating investors' view of a cryptocurrency. It is determined by compiling tweets for each cryptocurrency. ",
+                          const Text(
+                            "A metric indicating investors' view of a cryptocurrency. It is determined by compiling tweets sentiment analysis for each cryptocurrency. ",
                             style: TextStyle(
                               fontSize: 15,
                             ),
+                            textAlign: TextAlign.justify,
                           ),
                         ])),
               ),
@@ -84,22 +133,44 @@ class Information extends StatelessWidget {
               ),
               Center(
                 child: Container(
-                    height: 70,
+                    height: 130,
                     width: 350,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const <Widget>[
-                          Text(
-                            "Predicted Change (24h)",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                        children: <Widget>[
+                          Row(
+                            children: <Widget> [
+                              Image.network(
+                                'https://i.postimg.cc/SNcFQTHG/bull.png',
+                                height: 30,
+                                width: 30,
+                              ),
+                              const Text(
+                                " Predicted Change (24h) ",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Image.network(
+                                'https://i.postimg.cc/0yxgzGs1/bear.png',
+                                height: 30,
+                                width: 30,
+                              ),
+                            ]
                           ),
-                          Text(
-                            "A metric indicating the view of the cryptocurrency in the next 24h according to our model. ",
-                            style: TextStyle(
-                              fontSize: 15,
+                          RichText(
+                            text: const TextSpan(
+                              text: "A metric indicating the market view of the cryptocurrency in the next 24h according to our ",
+                              children: <TextSpan>[
+                                TextSpan(text: '91%', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.lightBlue)),
+                                TextSpan(text: ' accurate model (according to back tests).'),
+                              ],
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
                             ),
-                          ),
+                            textAlign: TextAlign.justify,
+                          )
+
                         ])),
               ),
               const SizedBox(
@@ -109,7 +180,16 @@ class Information extends StatelessWidget {
                 child: Image.network(
                   'https://i.postimg.cc/vT8WhZ52/Retrospect-Text-Outline.png'
                 ),
+              ),
+              const SizedBox(
+                height: 500,
+              ),
+              Center(
+                child: const Text(
+                  "Still scrolling? lol 😀",
+                ),
               )
+
             ]),
       ),
     );

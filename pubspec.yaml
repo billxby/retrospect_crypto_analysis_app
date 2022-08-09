@@ -47,7 +47,8 @@ dependencies:
   flutter_launcher_icons: ^0.9.3
   introduction_screen: ^3.0.1
   get_storage: ^2.0.3
-  syncfusion_flutter_gauges: ^19.1.56
+  syncfusion_flutter_gauges: ^20.2.43
+  percent_indicator: ^4.2.2
 
 
 dev_dependencies:

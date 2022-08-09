@@ -417,8 +417,8 @@ class _MainPagesState extends State<MainPages> {
               tiles: <SettingsTile>[
                 SettingsTile.navigation(
                     leading: Icon(Icons.edit_note),
-                    title: Text('Information'),
-                    value: Text('What do metrics mean???'),
+                    title: Text('Metrics Meaning'),
+                    value: Text('Learn more about the metrics!'),
                     onPressed: (context) {
                       Navigator.push(
                         context,
