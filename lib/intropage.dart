@@ -12,7 +12,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_splash_screen/flutter_splash_screen.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'main.dart';
@@ -69,7 +68,7 @@ class _IntroPageState extends State<IntroPage> {
                 ),
                 title: "How does Retrospect work?",
                 body: "Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based mainly on social metrics.",
-                footer: Text("Learn more in Settings -> Information"),
+                footer: Text("Learn more in Settings -> Information -> Metrics Meaning"),
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
@@ -80,7 +79,7 @@ class _IntroPageState extends State<IntroPage> {
                 ),
                 title: "Metrics",
                 body: "Retrospect has 3 different metrics: \n RETRO-SCORE© (Quality), Market View score(Sentiment), and predicted 24h change",
-                footer: const Text("Learn more in Settings -> Information"),
+                footer: const Text("Learn more in Settings -> Information -> Metrics Meaning"),
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
@@ -97,7 +96,8 @@ class _IntroPageState extends State<IntroPage> {
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png'
+                    'https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png',
+                    width: 300,
                 ),
                 title: "One last thing!",
                 body: "Retrospect data updates every 2 hours, because we want to provide the best quality analysis. Use a real-time price provider for real-time data. ",

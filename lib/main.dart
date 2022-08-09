@@ -12,8 +12,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_splash_screen/flutter_splash_screen.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
@@ -192,14 +192,6 @@ class _MainPagesState extends State<MainPages> {
   @override
   void initState() {
     super.initState();
-    hideScreen();
-  }
-
-  ///hide your splash screen
-  Future<void> hideScreen() async {
-    Future.delayed(const Duration(milliseconds: 3600), () {
-      FlutterSplashScreen.hide();
-    });
   }
 
   void _onItemTapped(int index) {
@@ -416,13 +408,23 @@ class _MainPagesState extends State<MainPages> {
               title: const Text('Information'),
               tiles: <SettingsTile>[
                 SettingsTile.navigation(
-                    leading: Icon(Icons.edit_note),
+                    leading: Icon(Icons.rule_rounded),
                     title: Text('Metrics Meaning'),
                     value: Text('Learn more about the metrics!'),
                     onPressed: (context) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Information()),
+                      );
+                    }),
+                SettingsTile.navigation(
+                    leading: Icon(Icons.book_outlined),
+                    title: Text('App Intro'),
+                    value: Text('Load the app intro again!'),
+                    onPressed: (context) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => IntroPage()),
                       );
                     }),
                 SettingsTile.navigation(

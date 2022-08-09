@@ -30,7 +30,7 @@ class UpdateLog extends StatelessWidget {
               ),
               Center(
                 child: Container(
-                    height: 50,
+                    height: 70,
                     width: 350,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
