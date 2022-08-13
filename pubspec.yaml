@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.5+5
+version: 1.0.8+8
 
 environment:
   sdk: ">=2.17.1 <3.0.0"
@@ -34,8 +34,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  cloud_firestore: ^3.1.18
-  firebase_core : ^1.18.0
+  firebase_core: ^1.20.1
+  cloud_firestore: ^3.4.4
   numeral: ^2.0.1
   http: ^0.13.4
   flutter_easyloading: ^3.0.5
@@ -49,6 +49,9 @@ dependencies:
   syncfusion_flutter_gauges: ^20.2.43
   percent_indicator: ^4.2.2
   flutter_native_splash: ^2.2.7
+  syncfusion_flutter_charts: ^20.2.43
+  google_mobile_ads: ^2.0.0
+  flutter_login: ^4.0.0
 
 
 dev_dependencies:
@@ -67,15 +70,16 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "images/icon/Icon.png"
+  image_path: "images/Splash_Icon.png"
 
 flutter_native_splash:
   color: "#000000"
-  background_image: "images/icon/Icon.png"
+  image: "images/Splash_Icon.png"
   android_12:
+    image: "images/Splash_Icon.png"
     color: "#000000"
     icon_background_color: "#000000"
-    image_dark: "images/icon/Icon.png"
+    image_dark: "images/Splash_Icon.png"
     color_dark: #000000"
     icon_background_color_dark: #000000"
 

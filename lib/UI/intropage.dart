@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:crypto_app/updatelog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -14,7 +13,8 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get_storage/get_storage.dart';
 
-import 'main.dart';
+import '../main.dart';
+import 'mainpages.dart';
 
 class IntroPage extends StatefulWidget {
   @override
@@ -26,8 +26,13 @@ class _IntroPageState extends State<IntroPage> {
   final introdata = GetStorage();
 
   void _EndWelcomePage(context) {
-    introdata.write("displayed", true);
+
     Navigator.pop(context);
+    if (introdata.read("displayed") == true){
+      return;
+    }
+
+    introdata.write("displayed", true);
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_)=>MainPages())
     );
@@ -100,7 +105,7 @@ class _IntroPageState extends State<IntroPage> {
                     width: 300,
                 ),
                 title: "One last thing!",
-                body: "Retrospect data updates every 2 hours, because we want to provide the best quality analysis. Use a real-time price provider for real-time data. ",
+                body: "Retrospect data updates every 30 minutes, because we want to provide the best quality analysis. Use a real-time price provider for real-time data. ",
                 footer: Text("Enjoy!"),
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,

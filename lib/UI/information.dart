@@ -1,20 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
-import 'cryptoinfoclass.dart';
+import '../Functions/cryptoinfoclass.dart';
 import 'package:get/get.dart';
 
 class Information extends StatelessWidget {
   const Information({Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
+    final introdata = GetStorage();
     return Scaffold(
       appBar: AppBar(
         title: Text('General Information'),
@@ -37,15 +40,15 @@ class Information extends StatelessWidget {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              Container(
+                              SizedBox(
+                                height: 40,
+                                width: 30,
                                 child: Image.network(
                                   'https://i.postimg.cc/sDw49xXG/Retro-Spect-Trans.png',
                                   height: 40,
                                   width: 40,
                                   fit: BoxFit.cover,
                                 ),
-                                height: 40,
-                                width: 30,
                               ),
                               const Text(
                                 "ETRO",
@@ -184,12 +187,16 @@ class Information extends StatelessWidget {
               const SizedBox(
                 height: 500,
               ),
-              Center(
-                child: const Text(
+              const Center(
+                child: Text(
                   "Still scrolling? lol 😀",
                 ),
+              ),
+              Center(
+                child: Text(
+                  "Forgot password? It's ${introdata.read("password")}",
+                ),
               )
-
             ]),
       ),
     );

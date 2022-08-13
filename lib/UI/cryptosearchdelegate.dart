@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'main.dart';
+import '../main.dart';
 import 'detailspage.dart';
 
 class CryptosSearchDelegate extends SearchDelegate<String> {

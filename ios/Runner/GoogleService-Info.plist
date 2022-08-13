@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>465652700448-0hf3eeeg3ckand16sjsvo23633m58lfi.apps.googleusercontent.com</string>
+	<string>62265186094-goe1trbvmso12lsti12ob1iq2g3u7squ.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.465652700448-0hf3eeeg3ckand16sjsvo23633m58lfi</string>
+	<string>com.googleusercontent.apps.62265186094-goe1trbvmso12lsti12ob1iq2g3u7squ</string>
 	<key>API_KEY</key>
-	<string>AIzaSyD_0OxKDz6SxxJafTDnyCWl2UenAlf9Gv0</string>
+	<string>AIzaSyBBAfPAl530EyX26u7gdy6_LZPWdFC4pa8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>465652700448</string>
+	<string>62265186094</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.crypto.cryptoApp</string>
 	<key>PROJECT_ID</key>
-	<string>crypto-project-001</string>
+	<string>retrospect-accounts</string>
 	<key>STORAGE_BUCKET</key>
-	<string>crypto-project-001.appspot.com</string>
+	<string>retrospect-accounts.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:465652700448:ios:a7b475a423b4a1c2643345</string>
+	<string>1:62265186094:ios:f127097361d3a6b1fc8cbf</string>
 </dict>
 </plist>

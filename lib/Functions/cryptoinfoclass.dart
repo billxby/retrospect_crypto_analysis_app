@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 class CryptoInfo {
   final String market_cap_rank;
@@ -26,6 +26,8 @@ class CryptoInfo {
   final String tweets;
   final String commits;
   final String score;
+  final String realVolume;
+  final String realScore;
 
   CryptoInfo({
     required this.market_cap_rank,
@@ -46,6 +48,8 @@ class CryptoInfo {
     required this.tweets,
     required this.commits,
     required this.score,
+    required this.realVolume,
+    required this.realScore,
   });
 
   factory CryptoInfo.fromJson(Map<String, dynamic> json) {
@@ -62,6 +66,8 @@ class CryptoInfo {
     String commits = json['commits'].toString() == "updating database" ? '0' : json['commits'].toString();
     String score = json['score'].toString();
     String totalSupply = json['total_supply'].toString();
+    String realVolume = json['total_volume'].toString();
+    String realScore = json['score'].toString() == "updating database" ? 'Upd' : double.parse(json['score'].toString()).toStringAsFixed(1);
 
     if (prediction != "updating database") {
       double pred = double.parse(prediction);
@@ -89,6 +95,9 @@ class CryptoInfo {
     if (volume.contains(".")) {
       volume = volume.substring(0, volume.indexOf(".")) +
           volume.substring(volume.length - 1, volume.length);
+    }
+    if (realVolume.contains(".")) {
+      realVolume = realVolume.substring(0, realVolume.indexOf("."));
     }
 
     if (price.length < 5) {
@@ -135,6 +144,8 @@ class CryptoInfo {
       tweets: tweets,
       commits: commits,
       score: score,
+      realVolume: realVolume,
+      realScore: realScore,
     );
   }
 }

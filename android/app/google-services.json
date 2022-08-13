@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "465652700448",
-    "project_id": "crypto-project-001",
-    "storage_bucket": "crypto-project-001.appspot.com"
+    "project_number": "62265186094",
+    "project_id": "retrospect-accounts",
+    "storage_bucket": "retrospect-accounts.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:465652700448:android:3941f8935e9db8c4643345",
+        "mobilesdk_app_id": "1:62265186094:android:9ee7b526454039b4fc8cbf",
         "android_client_info": {
           "package_name": "com.cryptos.crypto_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "465652700448-rfs32ldfhjcst5trkffg8oq9g13agr43.apps.googleusercontent.com",
+          "client_id": "62265186094-s9jt8scr044u17b5kgdkivksck3tcr4n.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCeIRdAXYy1Gx0-vFqPddnWXgl1IdmFNAQ"
+          "current_key": "AIzaSyCGH6lQEqrdbk_uJ8yZklrIu7EQzCZz1TM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "465652700448-rfs32ldfhjcst5trkffg8oq9g13agr43.apps.googleusercontent.com",
+              "client_id": "62265186094-s9jt8scr044u17b5kgdkivksck3tcr4n.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

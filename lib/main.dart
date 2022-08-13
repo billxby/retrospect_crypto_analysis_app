@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:crypto_app/intropage.dart';
-import 'package:crypto_app/updatelog.dart';
+import 'package:crypto_app/UI/intropage.dart';
+import 'package:crypto_app/UI/updatelog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:numeral/numeral.dart';
@@ -14,12 +14,19 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'cryptosearchdelegate.dart';
-import "detailspage.dart";
-import 'cryptoinfoclass.dart';
-import 'information.dart';
-import 'updatelog.dart';
+import 'UI/cryptosearchdelegate.dart';
+import "UI/detailspage.dart";
+import 'Functions/cryptoinfoclass.dart';
+import 'UI/information.dart';
+import 'UI/updatelog.dart';
+import 'Functions/database.dart';
+import 'UI/mainpages.dart';
+import 'UI/adhelper.dart';
 
 //Program Settings
 const int cryptosCap = 500;
@@ -37,12 +44,13 @@ List<int> MarketCapD = [];
 List<int> ChangeA = [];
 List<int> ChangeD = [];
 
+DateTime lastRefreshed = DateTime.now();
 int globalIndex = 0;
 List<dynamic> data = [];
 
+List<String> testDeviceIds = ['CECBD9E93B5FEC5E0260450BD959DA93'];
+
 //Declare styles
-const TextStyle cryptosListStyle =
-    TextStyle(height: 1.8, fontSize: 15, fontWeight: FontWeight.bold);
 
 //Settings variables
 bool darkTheme = true;
@@ -51,110 +59,44 @@ bool worked = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    name: 'Retrospect',
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+
+  MobileAds.instance
+    ..initialize()
+    ..updateRequestConfiguration(
+      RequestConfiguration(testDeviceIds: testDeviceIds),
+    );
+  // MobileAds.instance.initialize();
+  // RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
+  // MobileAds.instance.updateRequestConfiguration(configuration);
+
   await GetStorage.init();
   final introdata = GetStorage();
 
-  for (int tries = 0; tries < maxFetchTries; tries++) {
-    try {
-      final response =
-          await http.get(Uri.parse('http://3.142.236.93:5000/'));
-      data = await jsonDecode(response.body);
-      if (response.statusCode != 200) {
-        throw Exception('Could not fetch data!');
-      }
-      if (data.contains('refreshing_data')) {
-        throw Exception('Updating data');
-      }
-
-      worked = true;
-
-      Sort["⬆A-Z"] = [];
-      Sort["⬇A-Z"] = [];
-      Sort["⬆Mrkt"] = [];
-      Sort["⬇Mrkt"] = [];
-      Sort["⬆24h"] = [];
-      Sort["⬇24h"] = [];
-      // Sort["⬆Vol"] = [];
-      // Sort["⬇Vol"] = [];
-      // Volume doesn't work lol
-
-      for (int i = 0; i < cryptosCap; i++) {
-        late Future<CryptoInfo> Responses;
-        Responses = getData(i);
-        TopCryptos.add(await Responses);
-        Sort["⬆A-Z"]?.add(i);
-        Sort["⬇A-Z"]?.add(cryptosCap-i-1);
-      }
-
-      break;
-    } catch (e) {
-      if (e is ClientException) {
-        if (e.message == 'Connection closed while receiving data') {
-          await Future.delayed(const Duration(seconds: 5), () {});
-          print('Exception Connection closed while receiving data');
-          print('Trying again in 5 seconds');
-          continue;
-        }
-      } else {
-        print('Updating data');
-        print('Trying again in 10 seconds');
-        print(e);
-        await Future.delayed(const Duration(seconds: 10), () {});
-        continue;
-      }
-    }
-  }
+  final worked = await fetchDatabase();
 
   if (worked == false) {
     exit(0);
   }
 
-  // Sort cryptos by marketCap and Change
-  List<CryptoInfo> copy = List.from(TopCryptos);
-
-  copy.sort((a,b) => int.parse(a.market_cap_rank).compareTo(int.parse(b.market_cap_rank)));
-  for (CryptoInfo crypto in copy) {
-    Sort["⬇Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
-  }
-
-  copy.sort((a,b) => int.parse(b.market_cap_rank).compareTo(int.parse(a.market_cap_rank)));
-  for (CryptoInfo crypto in copy) {
-    Sort["⬆Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
-  }
-
-  copy.sort((a,b) => (double.tryParse(a.price_change_precentage_24h) ?? 0.0).compareTo(double.tryParse(b.price_change_precentage_24h) ?? 0.0));
-  for (CryptoInfo crypto in copy) {
-    Sort["⬇24h"]?.add(CryptosIndex[crypto.id] ?? 0);
-  }
-
-  copy.sort((a,b) => (double.tryParse(b.price_change_precentage_24h) ?? 0.0).compareTo(double.tryParse(a.price_change_precentage_24h) ?? 0.0));
-  for (CryptoInfo crypto in copy) {
-    Sort["⬆24h"]?.add(CryptosIndex[crypto.id] ?? 0);
-  }
+  DateTime lastRefreshed = DateTime.now();
 
   introdata.writeIfNull("displayed", false);
   introdata.writeIfNull("darkTheme", true);
+  introdata.writeIfNull("credits", 0);
+  introdata.writeIfNull("logged in", false);
+  introdata.writeIfNull("username", "");
+  introdata.writeIfNull("password", "");
 
   darkTheme = introdata.read("darkTheme");
-
-  // copy.sort((a,b) => (int.tryParse(a.total_volume.substring(0, a.total_volume.length-1)) ?? 0).compareTo(int.tryParse(b.total_volume.substring(0, b.total_volume.length-1)) ?? 0));
-  // for (CryptoInfo crypto in copy) {
-  //   Sort["⬆Vol"]?.add(CryptosIndex![crypto.id] ?? 0);
-  // }
-  //
-  // copy.sort((a,b) => (int.tryParse(b.total_volume.substring(0, b.total_volume.length-1)) ?? 0).compareTo(int.tryParse(a.total_volume.substring(0, a.total_volume.length-1)) ?? 0));
-  // for (CryptoInfo crypto in copy) {
-  //   Sort["⬇Vol"]?.add(CryptosIndex![crypto.id] ?? 0);
-  // }
 
   runApp(MyApp());
 }
 
-Future<CryptoInfo> getData(int index) async {
-  final Res = CryptoInfo.fromJson(jsonDecode(data[index]));
-  return await Res;
-}
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
@@ -178,289 +120,4 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPages extends StatefulWidget {
-  const MainPages({Key? key}) : super(key: key);
 
-  @override
-  State<MainPages> createState() => _MainPagesState();
-}
-
-class _MainPagesState extends State<MainPages> {
-  int _selectedIndex = 0;
-  final introdata = GetStorage();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_selectedIndex == 0) {
-      return Scaffold(
-        appBar: AppBar(
-            title: const Text('Top $cryptosCap Cryptos'),
-            centerTitle: true,
-            toolbarHeight: 40,
-            leadingWidth: 80,
-            leading: DropdownButton<String>(
-              value: sortBy,
-              isExpanded: true,
-              icon: const Icon(Icons.sort),
-              items: <String>["⬆A-Z", '⬇A-Z', '⬆Mrkt', '⬇Mrkt', '⬆24h', '⬇24h'/*, '⬆Vol', '⬇Vol'*/]
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  sortBy = newValue!;
-                });
-              },
-              style: TextStyle(
-                fontSize: 15,
-                color: darkTheme ? Colors.white : Colors.black,
-              ),
-            ),
-            actions: [
-              IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    showSearch(
-                        context: context,
-                        delegate: CryptosSearchDelegate(CryptosList));
-                  })
-            ]),
-        body: ListView.builder(
-            itemCount: TopCryptos.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                tileColor: Colors.transparent,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailsPage(
-                              passedIndex: Sort[sortBy]?[index] ?? 0,
-                            )),
-                  );
-                },
-                title: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                            color: darkTheme ? Colors.white : Colors.black)),
-                    color: Colors.transparent,
-                  ),
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Image.network(
-                              TopCryptos[Sort[sortBy]![index]].image,
-                              height: 25,
-                              width: 25,
-                            ),
-                            const SizedBox(
-                              width: 15,
-                              height: 10,
-                            ),
-                            Expanded(
-                              child: Text(
-                                TopCryptos[Sort[sortBy]![index]].id,
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                                softWrap: false,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              TopCryptos[Sort[sortBy]![index]].current_price,
-                              style: const TextStyle(height: 2, fontSize: 15),
-                            ),
-                            const SizedBox(
-                              width: 3,
-                              height: 1,
-                            ),
-                            const Text(
-                              "24h: ",
-                              style: cryptosListStyle,
-                            ),
-                            Text(
-                              TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h,
-                              style: TextStyle(
-                                  height: 2.2,
-                                  fontSize: 14,
-                                  color: TopCryptos[Sort[sortBy]![index]]
-                                          .price_change_precentage_24h
-                                          .contains("-")
-                                      ? Colors.red
-                                      : Colors.green),
-                            ),
-                            Text(
-                              "%",
-                              style: TextStyle(
-                                  height: 2.2,
-                                  fontSize: 12,
-                                  color: TopCryptos[Sort[sortBy]![index]]
-                                          .price_change_precentage_24h
-                                          .contains("-")
-                                      ? Colors.red
-                                      : Colors.green),
-                            ),
-                            const SizedBox(
-                              width: 3,
-                              height: 1,
-                            ),
-                            const Text(
-                              "Mrkt Cap: ",
-                              style: cryptosListStyle,
-                            ),
-                            Text(
-                              TopCryptos[Sort[sortBy]![index]].market_cap,
-                              style: const TextStyle(
-                                height: 2.2,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 3,
-                              height: 1,
-                            ),
-                            const Text(
-                              "Vol: ",
-                              style: cryptosListStyle,
-                            ),
-                            Text(
-                              TopCryptos[Sort[sortBy]![index]].total_volume,
-                              style: const TextStyle(
-                                height: 2.2,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              label: 'List',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-          centerTitle: true,
-          toolbarHeight: 40,
-        ),
-        body: SettingsList(
-          sections: [
-            SettingsSection(
-              title: const Text('General'),
-              tiles: <SettingsTile>[
-                SettingsTile.switchTile(
-                  initialValue: darkTheme,
-                  leading: const Icon(Icons.format_paint),
-                  title: const Text('Enable dark theme'),
-                  onToggle: (value) {
-                    setState(() {
-                      darkTheme = value;
-                      introdata.write("darkTheme", value);
-                    });
-                    if (darkTheme) {
-                      Get.changeTheme(ThemeData.dark());
-                    } else {
-                      Get.changeTheme(ThemeData.light());
-                    }
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: const Text('Information'),
-              tiles: <SettingsTile>[
-                SettingsTile.navigation(
-                    leading: Icon(Icons.rule_rounded),
-                    title: Text('Metrics Meaning'),
-                    value: Text('Learn more about the metrics!'),
-                    onPressed: (context) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Information()),
-                      );
-                    }),
-                SettingsTile.navigation(
-                    leading: Icon(Icons.book_outlined),
-                    title: Text('App Intro'),
-                    value: Text('Load the app intro again!'),
-                    onPressed: (context) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => IntroPage()),
-                      );
-                    }),
-                SettingsTile.navigation(
-                  leading: Icon(Icons.language),
-                  title: Text('App Version'),
-                  value: Text('1.0.5'),
-                ),
-                SettingsTile.navigation(
-                    leading: Icon(Icons.edit_note),
-                    title: Text('Update Log'),
-                    value: Text('Latest App Updates!'),
-                    onPressed: (context) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => UpdateLog()),
-                      );
-                    }),
-              ],
-            )
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              label: 'List',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-      );
-    }
-  }
-}
