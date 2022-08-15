@@ -16,8 +16,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'Functions/cloudfunctionshelper.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 import 'UI/cryptosearchdelegate.dart';
 import "UI/detailspage.dart";
@@ -27,10 +29,13 @@ import 'UI/updatelog.dart';
 import 'Functions/database.dart';
 import 'UI/mainpages.dart';
 import 'UI/adhelper.dart';
+import 'firebase_options.dart';
 
 //Program Settings
 const int cryptosCap = 500;
 const int maxFetchTries = 4;
+final int limit = 5;
+int premiumExpire = 0;
 
 //Declare variables
 List<String> CryptosList = [];
@@ -48,7 +53,7 @@ DateTime lastRefreshed = DateTime.now();
 int globalIndex = 0;
 List<dynamic> data = [];
 
-List<String> testDeviceIds = ['CECBD9E93B5FEC5E0260450BD959DA93'];
+List<String> testDeviceIds = ["CECBD9E93B5FEC5E0260450BD959DA93"];
 
 //Declare styles
 
@@ -60,17 +65,17 @@ bool worked = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: 'Retrospect',
+    name: "Retrospect",
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final functions = FirebaseFunctions.instance.app;
 
-
-  MobileAds.instance
-    ..initialize()
-    ..updateRequestConfiguration(
-      RequestConfiguration(testDeviceIds: testDeviceIds),
-    );
-  // MobileAds.instance.initialize();
+  // MobileAds.instance
+  //   ..initialize()
+  //   ..updateRequestConfiguration(
+  //     RequestConfiguration(testDeviceIds: testDeviceIds),
+  //   );
+  MobileAds.instance.initialize();
   // RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
   // MobileAds.instance.updateRequestConfiguration(configuration);
 
@@ -91,8 +96,16 @@ Future<void> main() async {
   introdata.writeIfNull("logged in", false);
   introdata.writeIfNull("username", "");
   introdata.writeIfNull("password", "");
+  introdata.writeIfNull("used", <String> []);
+  introdata.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
+
+  DateTime now = DateTime.now();
+  if (DateTime.fromMillisecondsSinceEpoch(introdata.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
+    introdata.write("used", <String> []);
+  }
 
   darkTheme = introdata.read("darkTheme");
+  introdata.write("last open", DateTime.now().millisecondsSinceEpoch);
 
   runApp(MyApp());
 }

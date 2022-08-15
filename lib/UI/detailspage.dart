@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -56,6 +57,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final introdata = GetStorage();
     Color twentyFourColor = getTextColor(TopCryptos[widget.passedIndex].price_change_precentage_24h);
     Color scoreColor = getTextColor(TopCryptos[widget.passedIndex].score);
     Color predictionColor = Colors.green;
@@ -101,6 +103,11 @@ class _DetailsPageState extends State<DetailsPage> {
       marketUrl = "https://i.postimg.cc/T13XqSpF/sad.png";
       marketViewColor = Colors.red;
     }
+
+    // print("-------------------------");
+    // print(introdata.read("used"));
+    // print(introdata.read("used").length);
+    // print("-------------------------");
 
     return FutureBuilder(
         future: waitForData(),

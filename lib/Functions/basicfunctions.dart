@@ -18,14 +18,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future<bool> checkIfDocExists(String docId) async {
-  try {
-    // Get reference to Firestore collection
-    var collectionRef = FirebaseFirestore.instance.collection('accounts');
-
-    var doc = await collectionRef.doc(docId).get();
-    return doc.exists;
-  } catch (e) {
-    throw e;
-  }
+int compareEpochMilli(int t1, DateTime t2) {
+  return (DateTime.fromMillisecondsSinceEpoch(t1).compareTo(t2));
 }

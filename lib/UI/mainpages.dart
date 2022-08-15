@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:crypto_app/Functions/firestorehelper.dart';
+import 'package:crypto_app/Functions/basicfunctions.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart';
@@ -18,7 +19,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
+import '../Functions/cloudfunctionshelper.dart';
+import '../Functions/premium.dart';
 import 'adhelper.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
@@ -28,11 +33,7 @@ import 'updatelog.dart';
 import '../Functions/database.dart';
 import '../main.dart';
 import 'UI helpers/textelements.dart';
-
-const users = const {
-  'xubill0707@gmail.com': '12345',
-  'kevin': 'dad??',
-};
+import '../Functions/premium.dart';
 
 class MainPages extends StatefulWidget {
   const MainPages({Key? key}) : super(key: key);
@@ -56,12 +57,6 @@ class _MainPagesState extends State<MainPages> {
   void initState() {
     super.initState();
     _createRewardedAd();
-    _checkUsername();
-  }
-
-  Future<void> _checkUsername() async {
-    bool docExist = await checkIfDocExists("xubill0707@gmail.com");
-    print("checking if exists ${docExist}");
   }
 
   void _onItemTapped(int index) {
@@ -87,182 +82,292 @@ class _MainPagesState extends State<MainPages> {
     final introdata = GetStorage();
 
     if (_selectedIndex == 0) {
-      return Scaffold(
-        appBar: AppBar(
-            title: const Text('Top $cryptosCap Cryptos'),
-            centerTitle: true,
-            toolbarHeight: 40,
-            leadingWidth: 80,
-            leading: DropdownButton<String>(
-              value: sortBy,
-              isExpanded: true,
-              icon: const Icon(Icons.sort),
-              items: <String>[
-                "⬆A-Z",
-                '⬇A-Z',
-                '⬆Mrkt',
-                '⬇Mrkt',
-                '⬆24h',
-                '⬇24h',
-                "⬆Rscr",
-                '⬇Rscr',
-                '⬆Vol',
-                '⬇Vol'
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  sortBy = newValue!;
-                });
-              },
-              style: TextStyle(
-                fontSize: 15,
-                color: darkTheme ? Colors.white : Colors.black,
-              ),
-              borderRadius: BorderRadius.circular(10),
-              itemHeight: 50,
-              menuMaxHeight: 250,
-            ),
-            actions: [
-              IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    showSearch(
-                        context: context,
-                        delegate: CryptosSearchDelegate(CryptosList));
-                  })
-            ]),
-        body: RefreshIndicator(
-          onRefresh: refreshPage,
-          child: ListView.builder(
-              itemCount: TopCryptos.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  tileColor: Colors.transparent,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailsPage(
-                                passedIndex: Sort[sortBy]?[index] ?? 0,
-                              )),
-                    );
-                  },
-                  title: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                              color: darkTheme ? Colors.white : Colors.black)),
-                      color: Colors.transparent,
+      return FutureBuilder(
+          future: checkExpire(introdata.read("username")),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Top $cryptosCap Cryptos'),
+                  centerTitle: true,
+                  toolbarHeight: 35,
+                ),
+                body: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color> (Colors.blue),
+                  ),
+                ),
+                bottomNavigationBar: getBar(),
+              );
+            }
+            return Scaffold(
+              appBar: AppBar(
+                  title: const Text('Top $cryptosCap Cryptos'),
+                  centerTitle: true,
+                  toolbarHeight: 40,
+                  leadingWidth: 80,
+                  leading: DropdownButton<String>(
+                    value: sortBy,
+                    isExpanded: true,
+                    icon: const Icon(Icons.sort),
+                    items: <String>[
+                      "⬆A-Z",
+                      '⬇A-Z',
+                      '⬆Mrkt',
+                      '⬇Mrkt',
+                      '⬆24h',
+                      '⬇24h',
+                      "⬆Rscr",
+                      '⬇Rscr',
+                      '⬆Vol',
+                      '⬇Vol'
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        sortBy = newValue!;
+                      });
+                    },
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: darkTheme ? Colors.white : Colors.black,
                     ),
-                    padding: const EdgeInsets.all(2),
-                    child: Center(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Image.network(
-                                TopCryptos[Sort[sortBy]![index]].image,
-                                height: 25,
-                                width: 25,
-                              ),
-                              const SizedBox(
-                                width: 15,
-                                height: 10,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  TopCryptos[Sort[sortBy]![index]].id,
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                  softWrap: false,
+                    borderRadius: BorderRadius.circular(10),
+                    itemHeight: 50,
+                    menuMaxHeight: 250,
+                  ),
+                  actions: [
+                    IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          showSearch(
+                              context: context,
+                              delegate: CryptosSearchDelegate(CryptosList));
+                        })
+                  ]),
+              body: RefreshIndicator(
+                onRefresh: refreshPage,
+                child: ListView.builder(
+                    itemCount: TopCryptos.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        tileColor: Colors.transparent,
+                        onTap: () {
+                          if (userLimitAvailable(Sort[sortBy]?[index] ?? 0)) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailsPage(
+                                    passedIndex: Sort[sortBy]?[index] ?? 0,
+                                  )),
+                            );
+                          }
+                          else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Limit Reached'),
+                                  content: const Text(
+                                      'You have reached your daily limit of cryptocurrency analysis ☹️You may use your credits or get premium to access more'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context, '60 Credits');
+                                        if (redeemCreditsDetails(Sort[sortBy]?[index] ?? 0)) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => DetailsPage(
+                                                  passedIndex: Sort[sortBy]?[index] ?? 0,
+                                                )),
+                                          );
+                                        }
+                                        else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('You don\'t have enough Credits'),
+                                                content: const Text('You need at least 60 Credits to redeem that'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, 'OK'),
+                                                    child: const Text('OK'),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: const Text('60 Credits'),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            );
+                          }
+                        },
+                        title: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    color: darkTheme ? Colors.white : Colors.black)),
+                            color: Colors.transparent,
                           ),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                TopCryptos[Sort[sortBy]![index]].current_price,
-                                style: const TextStyle(height: 2, fontSize: 15),
-                              ),
-                              listviewTextTitle(" 24h: "),
-                              listviewTextInfo(
-                                  "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
-                                  TopCryptos[Sort[sortBy]![index]]
-                                          .price_change_precentage_24h
-                                          .contains("-")
-                                      ? Colors.red
-                                      : Colors.green),
-                              listviewTextTitle(" R "),
-                              listviewTextInfo(
-                                  TopCryptos[Sort[sortBy]![index]].realScore,
-                                  TopCryptos[Sort[sortBy]![index]]
-                                          .realScore
-                                          .contains("-")
-                                      ? Colors.red
-                                      : Colors.green),
-                              listviewTextTitle(" Mrkt Cap: "),
-                              listviewTextInfo(
-                                  TopCryptos[Sort[sortBy]![index]].market_cap,
-                                  darkTheme ? Colors.white : Colors.black),
-                              listviewTextTitle(" Vol "),
-                              listviewTextInfo(
-                                  TopCryptos[Sort[sortBy]![index]].total_volume,
-                                  darkTheme ? Colors.white : Colors.black),
-                            ],
+                          padding: const EdgeInsets.all(2),
+                          child: Center(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Image.network(
+                                      TopCryptos[Sort[sortBy]![index]].image,
+                                      height: 25,
+                                      width: 25,
+                                    ),
+                                    const SizedBox(
+                                      width: 15,
+                                      height: 10,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        TopCryptos[Sort[sortBy]![index]].id,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                        softWrap: false,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      TopCryptos[Sort[sortBy]![index]].current_price,
+                                      style: const TextStyle(height: 2, fontSize: 15),
+                                    ),
+                                    listviewTextTitle(" 24h: "),
+                                    listviewTextInfo(
+                                        "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
+                                        TopCryptos[Sort[sortBy]![index]]
+                                            .price_change_precentage_24h
+                                            .contains("-")
+                                            ? Colors.red
+                                            : Colors.green),
+                                    listviewTextTitle(" R "),
+                                    listviewTextInfo(
+                                        TopCryptos[Sort[sortBy]![index]].realScore,
+                                        TopCryptos[Sort[sortBy]![index]]
+                                            .realScore
+                                            .contains("-")
+                                            ? Colors.red
+                                            : Colors.green),
+                                    listviewTextTitle(" Mrkt Cap: "),
+                                    listviewTextInfo(
+                                        TopCryptos[Sort[sortBy]![index]].market_cap,
+                                        darkTheme ? Colors.white : Colors.black),
+                                    listviewTextTitle(" Vol "),
+                                    listviewTextInfo(
+                                        TopCryptos[Sort[sortBy]![index]].total_volume,
+                                        darkTheme ? Colors.white : Colors.black),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-        ),
-        bottomNavigationBar: getBar(),
+                        ),
+                      );
+                    }),
+              ),
+              bottomNavigationBar: getBar(),
+            );
+          }
       );
-    } else if (_selectedIndex == 1) {
+    }
+    else if (_selectedIndex == 1) {
       return earnPage();
-    } else if (_selectedIndex == 2) {
+    }
+    else if (_selectedIndex == 2) {
       if (introdata.read("logged in") == false) {
-        return FlutterLogin(
-          title: 'Retrospect',
-          logo: Image.network(
-                  "https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png")
-              .image,
-          onLogin: _authUser,
-          onSignup: _signupUser,
-          onSubmitAnimationCompleted: () {
-            introdata.write("logged in", true);
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => MainPages(),
-            ));
-          },
-          userValidator: null,
-          onRecoverPassword: _recoverPassword,
-          hideForgotPasswordButton: true,
-          loginAfterSignUp: true,
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Premium'),
+            centerTitle: true,
+            toolbarHeight: 40,
+          ),
+          body: FlutterLogin(
+            title: 'Retrospect',
+            logo: Image.network(
+                "https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png")
+                .image,
+            onLogin: _authUser,
+            onSignup: _signupUser,
+            onSubmitAnimationCompleted: () {
+              introdata.write("logged in", true);
+              setState(() {});
+              // Navigator.of(context).pushReplacement(MaterialPageRoute(
+              //   builder: (context) => MainPages(),
+              // ));
+            },
+            userValidator: null,
+            onRecoverPassword: _recoverPassword,
+            hideForgotPasswordButton: true,
+            loginAfterSignUp: false,
+            messages: LoginMessages(
+              signUpSuccess: "You have successfully signed up!",
+            ),
+          ),
+          bottomNavigationBar: getBar(),
         );
       } else {
-        return premiumPage();
+        return FutureBuilder(
+            future: checkExpire(introdata.read("username")),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Premium'),
+                    centerTitle: true,
+                    toolbarHeight: 35,
+                  ),
+                  body: const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color> (Colors.blue),
+                    ),
+                  ),
+                  bottomNavigationBar: getBar(),
+                );
+              }
+              return premiumPage();
+            }
+        );
       }
     } else {
       return settingsPage();
     }
   }
 
-  Future<String?> _authUser(LoginData data) {
+  Future<String?> _authUser(LoginData data) async {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
+
+    List<bool> back = await checkLogin(data.name.toString(), data.password.toString());
+
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(data.name)) {
+      if (back[0] == false) {
         return 'User not exists';
       }
-      if (users[data.name] != data.password) {
+      if (back[1] == false) {
         return 'Password does not match';
       }
       introdata.write("username", data.name);
@@ -271,20 +376,25 @@ class _MainPagesState extends State<MainPages> {
     });
   }
 
-  Future<String?> _signupUser(SignupData data) {
+  Future<String?> _signupUser(SignupData data) async {
     debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+
+    bool worked = await register(data.name.toString(), data.password.toString());
+
     return Future.delayed(loginTime).then((_) {
-      return null;
+      if (worked) {
+        return null;
+      }
+      else {
+        return "Something went wrong with registering, please try again later";
+      }
     });
   }
 
   Future<String> _recoverPassword(String name) {
     debugPrint('Name: $name');
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(name)) {
-        return 'User not exists';
-      }
-      return 'Hi';
+      return "hi";
     });
   }
 
@@ -372,9 +482,6 @@ class _MainPagesState extends State<MainPages> {
   }
 
   Scaffold premiumPage() {
-    final Stream<QuerySnapshot> users =
-        FirebaseFirestore.instance.collection("cryptos").snapshots();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Premium'),
@@ -399,34 +506,74 @@ class _MainPagesState extends State<MainPages> {
                   ),
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
-                    Text(
-                      " Hello ${introdata.read("username")} ",
-                      style: hugeTitleStyle,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget> [
+                        RichText(
+                          text: TextSpan(
+                            text: " Hello, ",
+                            style: hugeTitleStyle,
+                            children: <TextSpan> [
+                              TextSpan(
+                                text: " ${introdata.read("username")} !",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: userHasPremium() ? Colors.blue : (darkTheme ? Colors.white : Colors.black),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        if (userHasPremium())
+                          SizedBox(
+                            height: 30,
+                            child: Image.network(
+                              "https://i.postimg.cc/xd65xDw4/Premium-Crown.png",
+                              width: 40,
+                            ),
+                          )
+                      ]
+                    ),
+                    if (userHasPremium())
+                      detailsPageTitle("You are a PREMIUM user :)"),
+                    if (userHasPremium())
+                      Text("Your membership expires on ${DateFormat('MM-dd-yy').format(DateTime.fromMillisecondsSinceEpoch(premiumExpire))}"),
+                    if (!userHasPremium())
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'You do not have PREMIUM. \n Click here for premium: ',
+                            ),
+                            TextSpan(
+                              text: 'Buy Premium on Stripe',
+                              style: const TextStyle(color: Colors.blue),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () { launch('https://www.retrospectapps.com/');
+                                },
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    const SizedBox(
+                      height: 120,
+                    ),
+                    OutlinedButton(
+                      style: TextButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      onPressed: () {
+                        introdata.write("username", "");
+                        introdata.write("password", "");
+                        introdata.write("logged in", false);
+
+                        setState(() {});
+                      },
+                      child: const Text('Log Out'),
                     ),
                   ])),
             ),
-            Container(
-              height: 250,
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: users,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('somethign went wrong');
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
-                    }
-
-                    final data = snapshot.requireData;
-                    return ListView.builder(
-                        itemCount: data.size,
-                        itemBuilder: (context, index) {
-                          return Text(
-                              "User is ${data.docs[index]['uid']} has password ${data.docs[index]['password']}");
-                        });
-                  }),
-            )
           ],
         ),
       ),
@@ -527,7 +674,19 @@ class _MainPagesState extends State<MainPages> {
                     ),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Enter username of Referrer'),
+                            content: const Text('Referrals Coming out soon!'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        ),
                         child: const Text('200 Credits Referral'),
                       ),
                     ),
@@ -549,7 +708,7 @@ class _MainPagesState extends State<MainPages> {
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
                     Text(
-                      "REDEEM",
+                      "REDEEM (soon)",
                       style: hugeTitleStyle,
                     ),
                     title("\n  1 week Premium: "),
@@ -659,7 +818,7 @@ class _MainPagesState extends State<MainPages> {
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('App Version'),
-                value: Text('1.0.7'),
+                value: Text('1.0.8'),
               ),
               // SettingsTile.navigation(
               //     leading: Icon(Icons.edit_note),

@@ -29,10 +29,18 @@
             {
               "client_id": "62265186094-s9jt8scr044u17b5kgdkivksck3tcr4n.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "62265186094-goe1trbvmso12lsti12ob1iq2g3u7squ.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.crypto.cryptoApp"
+              }
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-9792887799877917~6551339905"
     }
   ],
   "configuration_version": "1"

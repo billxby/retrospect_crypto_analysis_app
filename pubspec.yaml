@@ -52,6 +52,8 @@ dependencies:
   syncfusion_flutter_charts: ^20.2.43
   google_mobile_ads: ^2.0.0
   flutter_login: ^4.0.0
+  cloud_functions: ^3.3.4
+  url_launcher: ^6.1.5
 
 
 dev_dependencies:
