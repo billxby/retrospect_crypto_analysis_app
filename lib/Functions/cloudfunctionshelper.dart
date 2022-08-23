@@ -243,10 +243,10 @@ Future<bool> changePassword(String username, String password, String newP) async
   return false;
 }
 
-Future<bool> redeemPromocode(String code) async {
+Future<bool> redeemPromocode(String code, String username) async {
   try {
     print(code);
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/promocode?promocode=$code'));
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/promocode?username=$username&promocode=$code'));
     print(response.body);
 
     Map<String, dynamic> works = jsonDecode(response.body);

@@ -590,7 +590,7 @@ class _MainPagesState extends State<MainPages> {
                                 onPressed: () async {
                                   print(promoCode.text);
 
-                                  bool worked = await redeemPromocode(promoCode.text);
+                                  bool worked = await redeemPromocode(promoCode.text, introdata.read("username"));
 
                                   if (worked == true) {
                                     Navigator.push(
@@ -1159,7 +1159,7 @@ class _MainPagesState extends State<MainPages> {
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('App Version'),
-                value: Text('1.2.1'),
+                value: Text('1.2.3'),
               ),
             ],
           )
