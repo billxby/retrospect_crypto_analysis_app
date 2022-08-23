@@ -64,6 +64,6 @@ class DefaultFirebaseOptions {
     projectId: 'retrospect-accounts',
     storageBucket: 'retrospect-accounts.appspot.com',
     iosClientId: '62265186094-goe1trbvmso12lsti12ob1iq2g3u7squ.apps.googleusercontent.com',
-    iosBundleId: 'com.crypto.cryptoApp',
+    iosBundleId: 'com.cryptos.cryptoApp',
   );
 }

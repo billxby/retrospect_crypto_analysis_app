@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto_app/Functions/purchase.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ DateTime lastRefreshed = DateTime.now();
 int globalIndex = 0;
 List<dynamic> data = [];
 
-List<String> testDeviceIds = ["CECBD9E93B5FEC5E0260450BD959DA93"];
+List<String> testDeviceIds = ["CFA4604CA7FDF96FC2E2B539F1B430E9"];
 
 //Declare styles
 
@@ -61,6 +62,8 @@ List<String> testDeviceIds = ["CECBD9E93B5FEC5E0260450BD959DA93"];
 bool darkTheme = true;
 String sortBy = "⬆A-Z";
 bool worked = false;
+String currentPromo = "none";
+String offerMsg = "none";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,13 +72,13 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final functions = FirebaseFunctions.instance.app;
-
+  await initPlatformState();
   // MobileAds.instance
   //   ..initialize()
   //   ..updateRequestConfiguration(
   //     RequestConfiguration(testDeviceIds: testDeviceIds),
   //   );
-  MobileAds.instance.initialize();
+  // MobileAds.instance.initialize();
   // RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
   // MobileAds.instance.updateRequestConfiguration(configuration);
 
@@ -97,6 +100,7 @@ Future<void> main() async {
   introdata.writeIfNull("username", "");
   introdata.writeIfNull("password", "");
   introdata.writeIfNull("used", <String> []);
+  introdata.writeIfNull("premiumUser", "");
   introdata.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
 
   DateTime now = DateTime.now();

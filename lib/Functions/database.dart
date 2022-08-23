@@ -51,6 +51,14 @@ Future<bool> fetchDatabase() async {
 
       int count = 0;
 
+      TopCryptos = [];
+      CryptosList = [];
+      CryptosIndex = {};
+      globalIndex = 0;
+
+      // print(TopCryptos);
+      // print(CryptosIndex);
+
       for (String idx in data) {
         final Res = CryptoInfo.fromJson(jsonDecode(idx));
         TopCryptos.add(await Res);
@@ -72,6 +80,7 @@ Future<bool> fetchDatabase() async {
 
       break;
     } catch (e) {
+
       if (e is ClientException) {
         if (e.message == 'Connection closed while receiving data') {
           await Future.delayed(const Duration(seconds: 5), () {});
@@ -93,13 +102,22 @@ Future<bool> fetchDatabase() async {
     return worked;
   }
 
+  // print(TopCryptos);
+  // print(CryptosIndex);
+
   // Sort cryptos by marketCap and Change
   List<CryptoInfo> copy = List.from(TopCryptos);
+
+  // print(Sort["⬇Mrkt"]);
 
   copy.sort((a,b) => int.parse(a.market_cap_rank).compareTo(int.parse(b.market_cap_rank)));
   for (CryptoInfo crypto in copy) {
     Sort["⬇Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
+
+  // print(Sort["⬇Mrkt"]);
+  //
+  // print("-----------------------");
 
   copy.sort((a,b) => int.parse(b.market_cap_rank).compareTo(int.parse(a.market_cap_rank)));
   for (CryptoInfo crypto in copy) {

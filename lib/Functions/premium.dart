@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:purchases_flutter/models/customer_info_wrapper.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -20,15 +22,19 @@ import '../UI/detailspage.dart';
 final introdata = GetStorage();
 
 bool userHasPremium() {
-
   if (introdata.read("username") != "") {
-
     DateTime now = DateTime.now();
     DateTime begin = DateTime.fromMillisecondsSinceEpoch(0);
 
-    if ((DateTime.fromMillisecondsSinceEpoch(premiumExpire) ?? begin).compareTo(now) > 0) {
+    if ((DateTime.fromMillisecondsSinceEpoch(premiumExpire) ?? begin)
+            .compareTo(now) >
+        0) {
       return true;
     }
+  }
+
+  if (premiumExpire == -1) {
+    return true;
   }
 
   return false;
@@ -42,13 +48,11 @@ bool userLimitAvailable(int passedIndex) {
   List<dynamic> used = introdata.read("used");
   if (introdata.read("used").contains(selectedCrypto)) {
     return true;
-  }
-  else if (introdata.read("used").length < limit) {
+  } else if (introdata.read("used").length < limit) {
     used.add(selectedCrypto);
     introdata.write("used", used);
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 
@@ -60,13 +64,140 @@ bool redeemCreditsDetails(int passedIndex) {
   List<dynamic> used = introdata.read("used");
 
   if (introdata.read("credits") >= 60) {
-    int newNum = introdata.read("credits")-60;
+    int newNum = introdata.read("credits") - 60;
     introdata.write("credits", newNum);
     used.add(selectedCrypto);
     introdata.write("used", used);
     return true;
-  }
-  else {
+  } else {
     return false;
   }
+}
+
+refDialog(BuildContext context, String title, String content) {
+  return AlertDialog(
+    title: Text(title),
+    content: Text(content),
+    actions: <Widget>[
+      TextButton(
+        onPressed: () => Navigator.pop(context, 'OK'),
+        child: const Text('OK'),
+      ),
+    ],
+  );
+}
+
+redeemPremiumDialog(BuildContext context, int days, int requirement) {
+  return showDialog<String>(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      title: const Text('Redeem Premium?'),
+      content: Text('Redeem $days days of Premium for $requirement credits?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Cancel'),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () async {
+            bool worked = await redeemCreditsPremium(days, requirement);
+            if (worked == true) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AlertDialog(
+                    title: const Text('Successful!'),
+                    content: const Text('Enjoy your premium subscription!'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AlertDialog(
+                    title: const Text('An Error Occurred!'),
+                    content: const Text(
+                        'You either already have premium or do not have enough credits'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+limitDialog(BuildContext context, int index) {
+  return AlertDialog(
+    title: const Text('Limit Reached'),
+    content: Text(
+        'You have reached your daily limit of cryptocurrency analysis ☹️  \n\nYou still have access to: ${introdata.read("used")}\n\nGet premium to access more!'),
+        //'You have reached your daily limit of cryptocurrency analysis ☹️  \n\nYou may use your credits or get premium to access more'),
+    actions: <Widget>[
+      TextButton(
+        onPressed: () => Navigator.pop(context, 'Cancel'),
+        child: const Text('Cancel'),
+      ),
+      // TextButton(
+      //   onPressed: () {
+      //     Navigator.pop(context, '60 Credits');
+      //     if (redeemCreditsDetails(Sort[sortBy]?[index] ?? 0)) {
+      //       Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => DetailsPage(
+      //                   passedIndex: Sort[sortBy]?[index] ?? 0,
+      //                 )),
+      //       );
+      //     } else {
+      //       Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //           builder: (context) => AlertDialog(
+      //             title: const Text('You don\'t have enough Credits'),
+      //             content:
+      //                 const Text('You need at least 60 Credits to redeem that'),
+      //             actions: <Widget>[
+      //               TextButton(
+      //                 onPressed: () => Navigator.pop(context, 'OK'),
+      //                 child: const Text('OK'),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       );
+      //     }
+      //   },
+      //   child: const Text('60 Credits'),
+      // ),
+    ],
+  );
+}
+
+Future<bool> redeemCreditsPremium(int days, int require) async {
+  if (introdata.read("credits") >= require) {
+    int newNum = introdata.read("credits") - require;
+    introdata.write("credits", newNum);
+    bool worked = await redeemPremium(introdata.read("username"), days);
+
+    return worked;
+  }
+
+  return false;
 }

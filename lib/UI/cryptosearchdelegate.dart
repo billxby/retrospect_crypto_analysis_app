@@ -64,50 +64,7 @@ class CryptosSearchDelegate extends SearchDelegate<String> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AlertDialog(
-                    title: const Text('Limit Reached'),
-                    content: const Text(
-                        'You have reached your daily limit of cryptocurrency analysis ☹️You may use your credits or get premium to access more'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.pop(context, 'Cancel'),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context, '60 Credits');
-                          if (redeemCreditsDetails(Sort[sortBy]?[index] ?? 0)) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailsPage(
-                                    passedIndex: Sort[sortBy]?[index] ?? 0,
-                                  )),
-                            );
-                          }
-                          else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AlertDialog(
-                                  title: const Text('You don\'t have enough Credits'),
-                                  content: const Text('You need at least 60 Credits to redeem that'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, 'OK'),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text('60 Credits'),
-                      ),
-                    ],
-                  ),
+                  builder: (context) => limitDialog(context, index),
                 ),
               );
             }

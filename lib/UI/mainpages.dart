@@ -21,9 +21,13 @@ import 'package:flutter_login/flutter_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../utils.dart';
 import '../Functions/cloudfunctionshelper.dart';
 import '../Functions/premium.dart';
+import '../Functions/purchase.dart';
+import 'UI helpers/paywallwidget.dart';
 import 'adhelper.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
@@ -34,6 +38,8 @@ import '../Functions/database.dart';
 import '../main.dart';
 import 'UI helpers/textelements.dart';
 import '../Functions/premium.dart';
+
+bool fetching = false;
 
 class MainPages extends StatefulWidget {
   const MainPages({Key? key}) : super(key: key);
@@ -56,7 +62,7 @@ class _MainPagesState extends State<MainPages> {
   @override
   void initState() {
     super.initState();
-    _createRewardedAd();
+    // _createRewardedAd();
   }
 
   void _onItemTapped(int index) {
@@ -170,50 +176,7 @@ class _MainPagesState extends State<MainPages> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Limit Reached'),
-                                  content: const Text(
-                                      'You have reached your daily limit of cryptocurrency analysis ☹️You may use your credits or get premium to access more'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(context, 'Cancel'),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context, '60 Credits');
-                                        if (redeemCreditsDetails(Sort[sortBy]?[index] ?? 0)) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => DetailsPage(
-                                                  passedIndex: Sort[sortBy]?[index] ?? 0,
-                                                )),
-                                          );
-                                        }
-                                        else {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => AlertDialog(
-                                                title: const Text('You don\'t have enough Credits'),
-                                                content: const Text('You need at least 60 Credits to redeem that'),
-                                                actions: <Widget>[
-                                                  TextButton(
-                                                    onPressed: () => Navigator.pop(context, 'OK'),
-                                                    child: const Text('OK'),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: const Text('60 Credits'),
-                                    ),
-                                  ],
-                                ),
+                                builder: (context) => limitDialog(context, index),
                               ),
                             );
                           }
@@ -295,10 +258,10 @@ class _MainPagesState extends State<MainPages> {
           }
       );
     }
+    // else if (_selectedIndex == 1) {
+    //   return earnPage();
+    // }
     else if (_selectedIndex == 1) {
-      return earnPage();
-    }
-    else if (_selectedIndex == 2) {
       if (introdata.read("logged in") == false) {
         return Scaffold(
           appBar: AppBar(
@@ -322,10 +285,12 @@ class _MainPagesState extends State<MainPages> {
             },
             userValidator: null,
             onRecoverPassword: _recoverPassword,
-            hideForgotPasswordButton: true,
+            hideForgotPasswordButton: false,
             loginAfterSignUp: false,
+
             messages: LoginMessages(
-              signUpSuccess: "You have successfully signed up!",
+              recoverPasswordIntro: "Get your password here",
+              recoverPasswordDescription: "We will send you your password to this email account.",
             ),
           ),
           bottomNavigationBar: getBar(),
@@ -370,6 +335,9 @@ class _MainPagesState extends State<MainPages> {
       if (back[1] == false) {
         return 'Password does not match';
       }
+      if (back[2] == false) {
+        return 'Please verify your email';
+      }
       introdata.write("username", data.name);
       introdata.write("password", data.password);
       return null;
@@ -391,10 +359,16 @@ class _MainPagesState extends State<MainPages> {
     });
   }
 
-  Future<String> _recoverPassword(String name) {
+  Future<String?> _recoverPassword(String name) async {
     debugPrint('Name: $name');
+
+    bool worked = await forgotPassword(name);
+
     return Future.delayed(loginTime).then((_) {
-      return "hi";
+      if (worked) {
+        return null;
+      }
+      return "Failed to send";
     });
   }
 
@@ -461,11 +435,11 @@ class _MainPagesState extends State<MainPages> {
           label: 'List',
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.monetization_on),
-          label: 'Earn',
-          backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
-        ),
+        // BottomNavigationBarItem(
+        //   icon: const Icon(Icons.monetization_on),
+        //   label: 'Earn',
+        //   backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
+        // ),
         BottomNavigationBarItem(
           icon: const Icon(Icons.stars),
           label: 'Premium',
@@ -482,6 +456,12 @@ class _MainPagesState extends State<MainPages> {
   }
 
   Scaffold premiumPage() {
+    TextEditingController curPassw = TextEditingController();
+    TextEditingController newPassw1 = TextEditingController();
+    TextEditingController newPassw2 = TextEditingController();
+    TextEditingController referrer = TextEditingController();
+    TextEditingController promoCode = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Premium'),
@@ -496,13 +476,13 @@ class _MainPagesState extends State<MainPages> {
             ),
             Center(
               child: Container(
-                  height: 300,
+                  height: 540,
                   width: 350,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
                     border: Border.all(
                         color: darkTheme ? Colors.white : Colors.black),
-                    color: Colors.grey[900],
+                    color: darkTheme ? Colors.grey[900] : Colors.white,
                   ),
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
@@ -512,7 +492,12 @@ class _MainPagesState extends State<MainPages> {
                         RichText(
                           text: TextSpan(
                             text: " Hello, ",
-                            style: hugeTitleStyle,
+                            style: TextStyle(
+                              height: 2,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                                color: darkTheme ? Colors.white : Colors.black
+                            ),
                             children: <TextSpan> [
                               TextSpan(
                                 text: " ${introdata.read("username")} !",
@@ -524,44 +509,125 @@ class _MainPagesState extends State<MainPages> {
                             ],
                           ),
                         ),
-                        if (userHasPremium())
-                          SizedBox(
-                            height: 30,
-                            child: Image.network(
-                              "https://i.postimg.cc/xd65xDw4/Premium-Crown.png",
-                              width: 40,
-                            ),
-                          )
                       ]
                     ),
                     if (userHasPremium())
-                      detailsPageTitle("You are a PREMIUM user :)"),
-                    if (userHasPremium())
-                      Text("Your membership expires on ${DateFormat('MM-dd-yy').format(DateTime.fromMillisecondsSinceEpoch(premiumExpire))}"),
-                    if (!userHasPremium())
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'You do not have PREMIUM. \n Click here for premium: ',
-                            ),
-                            TextSpan(
-                              text: 'Buy Premium on Stripe',
-                              style: const TextStyle(color: Colors.blue),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () { launch('https://www.retrospectapps.com/');
-                                },
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
+                      Column(
+                        children: <Widget> [
+                          Image.network(
+                            "https://i.postimg.cc/N0vc0vzn/Premium-Crown-Crisp.png",
+                            width: 200,
+                          ),
+                          detailsPageTitle("You are a PREMIUM user :)"),
+                          const Text("You have unlimited access to all analysis"),
+                          Text("\nYour membership expires on ${DateFormat('MM-dd-yy').format(DateTime.fromMillisecondsSinceEpoch(premiumExpire))}",
+                            style: TextStyle(fontSize: 10,)
+                          ),
+                        ]
                       ),
-                    const SizedBox(
-                      height: 120,
+                    if (!userHasPremium())
+                      Column(
+                          children: <Widget> [
+                            Image.network(
+                              "https://i.postimg.cc/8CS2SBFQ/Premium-Crown-Crisp-Broken.png",
+                              width: 200,
+                            ),
+                            detailsPageTitle("You do not have Premium"),
+                            const Text("Get premium for Unlimited access to the app, helping you make better trades! \n",
+                              textAlign: TextAlign.center,
+                            ),
+                          ]
+                      ),
+                    const SizedBox(height: 20,),
+                    ElevatedButton(
+                      style: OutlinedButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        // side: BorderSide(width: 5.0, color: Colors.blue),
+                      ),
+                      onPressed: () {
+                        if (fetching == true) {}
+                        else {
+                          fetching = true;
+                          fetchOffers();
+                          fetching = false;
+                        }
+                      },
+                      child: const Text('See Plans'),
                     ),
-                    OutlinedButton(
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Promo Codes', textAlign: TextAlign.center),
+                            content: Container(
+                              height: 121,
+                              child: Column(
+                                  children: <Widget> [
+                                    TextFormField(
+                                      controller: promoCode,
+                                      decoration: const InputDecoration(
+                                        border: UnderlineInputBorder(),
+                                        labelText: 'Enter Code',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Text('Get exclusive Offers by following us on Twitter! \n\n',
+                                        style: TextStyle(fontSize: 12,)
+                                    ),
+                                  ]
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  print(promoCode.text);
+
+                                  bool worked = await redeemPromocode(promoCode.text);
+
+                                  if (worked == true) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Promo Code Valid", "You just applied a promocode for $offerMsg!")
+                                      ),
+                                    );
+                                  }
+                                  else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Promo Code Invalid", "Your promo code is invalid.")
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // onPressed:() {},
+                        child: const Text('Promo Code'),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    // if (userHasPremium())
+                    //   const SizedBox(
+                    //     height: 40,
+                    //   ),
+                    TextButton(
                       style: TextButton.styleFrom(
-                        textStyle: const TextStyle(fontSize: 20),
+                        textStyle: const TextStyle(fontSize: 15),
                       ),
                       onPressed: () {
                         introdata.write("username", "");
@@ -574,6 +640,173 @@ class _MainPagesState extends State<MainPages> {
                     ),
                   ])),
             ),
+            const SizedBox(height:50),
+            Center(
+              child: Container(
+                  height: 150,
+                  width: 350,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.0),
+                    border: Border.all(
+                        color: darkTheme ? Colors.white : Colors.black),
+                    color: darkTheme ? Colors.grey[900] : Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: Column(children: <Widget>[
+                    Text(
+                      "REFERRAL",
+                      style: hugeTitleStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 23,
+                    ),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Referrals', textAlign: TextAlign.center),
+                            content: Container(
+                              height: 183,
+                              child: Column(
+                                  children: <Widget> [
+                                    TextFormField(
+                                      controller: referrer,
+                                      decoration: const InputDecoration(
+                                        border: UnderlineInputBorder(),
+                                        labelText: 'Enter your Referrer\'s email',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Text('(You will get rewards in the future if you complete this!) \n\n',
+                                        style: TextStyle(fontSize: 12,)
+                                    ),
+                                    const Text('Refer people, ask them to write your email here, and you and your friends will both earn rewards!)',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ]
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  print(referrer.text);
+
+                                  List<bool> worked = await getReferer(introdata.read("username"), referrer.text ?? "");
+
+                                  print(worked);
+
+                                  if (worked[1] == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Verify Email", "You have not verified your email yet. Please verify it to continue.")
+                                      ),
+                                    );
+                                  } else if (worked[2] == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Referred", "You have already done that prompt.")
+                                      ),
+                                    );
+                                  } else if (worked[0] == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "User doesn't exist", "The user does not exist. ")
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Successful", "You have completed the prompt! 😀")
+                                          // builder: (context) => refDialog(context, "Successful", "You have completed the prompt. \n Refresh your credits (scroll down) :)")
+                                      ),
+                                    );
+                                  }
+
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // onPressed:() {},
+                        child: const Text('Referral (Benefits soon!)'),
+                      ),
+                    ),
+                  ])),
+            ),
+            const SizedBox(
+              height: 80,
+            ),
+            Center(
+              child: Container(
+                height: 400,
+                width: 350,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.0),
+                  border: Border.all(
+                      color: darkTheme ? Colors.white : Colors.black),
+                  color: darkTheme ? Colors.grey[900] : Colors.white,
+                ),
+                padding: const EdgeInsets.all(5),
+                child: Column(
+                  children: <Widget> [
+                    Text("Change Password", style: hugeTitleStyle),
+                    const SizedBox(height: 20),
+                    changePasswordField(curPassw, 'Current Password'),
+                    changePasswordField(newPassw1, 'New Password'),
+                    changePasswordField(newPassw2, 'Confirm Password'),
+                    const SizedBox(height: 20),
+                    OutlinedButton(
+                      style: TextButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 15),
+                      ),
+                      onPressed: () async {
+                        if (newPassw1.text == newPassw2.text) {
+                          worked = await changePassword(introdata.read("username"), curPassw.text, newPassw1.text);
+                          if (worked == true) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => refDialog(context, "Changed Password", "Your password was changed!")
+                              ),
+                            );
+                            introdata.write("password", newPassw1.text);
+                          }
+                          if (worked == false) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => refDialog(context, "Change Password Failed", "Your current password is incorrect, or something else went wrong.")
+                              ),
+                            );
+                          }
+                        }
+                        else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => refDialog(context, "Password don\'t match", "Your new passwords do not match.")
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text('Change Password'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height:300),
           ],
         ),
       ),
@@ -581,7 +814,37 @@ class _MainPagesState extends State<MainPages> {
     );
   }
 
+  Future fetchOffers() async {
+    final offerings = await fetchCurrentOffers();
+
+    if (offerings.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('No Plans Found'),
+      ));
+    }
+    else {
+      final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+
+      Utils.showSheet(context, (context) => PaywallWidget(
+        packages: packages,
+        title: '⭐ Upgrade to Premium',
+        description: 'Upgrade to premium to enjoy unlimited access and browsing without ads.',
+        onClickedPackage: (package) async {
+          bool worked = await purchasePackage(package);
+
+          if (worked) {
+            setState(() {});
+          }
+
+          Navigator.pop(context);
+        },
+      ));
+    }
+  }
+
   Scaffold earnPage() {
+    TextEditingController referrer = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Earn'),
@@ -605,7 +868,7 @@ class _MainPagesState extends State<MainPages> {
                     borderRadius: BorderRadius.circular(5.0),
                     border: Border.all(
                         color: darkTheme ? Colors.white : Colors.black),
-                    color: Colors.grey[900],
+                    color: darkTheme ? Colors.grey[900] : Colors.white,
                   ),
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
@@ -625,7 +888,9 @@ class _MainPagesState extends State<MainPages> {
                               builder: (BuildContext context) => AlertDialog(
                                 title: const Text('Credits'),
                                 content: const Text(
-                                    'Credits can be used to access the analysis of more cryptocurrencies every day, or to get Premium for free!'),
+                                    'Credits can be used to access the analysis of more cryptocurrencies every day, or to get Premium for free! \n \nNOTE: Credits are local, so they are not saved onto your account.',
+                                    textAlign: TextAlign.justify,
+                                ),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () =>
@@ -667,9 +932,9 @@ class _MainPagesState extends State<MainPages> {
                     Center(
                       child: OutlinedButton(
                         onPressed: () {
-                          _showRewardedAd();
+                          // _showRewardedAd();
                         },
-                        child: const Text('    Get 20 Credits!    '),
+                        child: const Text('    Get 20 Credits!    \n   (not working atm)   '),
                       ),
                     ),
                     Center(
@@ -677,16 +942,78 @@ class _MainPagesState extends State<MainPages> {
                         onPressed: () => showDialog<String>(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Enter username of Referrer'),
-                            content: const Text('Referrals Coming out soon!'),
+                            title: const Text('Referrals'),
+                            content: Container(
+                              height: 160,
+                              child: Column(
+                                  children: <Widget> [
+                                    TextFormField(
+                                      controller: referrer,
+                                      decoration: const InputDecoration(
+                                        border: UnderlineInputBorder(),
+                                        labelText: 'Enter your Referrer\'s email',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Text('(You will also get 100 Credits) \n\n',
+                                        style: TextStyle(fontSize: 12,)
+                                    ),
+                                    const Text('Refer people, ask them to write your email here to earn 200 CR/person referred!',
+                                        style: TextStyle(fontSize: 14),
+                                    ),
+                                  ]
+                              ),
+                            ),
                             actions: <Widget>[
                               TextButton(
-                                onPressed: () => Navigator.pop(context, 'OK'),
+                                onPressed: () => Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  print(referrer.text);
+
+                                  List<bool> worked = await getReferer(introdata.read("username"), referrer.text ?? "");
+
+                                  print(worked);
+
+                                  if (worked[1] == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => refDialog(context, "Verify Email", "You have not verified your email yet. Please verify it to continue.")
+                                      ),
+                                    );
+                                  } else if (worked[2] == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Referred", "You have already done that prompt.")
+                                      ),
+                                    );
+                                  } else if (worked[0] == false) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "User doesn't exist", "The user does not exist. ")
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => refDialog(context, "Successful", "You have completed the prompt. \n Refresh your credits (scroll down) :)")
+                                      ),
+                                    );
+                                  }
+
+                                },
                                 child: const Text('OK'),
                               ),
                             ],
                           ),
                         ),
+                        // onPressed:() {},
                         child: const Text('200 Credits Referral'),
                       ),
                     ),
@@ -703,18 +1030,18 @@ class _MainPagesState extends State<MainPages> {
                     borderRadius: BorderRadius.circular(5.0),
                     border: Border.all(
                         color: darkTheme ? Colors.white : Colors.black),
-                    color: Colors.grey[900],
+                    color: darkTheme ? Colors.grey[900] : Colors.white,
                   ),
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
                     Text(
-                      "REDEEM (soon)",
+                      "REDEEM",
                       style: hugeTitleStyle,
                     ),
                     title("\n  1 week Premium: "),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => redeemPremiumDialog(context, 7, 1000),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -727,7 +1054,7 @@ class _MainPagesState extends State<MainPages> {
                     title("  2 weeks Premium: "),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => redeemPremiumDialog(context, 14, 1500),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -740,7 +1067,7 @@ class _MainPagesState extends State<MainPages> {
                     title("  3 weeks Premium: "),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => redeemPremiumDialog(context, 21, 1800),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -754,6 +1081,15 @@ class _MainPagesState extends State<MainPages> {
             ),
             const SizedBox(
               height: 20,
+            ),
+            OutlinedButton(
+              onPressed: () async {
+                await checkPending(introdata.read("username"), introdata.read("password"));
+                setState(() {});
+              },
+              child: const Text("Refresh Credits \n (if someone use your referral)",
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
@@ -816,20 +1152,15 @@ class _MainPagesState extends State<MainPages> {
                     );
                   }),
               SettingsTile.navigation(
+                  leading: Icon(Icons.question_answer_sharp),
+                  title: Text('Support'),
+                  value: Text('Join our discord server!'),
+                  onPressed: (context) => launch('https://discord.gg/Xu9PsPG69T')),
+              SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('App Version'),
-                value: Text('1.0.8'),
+                value: Text('1.2.1'),
               ),
-              // SettingsTile.navigation(
-              //     leading: Icon(Icons.edit_note),
-              //     title: Text('Update Log'),
-              //     value: Text('Latest App Updates!'),
-              //     onPressed: (context) {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(builder: (context) => UpdateLog()),
-              //       );
-              //     }),
             ],
           )
         ],
@@ -838,3 +1169,4 @@ class _MainPagesState extends State<MainPages> {
     );
   }
 }
+

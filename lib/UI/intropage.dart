@@ -34,7 +34,7 @@ class _IntroPageState extends State<IntroPage> {
 
     introdata.write("displayed", true);
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_)=>MainPages())
+      MaterialPageRoute(builder: (_) => MainPages())
     );
   }
 
@@ -61,22 +61,11 @@ class _IntroPageState extends State<IntroPage> {
                   'https://i.postimg.cc/kGrjYf6B/project-thumb.png'
               ),
               title: "Welcome to Retrospect!",
-              body: "Look back first, then look forward.",
+              body: "Look back first, then look forward. \n \n Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based mainly on social metrics.",
               footer: Text("Let's get started!"),
               decoration: const PageDecoration(
                 pageColor: Colors.black12,
               )
-            ),
-            PageViewModel(
-                image: Image.network(
-                    'https://i.postimg.cc/90GL6ZZ1/traffic-thumb.png'
-                ),
-                title: "How does Retrospect work?",
-                body: "Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based mainly on social metrics.",
-                footer: Text("Learn more in Settings -> Information -> Metrics Meaning"),
-                decoration: const PageDecoration(
-                  pageColor: Colors.black12,
-                )
             ),
             PageViewModel(
                 image: Image.network(
@@ -91,14 +80,38 @@ class _IntroPageState extends State<IntroPage> {
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/mk5x80fC/Navigation.png'
+                    'https://i.postimg.cc/d3GhmKBN/Navigation.png'
                 ),
                 title: "Navigation",
-                body: "Go to list to view cryptos and their analysis, settings for... Settings!",
+                body: "Go to list to view cryptos and their analysis, Earn to earn, Premium for premium, and Settings for settings",
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
             ),
+            PageViewModel(
+                image: Image.network(
+                  'https://i.postimg.cc/N0vc0vzn/Premium-Crown-Crisp.png',
+                  height: 200,
+                ),
+                title: "Premium",
+                body: "Premium allows you to access more than 5 cryptocurrency analysis each day! \n \n You don't need premium to create an account.",
+                footer: const Text("Learn more in the Premium section"),
+                decoration: const PageDecoration(
+                  pageColor: Colors.black12,
+                )
+            ),
+            // PageViewModel(
+            //     image: Image.network(
+            //         'https://i.postimg.cc/D0PrC6Fz/Credits.png',
+            //       height: 200,
+            //     ),
+            //     title: "Credits",
+            //     body: "Credits allow you to access more than 5 analysis every day, or to get Premium for free! \n \n You can create an account without needing Premium!",
+            //     footer: const Text("Learn more in the Earn section"),
+            //     decoration: const PageDecoration(
+            //       pageColor: Colors.black12,
+            //     )
+            // ),
             PageViewModel(
                 image: Image.network(
                     'https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png',

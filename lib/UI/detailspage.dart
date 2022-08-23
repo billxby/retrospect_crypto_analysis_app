@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:crypto_app/Functions/premium.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +19,11 @@ import 'UI helpers/textelements.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'adhelper.dart';
+import 'information.dart';
+
+List<String> types = <String> ["","(in K)","(in M)"];
+List<String> sub = <String> ["in units", "in thousands", "in millions"];
+List<double> numbers = <double> [1, 1000, 1000000];
 
 class DetailsPage extends StatefulWidget {
   final int passedIndex;
@@ -33,6 +40,7 @@ class _DetailsPageState extends State<DetailsPage> {
   late List<List<PriceData>> _cryptoData = [];
   late BannerAd _bannerAd;
   late BannerAd _endBannerAd;
+  String type = "", subtitle = "in units";
   bool _isBannerAd1Ready = false;
   bool _isBannerAd2Ready = false;
 
@@ -42,12 +50,14 @@ class _DetailsPageState extends State<DetailsPage> {
     _trackballBehavior = TrackballBehavior(
         enable: true, activationMode: ActivationMode.singleTap);
     _trackballBehavior2 = TrackballBehavior(
-        enable: true, activationMode: ActivationMode.singleTap);
+        enable: true, activationMode: ActivationMode.singleTap, );
     super.initState();
-    _loadBannerAd1();
-    _loadBannerAd2();
+    bool loadAds = false;
+    if (userHasPremium() == false && loadAds == true) {
+      _loadBannerAd1();
+      _loadBannerAd2();
+    }
   }
-
 
 
   Future<bool> waitForData() async {
@@ -103,6 +113,8 @@ class _DetailsPageState extends State<DetailsPage> {
       marketUrl = "https://i.postimg.cc/T13XqSpF/sad.png";
       marketViewColor = Colors.red;
     }
+
+    setState(() {});
 
     // print("-------------------------");
     // print(introdata.read("used"));
@@ -231,7 +243,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 ),
                 Center(
                     child: Container(
-                      height: 1100,
+                      height: 1150,
                       width: 350,
                       child: Column(children: <Widget>[
                         const Center(
@@ -257,7 +269,12 @@ class _DetailsPageState extends State<DetailsPage> {
                                 text: "ETRO",
                                 style: blueRetroTitleStyle,
                                 children: <TextSpan>[
-                                  TextSpan(text:"-SCORE©: ", style: retroTitleStyle),
+                                  TextSpan(text:"-SCORE©: ", style: TextStyle(
+                                    height: 2,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: darkTheme ? Colors.white : Colors.black,
+                                  )),
                                 ]
                               )
                             ),
@@ -277,10 +294,15 @@ class _DetailsPageState extends State<DetailsPage> {
                             RichText(
                                 text: TextSpan(
                                     text: "Market ",
-                                    style: titleStyle,
+                                    style: TextStyle(
+                                      height: 2,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: darkTheme ? Colors.white : Colors.black,
+                                    ),
                                     children: <TextSpan>[
                                       TextSpan(text:"View ", style: blueTitleStyle),
-                                      TextSpan(text:"score: ", style: titleStyle),
+                                      TextSpan(text:"score: "),
                                     ]
                                 )
                             ),
@@ -311,7 +333,12 @@ class _DetailsPageState extends State<DetailsPage> {
                         Row(children: <Widget>[
                           Text(
                             "Predicted change (24h): ",
-                            style: titleStyle,
+                            style: TextStyle(
+                              height: 2,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: darkTheme ? Colors.white : Colors.black,
+                            ),
                           ),
                           detailsPageInfo("${TopCryptos[widget.passedIndex].prediction} ", predictionColor),
                           Image.network(
@@ -336,6 +363,24 @@ class _DetailsPageState extends State<DetailsPage> {
                         const SizedBox(
                           height: 15,
                         ),
+                        TextButton(
+                          style: TextButton.styleFrom(primary: Color.fromARGB(
+                              0, 22, 44, 100),),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Information()),
+                            );
+                          },
+                          child: Text(
+                            "To learn more about the metrics, go to Settings->Metrics Meaning",
+                            style: TextStyle(fontSize: 10, color: darkTheme ? Colors.white : Colors.black,),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         if (_isBannerAd1Ready)
                           Center(
                             child: Container(
@@ -354,8 +399,9 @@ class _DetailsPageState extends State<DetailsPage> {
                           height: 20,
                         ),
                         Center(
-                          child: cryptoInfoChart("Total Volume", _trackballBehavior2, _cryptoData[1], false, Colors.green),
+                          child: cryptoInfoChart("Total Volume $type", _trackballBehavior2, _cryptoData[1], false, Colors.green),
                         ),
+                        Text(subtitle, textAlign: TextAlign.right, style: const TextStyle(fontSize: 10, color: Colors.grey)),
                       ]),
                     )),
                 if (_isBannerAd2Ready)
@@ -395,8 +441,29 @@ class _DetailsPageState extends State<DetailsPage> {
           priceData.add(PriceData(DateTime.fromMillisecondsSinceEpoch(time[0]),time[1]));
         }
 
+        double largest = 0;
+
         for (List<dynamic> time in volume) {
-          volumeData.add(PriceData(DateTime.fromMillisecondsSinceEpoch(time[0]),time[1]));
+          if (time[1] > largest) {
+            largest = time[1];
+          }
+        }
+
+        int curIndex = 0;
+
+        for (int i=0;i<types.length;i++) {
+          if (largest / numbers[i] > 1) {
+            type = types[i];
+            subtitle = sub[i];
+            curIndex = i;
+          }
+          else {
+            break;
+          }
+        }
+
+        for (List<dynamic> time in volume) {
+          volumeData.add(PriceData(DateTime.fromMillisecondsSinceEpoch(time[0]), double.parse((time[1]/numbers[curIndex]).toStringAsFixed(3)))  );
         }
 
         cryptoData.add(priceData);
@@ -404,6 +471,7 @@ class _DetailsPageState extends State<DetailsPage> {
         break;
       }
       catch (e) {
+        print(e);
         print('Trying again in 5 seconds');
         await Future.delayed(const Duration(seconds: 5), () {});
         continue;
@@ -425,6 +493,7 @@ class _DetailsPageState extends State<DetailsPage> {
           });
         },
         onAdFailedToLoad: (ad, err) {
+          print(err);
           _isBannerAd1Ready = false;
           ad.dispose();
         },

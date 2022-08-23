@@ -85,13 +85,6 @@ TextStyle blueRetroTitleStyle = const TextStyle(
   color: Colors.lightBlue,
 );
 
-TextStyle retroTitleStyle = TextStyle(
-  height: 2,
-  fontSize: 15,
-  fontWeight: FontWeight.bold,
-  color: darkTheme ? Colors.white : Colors.black,
-);
-
 TextStyle blueTitleStyle = const TextStyle(
   height: 2,
   fontSize: 16,
@@ -103,6 +96,7 @@ TextStyle titleStyle = TextStyle(
   height: 2,
   fontSize: 16,
   fontWeight: FontWeight.bold,
+  color: darkTheme ? Colors.white : Colors.black,
 );
 
 Text buttonBlueText(String content) {
@@ -116,7 +110,7 @@ Text buttonBlueText(String content) {
   );
 }
 
-TextStyle hugeTitleStyle = const TextStyle(
+TextStyle hugeTitleStyle = TextStyle(
   height: 2,
   fontSize: 20,
   fontWeight: FontWeight.bold,
@@ -225,6 +219,20 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
           ),
         ),
       ],
+    ),
+  );
+}
+
+SizedBox changePasswordField(TextEditingController controller, String text) {
+  return SizedBox(
+    width: 300,
+    child: TextFormField(
+      controller: controller,
+      obscureText: true,
+      decoration: InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: text,
+      ),
     ),
   );
 }

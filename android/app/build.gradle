@@ -66,7 +66,7 @@ android {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storeP assword']
+            storePassword keystoreProperties['storePassword']
         }
     }
     buildTypes {
