@@ -1,0 +1,52 @@
+{
+  "identifier" : "18199326",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "6EABF820",
+      "localizations" : [
+
+      ],
+      "name" : "retrospect_premium_ios",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "105",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "15AED8B0",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "desc",
+              "displayName" : "Premium",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "retrospect_premium_1y",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "1 year",
+          "subscriptionGroupID" : "6EABF820",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 1,
+    "minor" : 2
+  }
+}

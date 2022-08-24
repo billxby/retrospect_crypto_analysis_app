@@ -332,7 +332,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                         Row(children: <Widget>[
                           Text(
-                            "Predicted change (24h): ",
+                            "Predicted change (24h):",
                             style: TextStyle(
                               height: 2,
                               fontSize: 16,

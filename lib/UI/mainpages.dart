@@ -697,7 +697,7 @@ class _MainPagesState extends State<MainPages> {
                                 onPressed: () async {
                                   print(referrer.text);
 
-                                  List<bool> worked = await getReferer(introdata.read("username"), referrer.text ?? "");
+                                  List<bool> worked = await getReferer(introdata.read("username"), referrer.text);
 
                                   print(worked);
 
@@ -973,7 +973,7 @@ class _MainPagesState extends State<MainPages> {
                                 onPressed: () async {
                                   print(referrer.text);
 
-                                  List<bool> worked = await getReferer(introdata.read("username"), referrer.text ?? "");
+                                  List<bool> worked = await getReferer(introdata.read("username"), referrer.text);
 
                                   print(worked);
 
@@ -1134,7 +1134,7 @@ class _MainPagesState extends State<MainPages> {
               SettingsTile.navigation(
                   leading: Icon(Icons.rule_rounded),
                   title: Text('Metrics Meaning'),
-                  value: Text('Learn more about the metrics!'),
+                  value: Text(Platform.isAndroid ? 'Learn more about the metrics!' : ""),
                   onPressed: (context) {
                     Navigator.push(
                       context,
@@ -1144,7 +1144,7 @@ class _MainPagesState extends State<MainPages> {
               SettingsTile.navigation(
                   leading: Icon(Icons.book_outlined),
                   title: Text('App Intro'),
-                  value: Text('Load the app intro again!'),
+                  value: Text(Platform.isAndroid ? 'Load the app intro again!' : ""),
                   onPressed: (context) {
                     Navigator.push(
                       context,

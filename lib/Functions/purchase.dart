@@ -14,7 +14,7 @@ Future<void> initPlatformState() async {
   if (Platform.isAndroid) {
     configuration = PurchasesConfiguration("goog_DawDwtyoQrWvoQRlDlRVBWQvlhD");
   } else if (Platform.isIOS) {
-    configuration = PurchasesConfiguration("public_ios_sdk_key");
+    configuration = PurchasesConfiguration("appl_pzRjjQWXGnjwWgIEvgOnXsYcvAF");
   } else {
     configuration = PurchasesConfiguration("apiKey");
   }
