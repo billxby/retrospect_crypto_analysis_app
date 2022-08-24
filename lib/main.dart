@@ -71,7 +71,6 @@ Future<void> main() async {
     name: "Retrospect",
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final functions = FirebaseFunctions.instance.app;
   await initPlatformState();
   // MobileAds.instance
   //   ..initialize()
@@ -129,7 +128,7 @@ class MyApp extends StatelessWidget {
     }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Crypto App',
+      title: 'Retrospect',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       home: introdata.read("displayed") ? const MainPages() : IntroPage(),
