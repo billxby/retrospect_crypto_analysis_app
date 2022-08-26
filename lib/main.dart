@@ -10,6 +10,7 @@ import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -37,6 +38,7 @@ const int cryptosCap = 500;
 const int maxFetchTries = 4;
 final int limit = 5;
 int premiumExpire = 0;
+bool isPremium = false;
 
 //Declare variables
 List<String> CryptosList = [];
@@ -64,6 +66,7 @@ String sortBy = "⬆A-Z";
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

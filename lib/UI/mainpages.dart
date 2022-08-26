@@ -258,14 +258,28 @@ class _MainPagesState extends State<MainPages> {
           }
       );
     }
-    // else if (_selectedIndex == 1) {
-    //   return earnPage();
-    // }
     else if (_selectedIndex == 1) {
       if (introdata.read("logged in") == false) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Premium'),
+            centerTitle: true,
+            toolbarHeight: 40,
+          ),
+          body: Center(
+            child: detailsPageTitle("Please log in to proceed"),
+          ),
+          bottomNavigationBar: getBar(),
+        );
+      } else {
+        return premiumPage();
+      }
+    }
+    else if (_selectedIndex == 2) {
+      if (introdata.read("logged in") == false) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Account'),
             centerTitle: true,
             toolbarHeight: 40,
           ),
@@ -314,7 +328,7 @@ class _MainPagesState extends State<MainPages> {
                   bottomNavigationBar: getBar(),
                 );
               }
-              return premiumPage();
+              return accountPage();
             }
         );
       }
@@ -446,6 +460,11 @@ class _MainPagesState extends State<MainPages> {
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
         BottomNavigationBarItem(
+          icon: const Icon(Icons.account_circle),
+          label: 'Account',
+          backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
+        ),
+        BottomNavigationBarItem(
           icon: const Icon(Icons.settings),
           label: 'Settings',
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
@@ -456,10 +475,6 @@ class _MainPagesState extends State<MainPages> {
   }
 
   Scaffold premiumPage() {
-    TextEditingController curPassw = TextEditingController();
-    TextEditingController newPassw1 = TextEditingController();
-    TextEditingController newPassw2 = TextEditingController();
-    TextEditingController referrer = TextEditingController();
     TextEditingController promoCode = TextEditingController();
 
     return Scaffold(
@@ -476,7 +491,7 @@ class _MainPagesState extends State<MainPages> {
             ),
             Center(
               child: Container(
-                  height: 540,
+                  height: userHasPremium() ? 800 : 920,
                   width: 350,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
@@ -491,7 +506,7 @@ class _MainPagesState extends State<MainPages> {
                       children: <Widget> [
                         RichText(
                           text: TextSpan(
-                            text: " Hello, ",
+                            text: " Hi, ",
                             style: TextStyle(
                               height: 2,
                               fontSize: 20,
@@ -536,108 +551,213 @@ class _MainPagesState extends State<MainPages> {
                             const Text("Get premium for Unlimited access to the app, helping you make better trades! \n",
                               textAlign: TextAlign.center,
                             ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              style: OutlinedButton.styleFrom(
+                                textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                // side: BorderSide(width: 5.0, color: Colors.blue),
+                              ),
+                              onPressed: () {
+                                if (fetching == true) {}
+                                else {
+                                  fetching = true;
+                                  fetchOffers();
+                                  fetching = false;
+                                }
+                              },
+                              child: const Text('See Plans'),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Center(
+                              child: OutlinedButton(
+                                onPressed: () => showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) => AlertDialog(
+                                    title: const Text('Promo Codes', textAlign: TextAlign.center),
+                                    content: Container(
+                                      height: 121,
+                                      child: Column(
+                                          children: <Widget> [
+                                            TextFormField(
+                                              controller: promoCode,
+                                              decoration: const InputDecoration(
+                                                border: UnderlineInputBorder(),
+                                                labelText: 'Enter Code',
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            const Text('Get exclusive Offers by following us on Twitter! \n\n',
+                                                style: TextStyle(fontSize: 12,)
+                                            ),
+                                          ]
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          print(promoCode.text);
+
+                                          bool worked = await redeemPromocode(promoCode.text, introdata.read("username"));
+
+                                          if (worked == true) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => refDialog(context, "Promo Code Valid", "You just applied a promocode for $offerMsg!")
+                                              ),
+                                            );
+                                          }
+                                          else {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => refDialog(context, "Promo Code Invalid", "Your promo code is invalid.")
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // onPressed:() {},
+                                child: const Text('Promo Code'),
+                              ),
+                            ),
                           ]
                       ),
                     const SizedBox(height: 20,),
-                    ElevatedButton(
-                      style: OutlinedButton.styleFrom(
-                        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        // side: BorderSide(width: 5.0, color: Colors.blue),
-                      ),
-                      onPressed: () {
-                        if (fetching == true) {}
-                        else {
-                          fetching = true;
-                          fetchOffers();
-                          fetching = false;
-                        }
-                      },
-                      child: const Text('See Plans'),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Center(
-                      child: OutlinedButton(
-                        onPressed: () => showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Promo Codes', textAlign: TextAlign.center),
-                            content: Container(
-                              height: 121,
-                              child: Column(
-                                  children: <Widget> [
-                                    TextFormField(
-                                      controller: promoCode,
-                                      decoration: const InputDecoration(
-                                        border: UnderlineInputBorder(),
-                                        labelText: 'Enter Code',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    const Text('Get exclusive Offers by following us on Twitter! \n\n',
-                                        style: TextStyle(fontSize: 12,)
-                                    ),
-                                  ]
-                              ),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, 'Cancel'),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  print(promoCode.text);
-
-                                  bool worked = await redeemPromocode(promoCode.text, introdata.read("username"));
-
-                                  if (worked == true) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => refDialog(context, "Promo Code Valid", "You just applied a promocode for $offerMsg!")
-                                      ),
-                                    );
-                                  }
-                                  else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => refDialog(context, "Promo Code Invalid", "Your promo code is invalid.")
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          ),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(20),
+                      child: Table(
+                        border: TableBorder.all(color: darkTheme? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.all(Radius.circular(12))
                         ),
-                        // onPressed:() {},
-                        child: const Text('Promo Code'),
+                        columnWidths: {
+                          0: FractionColumnWidth(0.5), // 1. Column
+                          1: FractionColumnWidth(0.25), // 2. Column
+                          2: FractionColumnWidth(0.25), // 3. Column
+                        },
+                        children: <TableRow>[
+                          TableRow(
+                            children: <Widget>[
+                              Text("Feature", style:tableStyleHeader(isHeader: true), textAlign: TextAlign.center),
+                              Text("Free", style:tableStyleHeader(isHeader: true), textAlign: TextAlign.center),
+                              const Text("Prem", style:TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                height: 2,
+                                color: Colors.blue,
+                              ), textAlign: TextAlign.center),
+                            ]
+                          ),
+                          compareRow("Analysis","5","∞"),
+                          compareRow("Alerts*","0","20"),
+                          compareRow("History*","7d","365d"),
+                          TableRow(
+                              children: <Widget>[
+                                Text("Your Plan", style:tableStyleBelow(isHeader: true), textAlign: TextAlign.center),
+                                Text(userHasPremium() ? "" : "✅", style:tableStyleBelow(), textAlign: TextAlign.center),
+                                Text(userHasPremium() ? "✅" : "", style:const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  height: 2,
+                                  color: Colors.blue,
+                                ), textAlign: TextAlign.center),
+                              ]
+                          )
+                        ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 40,
-                    ),
+                    Text("*Released in future updates"),
+                    SizedBox(height: 50),
+                    Text("NOTE:", style: TextStyle(color: Colors.red, fontSize: 15)),
+                    Text("Premium is not associated with your Retrospect Account, but with your ${Platform.isAndroid ? 'Google Play' : 'Apple ID'} account. Thus, Premium is local. Your Retrospect log-in is for future updates!"),
                     // if (userHasPremium())
                     //   const SizedBox(
                     //     height: 40,
                     //   ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        textStyle: const TextStyle(fontSize: 15),
-                      ),
-                      onPressed: () {
-                        introdata.write("username", "");
-                        introdata.write("password", "");
-                        introdata.write("logged in", false);
+                  ])),
+            ),
+            const SizedBox(height:50),
+          ],
+        ),
+      ),
+      bottomNavigationBar: getBar(),
+    );
+  }
 
-                        setState(() {});
-                      },
-                      child: const Text('Log Out'),
+  Scaffold accountPage() {
+    TextEditingController curPassw = TextEditingController();
+    TextEditingController newPassw1 = TextEditingController();
+    TextEditingController newPassw2 = TextEditingController();
+    TextEditingController referrer = TextEditingController();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Account'),
+        centerTitle: true,
+        toolbarHeight: 40,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            const SizedBox(
+              height: 80,
+            ),
+            Center(
+              child: Container(
+                  height: 270,
+                  width: 350,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.0),
+                    border: Border.all(
+                        color: darkTheme ? Colors.white : Colors.black),
+                    color: darkTheme ? Colors.grey[900] : Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: Column(children: <Widget>[
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget> [
+                          RichText(
+                            text: TextSpan(
+                              text: " Hello, ",
+                              style: TextStyle(
+                                  height: 2,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: darkTheme ? Colors.white : Colors.black
+                              ),
+                              children: <TextSpan> [
+                                TextSpan(
+                                  text: " ${introdata.read("username")} !",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: userHasPremium() ? Colors.blue : (darkTheme ? Colors.white : Colors.black),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ]
                     ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Image.network("https://i.postimg.cc/j2frSnhd/smiley-main.png", height: 150),
+                    // if (userHasPremium())
+                    //   const SizedBox(
+                    //     height: 40,
+                    //   ),
                   ])),
             ),
             const SizedBox(height:50),
@@ -727,7 +847,7 @@ class _MainPagesState extends State<MainPages> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => refDialog(context, "Successful", "You have completed the prompt! 😀")
-                                          // builder: (context) => refDialog(context, "Successful", "You have completed the prompt. \n Refresh your credits (scroll down) :)")
+                                        // builder: (context) => refDialog(context, "Successful", "You have completed the prompt. \n Refresh your credits (scroll down) :)")
                                       ),
                                     );
                                   }
@@ -745,11 +865,11 @@ class _MainPagesState extends State<MainPages> {
                   ])),
             ),
             const SizedBox(
-              height: 80,
+              height: 50,
             ),
             Center(
               child: Container(
-                height: 400,
+                height: 360,
                 width: 350,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5.0),
@@ -806,7 +926,23 @@ class _MainPagesState extends State<MainPages> {
                 ),
               ),
             ),
-            const SizedBox(height:300),
+
+            const SizedBox(height:30),
+
+            OutlinedButton(
+              style: TextButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 15),
+              ),
+              onPressed: () {
+                introdata.write("username", "");
+                introdata.write("password", "");
+                introdata.write("logged in", false);
+
+                setState(() {});
+              },
+              child: const Text('Log Out'),
+            ),
+            const SizedBox(height:150),
           ],
         ),
       ),
@@ -1159,7 +1295,7 @@ class _MainPagesState extends State<MainPages> {
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('App Version'),
-                value: Text('1.2.3'),
+                value: Text('1.3.0'),
               ),
             ],
           )

@@ -54,7 +54,7 @@ Future<bool> purchasePackage(Package package) async {
     print(entitlements);
 
     if (isPro == true) {
-      updatePremium(introdata.read("username"), package.storeProduct.title);
+      refferalProgram(introdata.read("username"), package.storeProduct.title);
     }
 
     return true;

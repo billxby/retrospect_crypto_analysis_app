@@ -22,19 +22,17 @@ import '../UI/detailspage.dart';
 final introdata = GetStorage();
 
 bool userHasPremium() {
+  if (isPremium) {
+    return true;
+  }
+
   if (introdata.read("username") != "") {
     DateTime now = DateTime.now();
     DateTime begin = DateTime.fromMillisecondsSinceEpoch(0);
 
-    if ((DateTime.fromMillisecondsSinceEpoch(premiumExpire) ?? begin)
-            .compareTo(now) >
-        0) {
+    if ((DateTime.fromMillisecondsSinceEpoch(premiumExpire) ?? begin).compareTo(now) > 0) {
       return true;
     }
-  }
-
-  if (premiumExpire == -1) {
-    return true;
   }
 
   return false;

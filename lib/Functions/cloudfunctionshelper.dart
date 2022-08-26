@@ -75,16 +75,30 @@ Future<int> checkExpire(String username) async {
     var isPro = purchaserInfo.entitlements.all['premium_membership']?.isActive;
 
     if (entitlements.length > 0) {
+      isPremium = true;
+      print(entitlements[0].toJson());
+      DateTime original = DateTime.tryParse(entitlements[0].toJson()['originalPurchaseDate']) ?? DateTime(2000,07,07);
       DateTime dt1 = DateTime.tryParse(entitlements[0].toJson()['latestPurchaseDate']) ?? DateTime(2000,07,07);
-      int newEpoch = dt1.millisecondsSinceEpoch;
 
-      if (newEpoch  + (86400000*5) > premiumExpire) {
-        String p = "Monthly";
-        if (entitlements[0].toJson()['productIdentifier'] == "retrospect_premium_1y") {
-          p = "Yearly";
-        }
-        updateExistingPremium(introdata.read("premiumUser"), p, newEpoch);
+      premiumExpire = dt1.millisecondsSinceEpoch+2629743000;
+
+      if (entitlements[0].toJson()['productIdentifier'].contains("1y")) {
+        premiumExpire = dt1.millisecondsSinceEpoch+(365*24*60*60*1000);
       }
+
+      if (original.millisecondsSinceEpoch + (2629743000*3) > dt1.millisecondsSinceEpoch) {
+        refferalProgram(introdata.read("username"), entitlements[0].toJson()['productIdentifier']);
+      }
+      // DateTime dt1 = DateTime.tryParse(entitlements[0].toJson()['latestPurchaseDate']) ?? DateTime(2000,07,07);
+      // int newEpoch = dt1.millisecondsSinceEpoch;
+      //
+      // if (newEpoch  + (86400000*5) > premiumExpire) {
+      //   String p = "Monthly";
+      //   if (entitlements[0].toJson()['productIdentifier'] == "retrospect_premium_1y") {
+      //     p = "Yearly";
+      //   }
+      //   updateExistingPremium(introdata.read("premiumUser"), p, newEpoch);
+      // }
     }
 
     return works['expire'];
@@ -94,68 +108,31 @@ Future<int> checkExpire(String username) async {
   }
 }
 
-Future<bool> updatePremium(String username, String packageTitle) async {
-  int days = 31;
-
-  if (packageTitle.contains("Yearly")) days = 365;
-
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_premium?username=$username&epoch=${DateTime.now().toUtc().millisecondsSinceEpoch}&days=$days'));
-    print(response.body);
-
-    Map<String, dynamic> works = jsonDecode(response.body);
-    introdata.write("premiumUser",username);
-
-    print("updated subscription");
-
-    if (works['worked'] == "True") {
-      return true;
-    }
-
-  } catch (e){
-    return false;
-  }
-
-  return false;
-}
-
-Future<bool> updateExistingPremium(String username, String packageTitle, int epoch) async {
-  int days = 31;
-
-  if (packageTitle.contains("Yearly")) days = 365;
-
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_premium?username=$username&epoch=$epoch&days=$days'));
-    print(response.body);
-
-    Map<String, dynamic> works = jsonDecode(response.body);
-    introdata.write("premiumUser",username);
-
-    print("updated subscription");
-
-    if (works['worked'] == "True") {
-      return true;
-    }
-
-  } catch (e){
-    return false;
-  }
-
-  return false;
-}
-
-Future<bool> redeemPremium(String username, int days) async {
+Future<bool> redeemPremium(String username, int planN) async {
   if (userHasPremium()) {
     return false;
   }
 
   try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_premium?username=$username&epoch=${DateTime.now().toUtc().millisecondsSinceEpoch}&days=$days'));
-    print(response.body);
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_premium?username=$username&plan=$planN'));
 
     Map<String, dynamic> works = jsonDecode(response.body);
 
-    print("redeemed subscription");
+    if (works['worked'] == "True") {
+      return true;
+    }
+  } catch (e){
+    return false;
+  }
+
+  return false;
+}
+
+Future<bool> refferalProgram(String username, String packageTitle) async {
+  try {
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/referral-program?username=$username&package=$packageTitle'));
+
+    Map<String, dynamic> works = jsonDecode(response.body);
 
     if (works['worked'] == "True") {
       return true;

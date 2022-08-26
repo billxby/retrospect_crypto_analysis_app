@@ -236,3 +236,56 @@ SizedBox changePasswordField(TextEditingController controller, String text) {
     ),
   );
 }
+
+TableRow buildRow(List<String> cells, {bool isHeader = false}) => TableRow(
+  children: cells.map((cell) {
+    final style = TextStyle(
+      fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+      fontSize: 14,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Center(child: Text(cell, style: style)),
+    );
+  }).toList(),
+);
+
+TextStyle tableStyleHeader({bool isHeader = false}) {
+  return TextStyle(
+    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+    fontSize: 18,
+    height: 2,
+  );
+}
+
+TextStyle tableStyle({bool isHeader = false}) {
+  return TextStyle(
+    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+    fontSize: 14,
+    height: 4,
+  );
+}
+
+TextStyle tableStyleBelow({bool isHeader = false}) {
+  return TextStyle(
+    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+    fontSize: 14,
+    height: 2,
+  );
+}
+
+TableRow compareRow(String text1, String text2, String text3) {
+  return TableRow(
+      children: <Widget>[
+        Text(text1, style:tableStyle(isHeader: true), textAlign: TextAlign.center),
+        Text(text2, style:tableStyle(), textAlign: TextAlign.center),
+        Text(text3, style:const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          height: 4,
+          color: Colors.blue,
+        ), textAlign: TextAlign.center),
+      ]
+  );
+}
