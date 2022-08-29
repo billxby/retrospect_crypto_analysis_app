@@ -24,16 +24,12 @@ import '../main.dart';
 
 Future<bool> fetchDatabase() async {
   print("Refreshing");
-  for (int tries = 0; tries < maxFetchTries; tries++) {
-    try {
-      final response =
-      await http.get(Uri.parse('http://3.142.236.93:5000/'));
+  // for (int tries = 0; tries < maxFetchTries; tries++) {
+  //   try {
+      final response = await http.get(Uri.parse('http://192.168.1.24:5000/'));
       data = await jsonDecode(response.body);
       if (response.statusCode != 200) {
         throw Exception('Could not fetch data!');
-      }
-      if (data.contains('refreshing_data')) {
-        throw Exception('Updating data');
       }
 
       worked = true;
@@ -59,8 +55,8 @@ Future<bool> fetchDatabase() async {
       // print(TopCryptos);
       // print(CryptosIndex);
 
-      for (String idx in data) {
-        final Res = CryptoInfo.fromJson(jsonDecode(idx));
+      for (Map<String, dynamic> idx in data) {
+        final Res = CryptoInfo.fromJson(idx);
         TopCryptos.add(await Res);
         count+=1;
       }
@@ -78,25 +74,24 @@ Future<bool> fetchDatabase() async {
       //   Sort["⬇A-Z"]?.add(cryptosCap-i-1);
       // }
 
-      break;
-    } catch (e) {
-
-      if (e is ClientException) {
-        if (e.message == 'Connection closed while receiving data') {
-          await Future.delayed(const Duration(seconds: 5), () {});
-          print('Exception Connection closed while receiving data');
-          print('Trying again in 5 seconds');
-          continue;
-        }
-      } else {
-        print('Updating data');
-        print('Trying again in 10 seconds');
-        print(e);
-        await Future.delayed(const Duration(seconds: 10), () {});
-        continue;
-      }
-    }
-  }
+    //   break;
+    // } catch (e) {
+    //
+    //   if (e is ClientException) {
+    //     if (e.message == 'Connection closed while receiving data') {
+    //       await Future.delayed(const Duration(seconds: 5), () {});
+    //       print('Exception Connection closed while receiving data');
+    //       print('Trying again in 5 seconds');
+    //       continue;
+    //     }
+    //   } else {
+    //     print('Trying again in 10 seconds');
+    //     print(e);
+    //     await Future.delayed(const Duration(seconds: 10), () {});
+    //     continue;
+    //   }
+    // }
+  // }
 
   if (worked == false) {
     return worked;

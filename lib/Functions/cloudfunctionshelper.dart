@@ -108,6 +108,19 @@ Future<int> checkExpire(String username) async {
   }
 }
 
+Future<bool> appVersion() async {
+  try {
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/new-version'));
+
+    String works = response.body.toString();
+
+    new_version = works;
+    return true;
+  } catch (e){
+    return false;
+  }
+}
+
 Future<bool> redeemPremium(String username, int planN) async {
   if (userHasPremium()) {
     return false;

@@ -53,8 +53,8 @@ class CryptoInfo {
   });
 
   factory CryptoInfo.fromJson(Map<String, dynamic> json) {
-    String marketCap = Numeral(json['market_cap'].toInt()).format().toString();
-    String volume = Numeral(json['total_volume'].toInt()).format().toString();
+    String marketCap = Numeral(json['market_cap']).format().toString();
+    String volume = Numeral(json['total_volume']).format().toString();
     String price = json['current_price'].toString();
     String twtyFHigh = json['high_24h'].toString();
     String twtyFLow = json['low_24h'].toString();

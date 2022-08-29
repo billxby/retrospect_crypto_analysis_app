@@ -1295,7 +1295,7 @@ class _MainPagesState extends State<MainPages> {
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('App Version'),
-                value: Text('1.3.0'),
+                value: Text(app_version),
               ),
             ],
           )

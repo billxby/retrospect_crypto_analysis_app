@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto_app/Functions/purchase.dart';
+import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,8 @@ String sortBy = "⬆A-Z";
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-
+String app_version = "1.3.2";
+String new_version = app_version;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +90,7 @@ Future<void> main() async {
   final introdata = GetStorage();
 
   final worked = await fetchDatabase();
+  await appVersion();
 
   if (worked == false) {
     exit(0);
@@ -134,9 +137,32 @@ class MyApp extends StatelessWidget {
       title: 'Retrospect',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: introdata.read("displayed") ? const MainPages() : IntroPage(),
+      home: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
     );
   }
 }
 
+class UpdateApp extends StatelessWidget {
+  const UpdateApp({Key? key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        const SizedBox(
+          height: 200,
+        ),
+        Center(
+            child: Text("Please update your app!", style: titleStyle)
+        ),
+        Center(
+          child: detailsPageTitle("A new version is available now!"),
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        Image.network("https://i.postimg.cc/y6SZ9YMF/Retro-Spect-Trans-BW.png", height: 300),
+      ],
+    );
+  }
+}

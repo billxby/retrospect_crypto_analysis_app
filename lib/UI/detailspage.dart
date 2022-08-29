@@ -233,7 +233,7 @@ class _DetailsPageState extends State<DetailsPage> {
                           height: 29,
                         ),
                         Text(
-                          "last updated: ${TopCryptos[widget.passedIndex].last_updated}",
+                          "last updated: ${TopCryptos[widget.passedIndex].last_updated} | powered by CoinGecko",
                           style: const TextStyle(fontSize: 9),
                         ),
                       ])),
@@ -246,12 +246,27 @@ class _DetailsPageState extends State<DetailsPage> {
                       height: 1150,
                       width: 350,
                       child: Column(children: <Widget>[
-                        const Center(
-                            child: Text(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center, //Center Row contents horizontally,
+                          children: <Widget>[
+                            const Text(
                               "Analysis",
                               style: TextStyle(
                                   height: 2, fontSize: 22, fontWeight: FontWeight.bold),
-                            )),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => refDialog(context, "Coming soon!", "You will have the option to be alerted every time predictions or scores change!"),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.notification_add_sharp),
+                            ),
+                          ],
+                        ),
                         Row(
                           children: <Widget>[
                             Container(
