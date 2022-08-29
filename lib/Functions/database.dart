@@ -26,7 +26,7 @@ Future<bool> fetchDatabase() async {
   print("Refreshing");
   // for (int tries = 0; tries < maxFetchTries; tries++) {
   //   try {
-      final response = await http.get(Uri.parse('http://192.168.1.24:5000/'));
+      final response = await http.get(Uri.parse('http://3.142.236.93:5000/'));
       data = await jsonDecode(response.body);
       if (response.statusCode != 200) {
         throw Exception('Could not fetch data!');

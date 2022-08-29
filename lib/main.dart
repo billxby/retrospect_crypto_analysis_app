@@ -67,7 +67,7 @@ String sortBy = "⬆A-Z";
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.3.2";
+String app_version = "1.3.3";
 String new_version = app_version;
 
 Future<void> main() async {
