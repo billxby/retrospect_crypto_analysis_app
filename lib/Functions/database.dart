@@ -34,6 +34,8 @@ Future<bool> fetchDatabase() async {
 
       worked = true;
 
+      // print(data);
+
       Sort["⬆A-Z"] = [];
       Sort["⬇A-Z"] = [];
       Sort["⬆Mrkt"] = [];
@@ -105,7 +107,7 @@ Future<bool> fetchDatabase() async {
 
   // print(Sort["⬇Mrkt"]);
 
-  copy.sort((a,b) => int.parse(a.market_cap_rank).compareTo(int.parse(b.market_cap_rank)));
+  copy.sort((a,b) => (int.tryParse(a.market_cap_rank) ?? 1000).compareTo((int.tryParse(b.market_cap_rank) ?? 1000)));
   for (CryptoInfo crypto in copy) {
     Sort["⬇Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
@@ -114,7 +116,7 @@ Future<bool> fetchDatabase() async {
   //
   // print("-----------------------");
 
-  copy.sort((a,b) => int.parse(b.market_cap_rank).compareTo(int.parse(a.market_cap_rank)));
+  copy.sort((a,b) => (int.tryParse(b.market_cap_rank) ?? 1000).compareTo((int.tryParse(a.market_cap_rank) ?? 1000)));
   for (CryptoInfo crypto in copy) {
     Sort["⬆Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
