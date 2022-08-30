@@ -24,8 +24,8 @@ import '../main.dart';
 
 Future<bool> fetchDatabase() async {
   print("Refreshing");
-  // for (int tries = 0; tries < maxFetchTries; tries++) {
-  //   try {
+  for (int tries = 0; tries < maxFetchTries; tries++) {
+    try {
       final response = await http.get(Uri.parse('http://3.142.236.93:5000/'));
       data = await jsonDecode(response.body);
       if (response.statusCode != 200) {
@@ -74,24 +74,24 @@ Future<bool> fetchDatabase() async {
       //   Sort["⬇A-Z"]?.add(cryptosCap-i-1);
       // }
 
-    //   break;
-    // } catch (e) {
-    //
-    //   if (e is ClientException) {
-    //     if (e.message == 'Connection closed while receiving data') {
-    //       await Future.delayed(const Duration(seconds: 5), () {});
-    //       print('Exception Connection closed while receiving data');
-    //       print('Trying again in 5 seconds');
-    //       continue;
-    //     }
-    //   } else {
-    //     print('Trying again in 10 seconds');
-    //     print(e);
-    //     await Future.delayed(const Duration(seconds: 10), () {});
-    //     continue;
-    //   }
-    // }
-  // }
+      break;
+    } catch (e) {
+
+      if (e is ClientException) {
+        if (e.message == 'Connection closed while receiving data') {
+          await Future.delayed(const Duration(seconds: 5), () {});
+          print('Exception Connection closed while receiving data');
+          print('Trying again in 5 seconds');
+          continue;
+        }
+      } else {
+        print('Trying again in 10 seconds');
+        print(e);
+        await Future.delayed(const Duration(seconds: 10), () {});
+        continue;
+      }
+    }
+  }
 
   if (worked == false) {
     return worked;
