@@ -202,5 +202,3 @@ class Information extends StatelessWidget {
     );
   }
 }
-
-//end
