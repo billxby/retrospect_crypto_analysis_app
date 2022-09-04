@@ -71,11 +71,11 @@ class Information extends StatelessWidget {
                           ),
                           RichText(
                             text: const TextSpan(
-                              text: "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The higher the better. Anything above ",
+                              text: "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The higher the better. When close to ",
                               children: <TextSpan>[
-                                TextSpan(text: '100 is excellent', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.greenAccent)),
-                                TextSpan(text: ', and below '),
-                                TextSpan(text: '-100 is horrible.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                                TextSpan(text: '100 it\'s excellent', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.greenAccent)),
+                                TextSpan(text: ', and close '),
+                                TextSpan(text: '-100 it\'s horrible.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
                               ],
                               style: TextStyle(
                                 fontSize: 15,
