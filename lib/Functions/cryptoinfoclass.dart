@@ -100,10 +100,10 @@ class CryptoInfo {
       realVolume = realVolume.substring(0, realVolume.indexOf("."));
     }
 
-    if (price.length < 5) {
+    if (price.length < 7) {
       price = price.substring(0, price.length);
     } else {
-      price = price.substring(0, 5);
+      price = price.substring(0, 7);
     }
     if (twtyFHigh.length < 5) {
       twtyFHigh = twtyFHigh.substring(0, twtyFHigh.length);

@@ -22,17 +22,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../utils.dart';
 import '../Functions/cloudfunctionshelper.dart';
 import '../Functions/premium.dart';
 import '../Functions/purchase.dart';
 import 'UI helpers/paywallwidget.dart';
+import 'UI helpers/themes.dart';
 import 'adhelper.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
 import '../Functions/cryptoinfoclass.dart';
 import 'information.dart';
+import 'notifications.dart';
 import 'updatelog.dart';
 import '../Functions/database.dart';
 import '../main.dart';
@@ -50,6 +53,7 @@ class MainPages extends StatefulWidget {
 
 class _MainPagesState extends State<MainPages> {
   static final AdRequest request = AdRequest();
+  late final NotificationService notificationService;
 
   Duration get loginTime => Duration(milliseconds: 2250);
 
@@ -94,9 +98,9 @@ class _MainPagesState extends State<MainPages> {
             if (!snapshot.hasData) {
               return Scaffold(
                 appBar: AppBar(
-                  title: const Text('Top $cryptosCap Cryptos'),
+                  title: const Text('Market'),
                   centerTitle: true,
-                  toolbarHeight: 35,
+                  toolbarHeight: 50,
                 ),
                 body: const Center(
                   child: CircularProgressIndicator(
@@ -108,9 +112,9 @@ class _MainPagesState extends State<MainPages> {
             }
             return Scaffold(
               appBar: AppBar(
-                  title: const Text('Top $cryptosCap Cryptos'),
+                  title: const Text('Market'),
                   centerTitle: true,
-                  toolbarHeight: 40,
+                  toolbarHeight: 50,
                   leadingWidth: 80,
                   leading: DropdownButton<String>(
                     value: sortBy,
@@ -183,68 +187,108 @@ class _MainPagesState extends State<MainPages> {
                         },
                         title: Container(
                           decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: darkTheme ? Colors.white : Colors.black)),
-                            color: Colors.transparent,
+                            border: Border.all(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            color: Colors.white10,
                           ),
                           padding: const EdgeInsets.all(2),
                           child: Center(
                             child: Column(
-                              children: <Widget>[
+                              children: <Widget> [
                                 Row(
-                                  children: <Widget>[
-                                    Image.network(
-                                      TopCryptos[Sort[sortBy]![index]].image,
-                                      height: 25,
-                                      width: 25,
-                                    ),
-                                    const SizedBox(
-                                      width: 15,
-                                      height: 10,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        TopCryptos[Sort[sortBy]![index]].id,
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
-                                        softWrap: false,
+                                    children: <Widget> [
+                                      const SizedBox(
+                                        width: 5,
+                                        height: 70,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Text(
-                                      TopCryptos[Sort[sortBy]![index]].current_price,
-                                      style: const TextStyle(height: 2, fontSize: 15),
-                                    ),
-                                    listviewTextTitle(" 24h: "),
-                                    listviewTextInfo(
-                                        "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
-                                        TopCryptos[Sort[sortBy]![index]]
-                                            .price_change_precentage_24h
-                                            .contains("-")
-                                            ? Colors.red
-                                            : Colors.green),
-                                    listviewTextTitle(" R "),
-                                    listviewTextInfo(
-                                        TopCryptos[Sort[sortBy]![index]].realScore,
-                                        TopCryptos[Sort[sortBy]![index]]
-                                            .realScore
-                                            .contains("-")
-                                            ? Colors.red
-                                            : Colors.green),
-                                    listviewTextTitle(" Mrkt Cap: "),
-                                    listviewTextInfo(
-                                        TopCryptos[Sort[sortBy]![index]].market_cap,
-                                        darkTheme ? Colors.white : Colors.black),
-                                    listviewTextTitle(" Vol "),
-                                    listviewTextInfo(
-                                        TopCryptos[Sort[sortBy]![index]].total_volume,
-                                        darkTheme ? Colors.white : Colors.black),
-                                  ],
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(TopCryptos[Sort[sortBy]![index]].image),
+                                        radius: 23,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                        height: 70,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: 160,
+                                            child: Text(
+                                              TopCryptos[Sort[sortBy]![index]].id.capitalizeFirst ?? TopCryptos[Sort[sortBy]![index]].id,
+                                              style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.5,
+                                              ),
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          Text(
+                                            TopCryptos[Sort[sortBy]![index]].symbol,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                            ),
+                                            textAlign: TextAlign.left,
+                                            softWrap: false,
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              listviewTextTitle("R "),
+                                              listviewTextInfo(
+                                                  TopCryptos[Sort[sortBy]![index]].realScore,
+                                                  TopCryptos[Sort[sortBy]![index]]
+                                                      .realScore
+                                                      .contains("-")
+                                                      ? Colors.red
+                                                      : Colors.green),
+                                              // listviewTextTitle(" Vol "),
+                                              // listviewTextInfo(
+                                              //     TopCryptos[Sort[sortBy]![index]].total_volume,
+                                              //     darkTheme ? Colors.white : Colors.black),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        width: 120,
+                                        color: Colors.transparent,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text(
+                                              TopCryptos[Sort[sortBy]![index]].current_price,
+                                              style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 0.8,
+                                              ),
+                                              softWrap: false,
+                                            ),
+                                            Text(
+                                              "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? Colors.red : Colors.green,
+                                              ),
+                                              textAlign: TextAlign.right,
+                                              softWrap: false,
+                                            ),
+                                            Text(
+                                              TopCryptos[Sort[sortBy]![index]].market_cap,
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  height: 2,
+                                              ),
+                                              softWrap: false,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                 ),
                               ],
                             ),
@@ -444,9 +488,9 @@ class _MainPagesState extends State<MainPages> {
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: const Icon(
-            Icons.list,
+            Icons.show_chart,
           ),
-          label: 'List',
+          label: 'Market',
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
         // BottomNavigationBarItem(
@@ -455,22 +499,23 @@ class _MainPagesState extends State<MainPages> {
         //   backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         // ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.stars),
+          icon: const Icon(Icons.star),
           label: 'Premium',
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.account_circle),
+          icon: const Icon(Icons.account_circle_outlined),
           label: 'Account',
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.settings),
+          icon: const Icon(Icons.settings_sharp),
           label: 'Settings',
           backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
       ],
       selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.white,
     );
   }
 
@@ -1256,7 +1301,7 @@ class _MainPagesState extends State<MainPages> {
                     introdata.write("darkTheme", value);
                   });
                   if (darkTheme) {
-                    Get.changeTheme(ThemeData.dark());
+                    Get.changeTheme(customDark);
                   } else {
                     Get.changeTheme(ThemeData.light());
                   }
@@ -1297,6 +1342,14 @@ class _MainPagesState extends State<MainPages> {
                 title: Text('App Version'),
                 value: Text(app_version),
               ),
+              SettingsTile.navigation(
+                  leading: Icon(Icons.book_outlined),
+                  title: Text('Clear Alerts'),
+                  value: Text(Platform.isAndroid ? 'Delete all active alerts' : ""),
+                  onPressed: (context) {
+                    introdata.write("alerts", <String, String> {});
+                    Workmanager().cancelAll();
+                  }),
             ],
           )
         ],

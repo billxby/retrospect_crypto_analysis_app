@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../Functions/detailspageassist.dart';
 import '../main.dart';
+import 'UI helpers/buttons.dart';
 import 'UI helpers/textelements.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -24,6 +25,7 @@ import 'information.dart';
 List<String> types = <String> ["","(in K)","(in M)"];
 List<String> sub = <String> ["in units", "in thousands", "in millions"];
 List<double> numbers = <double> [1, 1000, 1000000];
+
 
 class DetailsPage extends StatefulWidget {
   final int passedIndex;
@@ -74,6 +76,9 @@ class _DetailsPageState extends State<DetailsPage> {
     Color tweetsColor = getSpecialTextColor(TopCryptos[widget.passedIndex].tweets);
     Color commitsColor = getSpecialTextColor(TopCryptos[widget.passedIndex].commits);
     Color marketViewColor = getTextColor(TopCryptos[widget.passedIndex].marketView);
+
+    Map<String, String> inputData = {};
+    inputData['crypto'] = TopCryptos[widget.passedIndex].id;
 
     double percentageTw =
     double.parse(TopCryptos[widget.passedIndex].tweets) / 100.abs() > 1
@@ -255,14 +260,44 @@ class _DetailsPageState extends State<DetailsPage> {
                                   height: 2, fontSize: 22, fontWeight: FontWeight.bold),
                             ),
                             IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => refDialog(context, "Coming soon!", "You will have the option to be alerted every time predictions or scores change!"),
+                              onPressed: () => showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text("Alerts", textAlign: TextAlign.center),
+                                  content: SizedBox(
+                                    height: 100,
+                                    child: Column(
+                                      children: <Widget> [
+                                        Text('Get a alerted when predictions go to...'),
+                                        Row(
+                                          children: [
+                                            Image.network("https://i.postimg.cc/0yxgzGs1/bear.png", height: 35),
+                                            SizedBox(width: 5),
+                                            alertPredButton(0, Colors.red.shade900, inputData),
+                                            alertPredButton(1, Colors.red.shade600, inputData),
+                                            alertPredButton(2, Colors.red.shade300, inputData),
+                                            alertPredButton(3, Colors.green.shade300, inputData),
+                                            alertPredButton(4, Colors.green.shade600, inputData),
+                                            alertPredButton(5, Colors.green.shade900, inputData),
+                                            SizedBox(width: 5),
+                                            Image.network("https://i.postimg.cc/SNcFQTHG/bull.png", height: 35),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                );
-                              },
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               icon: const Icon(Icons.notification_add_sharp),
                             ),
                           ],

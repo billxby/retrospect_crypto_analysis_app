@@ -19,10 +19,15 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:workmanager/workmanager.dart';
 import 'Functions/cloudfunctionshelper.dart';
+import 'UI/UI helpers/pages.dart';
+import 'UI/UI helpers/themes.dart';
+import 'UI/notifications.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'UI/cryptosearchdelegate.dart';
 import "UI/detailspage.dart";
@@ -69,6 +74,7 @@ String currentPromo = "none";
 String offerMsg = "none";
 String app_version = "1.3.4";
 String new_version = app_version;
+late final NotificationService notificationService;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,6 +113,7 @@ Future<void> main() async {
   introdata.writeIfNull("used", <String> []);
   introdata.writeIfNull("premiumUser", "");
   introdata.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
+  introdata.writeIfNull("alerts", <String, String> {});
 
   DateTime now = DateTime.now();
   if (DateTime.fromMillisecondsSinceEpoch(introdata.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
@@ -116,9 +123,12 @@ Future<void> main() async {
   darkTheme = introdata.read("darkTheme");
   introdata.write("last open", DateTime.now().millisecondsSinceEpoch);
 
+  Workmanager().initialize(callbackDispatcher);
+
+  print(introdata.read("alerts"));
+
   runApp(MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
@@ -130,39 +140,48 @@ class MyApp extends StatelessWidget {
 
     // introdata.write("displayed", false);
     if (darkTheme == true) {
-      Get.changeTheme(ThemeData.dark());
+      Get.changeTheme(customDark);
     }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
       theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      // darkTheme: customDark,
       home: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
     );
   }
 }
 
-class UpdateApp extends StatelessWidget {
-  const UpdateApp({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const SizedBox(
-          height: 200,
-        ),
-        Center(
-            child: Text("Please update your app!", style: titleStyle)
-        ),
-        Center(
-          child: detailsPageTitle("A new version is available now!"),
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-        Image.network("https://i.postimg.cc/y6SZ9YMF/Retro-Spect-Trans-BW.png", height: 300),
-      ],
-    );
-  }
+
+void callbackDispatcher() {
+
+  Workmanager().executeTask((taskName, inputData) async {
+    print("Task executing: $taskName with input $inputData"); //simpleTask will be emitted here.
+    if (taskName.contains("Alert")) {
+      //update server
+      bool worked = await fetchDatabase();
+
+      notificationService = NotificationService();
+
+      notificationService.initializePlatformNotifications();
+
+      if (worked) {
+        if (TopCryptos[CryptosIndex[inputData!['crypto']] ?? 0].prediction == inputData['trigger']) {
+
+          await notificationService.showLocalNotification(
+              id: 0,
+              title: "Predictions Alert!",
+              body: "${inputData['crypto']} just turned ${inputData['target']}!!",
+              payload: "You just took water! Huurray!");
+
+          Workmanager().cancelByUniqueName(inputData['crypto']);
+
+        }
+      }
+    }
+
+    return Future.value(true);
+  });
 }
+

@@ -26,15 +26,15 @@ Text listviewTextTitle(String content) {
   return Text(
     content,
     style:
-        const TextStyle(height: 1.8, fontSize: 15, fontWeight: FontWeight.bold),
+        const TextStyle(height: 1.4, fontSize: 14, fontWeight: FontWeight.bold),
   );
 }
 
 Text listviewTextInfo(String content, Color color) {
   return Text(content,
       style: TextStyle(
-        height: 2.2,
-        fontSize: 14,
+        height: 1.6,
+        fontSize: 13,
         color: color,
       ));
 }
