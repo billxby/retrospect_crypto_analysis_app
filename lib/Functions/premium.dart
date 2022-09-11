@@ -42,7 +42,7 @@ bool userLimitAvailable(int passedIndex) {
   if (userHasPremium()) {
     return true;
   }
-  String selectedCrypto = TopCryptos[Sort[sortBy]![passedIndex]].id;
+  String selectedCrypto = TopCryptos[Sort["⬆A-Z"]![passedIndex]].id;
   List<dynamic> used = introdata.read("used");
   if (introdata.read("used").contains(selectedCrypto)) {
     return true;
@@ -75,6 +75,7 @@ bool redeemCreditsDetails(int passedIndex) {
 refDialog(BuildContext context, String title, String content) {
   return AlertDialog(
     title: Text(title),
+    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
     content: Text(content),
     actions: <Widget>[
       TextButton(
@@ -89,6 +90,7 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
   return showDialog<String>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
+      backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
       title: const Text('Redeem Premium?'),
       content: Text('Redeem $days days of Premium for $requirement credits?'),
       actions: <Widget>[

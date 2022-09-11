@@ -22,6 +22,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../../main.dart';
 import '../detailspage.dart';
 
+Color cGreen = Color(0xff0DC9AB);
+Color cRed = Color(0xffF45656);
+
 Text listviewTextTitle(String content) {
   return Text(
     content,
@@ -82,7 +85,7 @@ TextStyle blueRetroTitleStyle = const TextStyle(
   height: 2,
   fontSize: 15,
   fontWeight: FontWeight.bold,
-  color: Colors.lightBlue,
+  color: Colors.lightBlueAccent,
 );
 
 TextStyle blueTitleStyle = const TextStyle(
@@ -125,22 +128,27 @@ Image creditImage = Image.network(
 const Color lightGreen = Color(0xffabf7c1);
 const Color lightRed = Color(0xfff7abab);
 
-SfLinearGauge analysisGauge(double start, double end, double min, double max) {
+SfLinearGauge analysisGauge(double start, double end, double min, double max, Color pointerColor) {
   return SfLinearGauge(
     minimum: min,
     maximum: max,
+    maximumLabels: 2,
+    animateAxis: true,
+    axisTrackStyle: const LinearAxisTrackStyle(
+      color: Colors.transparent,
+    ),
     ranges: <LinearGaugeRange>[
       LinearGaugeRange(
         startValue: 0,
         endValue: max,
-        color: lightGreen,
-        position: LinearElementPosition.inside,
+        color: cGreen,
+        position: LinearElementPosition.cross,
       ),
       LinearGaugeRange(
         startValue: min,
         endValue: 0,
-        color: lightRed,
-        position: LinearElementPosition.inside,
+        color: cRed,
+        position: LinearElementPosition.cross,
       ),
       LinearGaugeRange(
         startValue: start,
@@ -153,6 +161,7 @@ SfLinearGauge analysisGauge(double start, double end, double min, double max) {
       LinearShapePointer(
         value: start == 0 ? end : start,
         animationType: LinearAnimationType.ease,
+        color: pointerColor,
       ),
     ],
   );
@@ -184,28 +193,40 @@ CircularPercentIndicator socialsChange(
 }
 
 Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
-    List<PriceData> cryptoData, bool showAxis, Color lineColor) {
+    List<PriceData> cryptoData, bool showAxis) {
+  Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? cRed : cGreen;
+
   return Container(
-    height: 275,
+    height: 300,
     width: 350,
     child: Column(
       children: <Widget>[
-        Center(
-            child: Text(
+        Text(
           title,
           style: const TextStyle(
-              height: 2, fontSize: 22, fontWeight: FontWeight.bold),
-        )),
+              height: 2, fontSize: 20, fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.left,
+        ),
         const SizedBox(
           height: 5,
         ),
         SizedBox(
-          height: 225,
+          height: 250,
           width: 350,
           child: SfCartesianChart(
             trackballBehavior: trackballBehavior,
-            primaryXAxis: CategoryAxis(),
-            primaryYAxis: NumericAxis(isVisible: showAxis),
+            borderColor: Colors.transparent,
+            plotAreaBorderColor: Colors.transparent,
+            primaryXAxis: CategoryAxis(
+              majorGridLines: const MajorGridLines(width: 0),
+              isVisible: showAxis,
+            ),
+            primaryYAxis: NumericAxis(
+              isVisible: showAxis,
+              majorGridLines: const MajorGridLines(width: 0),
+              rangePadding: ChartRangePadding.round,
+            ),
             legend: Legend(isVisible: false),
             series: <LineSeries<PriceData, String>>[
               LineSeries<PriceData, String>(
@@ -213,6 +234,48 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
                 dataSource: cryptoData,
                 xValueMapper: (PriceData prices, _) =>
                     DateFormat('MM-dd').format(prices.time),
+                yValueMapper: (PriceData prices, _) => prices.price,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Container cryptoPriceChart(TrackballBehavior trackballBehavior,
+    List<PriceData> cryptoData, bool showAxis) {
+  Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? cRed : cGreen;
+  return Container(
+    height: 350,
+    width: 350,
+    child: Column(
+      children: <Widget>[
+        SizedBox(
+          height: 350,
+          width: 350,
+          child: SfCartesianChart(
+            trackballBehavior: trackballBehavior,
+            primaryXAxis: CategoryAxis(
+              majorGridLines: const MajorGridLines(width: 0),
+              isVisible: showAxis,
+            ),
+            primaryYAxis: NumericAxis(
+              isVisible: showAxis,
+              majorGridLines: const MajorGridLines(width: 0),
+              rangePadding: ChartRangePadding.round,
+              // labelFormat: '\${value}',
+            ),
+            borderColor: Colors.transparent,
+            plotAreaBorderColor: Colors.transparent,
+            legend: Legend(isVisible: false),
+            series: <LineSeries<PriceData, String>>[
+              LineSeries<PriceData, String>(
+                color: lineColor,
+                dataSource: cryptoData,
+                xValueMapper: (PriceData prices, _) =>
+                    DateFormat('MM-dd HH:00').format(prices.time),
                 yValueMapper: (PriceData prices, _) => prices.price,
               ),
             ],
@@ -287,5 +350,53 @@ TableRow compareRow(String text1, String text2, String text3) {
           color: Colors.blue,
         ), textAlign: TextAlign.center),
       ]
+  );
+}
+
+TableRow infoRow(String stat, String text, Color borderColor) {
+  return TableRow(
+    children: <Widget> [
+      Container(
+        margin: const EdgeInsets.all(1.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: borderColor,
+              width: 0.5,
+            ),
+          ),
+        ),
+        height: 35,
+        child: Row(
+          children: <Widget> [
+            SizedBox(
+              width: 160,
+              child: Text(
+                stat,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+                softWrap: false,
+              ),
+            ),
+            SizedBox(width:60),
+            SizedBox(
+              width: 120,
+              child: Text(
+                text,
+                textAlign: TextAlign.right,
+                softWrap: false,
+                style: TextStyle(
+                  fontSize: 15,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    ],
   );
 }

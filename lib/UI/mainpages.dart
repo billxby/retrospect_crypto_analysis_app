@@ -116,11 +116,13 @@ class _MainPagesState extends State<MainPages> {
                   centerTitle: true,
                   toolbarHeight: 50,
                   leadingWidth: 80,
+                  elevation: 0,
                   leading: DropdownButton<String>(
                     value: sortBy,
                     isExpanded: true,
                     icon: const Icon(Icons.sort),
                     items: <String>[
+                      'Starred',
                       "⬆A-Z",
                       '⬇A-Z',
                       '⬆Mrkt',
@@ -130,7 +132,7 @@ class _MainPagesState extends State<MainPages> {
                       "⬆Rscr",
                       '⬇Rscr',
                       '⬆Vol',
-                      '⬇Vol'
+                      '⬇Vol',
                     ].map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -162,28 +164,19 @@ class _MainPagesState extends State<MainPages> {
               body: RefreshIndicator(
                 onRefresh: refreshPage,
                 child: ListView.builder(
-                    itemCount: TopCryptos.length,
+                    itemCount: Sort[sortBy]?.length,
                     itemBuilder: (context, index) {
+                      print(index);
                       return ListTile(
                         tileColor: Colors.transparent,
                         onTap: () {
-                          if (userLimitAvailable(Sort[sortBy]?[index] ?? 0)) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailsPage(
-                                    passedIndex: Sort[sortBy]?[index] ?? 0,
-                                  )),
-                            );
-                          }
-                          else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => limitDialog(context, index),
-                              ),
-                            );
-                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailsPage(
+                                  passedIndex: Sort[sortBy]?[index] ?? 0,
+                                )),
+                          );
                         },
                         title: Container(
                           decoration: BoxDecoration(
@@ -191,7 +184,7 @@ class _MainPagesState extends State<MainPages> {
                               color: Colors.transparent,
                             ),
                             borderRadius: BorderRadius.all(Radius.circular(20)),
-                            color: Colors.white10,
+                            color: darkTheme ? Colors.white10 : Colors.grey[200],
                           ),
                           padding: const EdgeInsets.all(2),
                           child: Center(
@@ -205,6 +198,7 @@ class _MainPagesState extends State<MainPages> {
                                       ),
                                       CircleAvatar(
                                         backgroundImage: NetworkImage(TopCryptos[Sort[sortBy]![index]].image),
+                                        backgroundColor: Colors.transparent,
                                         radius: 23,
                                       ),
                                       const SizedBox(
@@ -227,9 +221,9 @@ class _MainPagesState extends State<MainPages> {
                                             ),
                                           ),
                                           Text(
-                                            TopCryptos[Sort[sortBy]![index]].symbol,
+                                            TopCryptos[Sort[sortBy]![index]].symbol.toUpperCase(),
                                             style: const TextStyle(
-                                              fontSize: 15,
+                                              fontSize: 14,
                                             ),
                                             textAlign: TextAlign.left,
                                             softWrap: false,
@@ -242,8 +236,8 @@ class _MainPagesState extends State<MainPages> {
                                                   TopCryptos[Sort[sortBy]![index]]
                                                       .realScore
                                                       .contains("-")
-                                                      ? Colors.red
-                                                      : Colors.green),
+                                                      ? cRed
+                                                      : Color(0xff0DC9AB)),
                                               // listviewTextTitle(" Vol "),
                                               // listviewTextInfo(
                                               //     TopCryptos[Sort[sortBy]![index]].total_volume,
@@ -271,7 +265,7 @@ class _MainPagesState extends State<MainPages> {
                                               "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
                                               style: TextStyle(
                                                 fontSize: 14,
-                                                color: TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? Colors.red : Colors.green,
+                                                color: TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? cRed : cGreen,
                                               ),
                                               textAlign: TextAlign.right,
                                               softWrap: false,
@@ -538,12 +532,13 @@ class _MainPagesState extends State<MainPages> {
               child: Container(
                   height: userHasPremium() ? 800 : 920,
                   width: 350,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    border: Border.all(
-                        color: darkTheme ? Colors.white : Colors.black),
-                    color: darkTheme ? Colors.grey[900] : Colors.white,
-                  ),
+                  color: Colors.transparent,
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(5.0),
+                  //   border: Border.all(
+                  //       color: darkTheme ? Colors.white : Colors.black),
+                  //   color: darkTheme ? Colors.grey[900] : Colors.white,
+                  // ),
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
                     Row(
@@ -610,7 +605,7 @@ class _MainPagesState extends State<MainPages> {
                                   fetching = false;
                                 }
                               },
-                              child: const Text('See Plans'),
+                              child: const Text('See Plans', style: TextStyle(color: Colors.white,)),
                             ),
                             const SizedBox(
                               height: 5,
@@ -620,6 +615,7 @@ class _MainPagesState extends State<MainPages> {
                                 onPressed: () => showDialog<String>(
                                   context: context,
                                   builder: (BuildContext context) => AlertDialog(
+                                    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
                                     title: const Text('Promo Codes', textAlign: TextAlign.center),
                                     content: Container(
                                       height: 121,
@@ -722,9 +718,9 @@ class _MainPagesState extends State<MainPages> {
                         ],
                       ),
                     ),
-                    Text("*Released in future updates"),
+                    Text("*Released VERY soon! ⚠️"),
                     SizedBox(height: 50),
-                    Text("NOTE:", style: TextStyle(color: Colors.red, fontSize: 15)),
+                    Text("NOTE:", style: TextStyle(color: cRed, fontSize: 15)),
                     Text("Premium is not associated with your Retrospect Account, but with your ${Platform.isAndroid ? 'Google Play' : 'Apple ID'} account. Thus, Premium is local. Your Retrospect log-in is for future updates!"),
                     // if (userHasPremium())
                     //   const SizedBox(
@@ -760,14 +756,9 @@ class _MainPagesState extends State<MainPages> {
             ),
             Center(
               child: Container(
-                  height: 270,
+                  height: 50,
                   width: 350,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    border: Border.all(
-                        color: darkTheme ? Colors.white : Colors.black),
-                    color: darkTheme ? Colors.grey[900] : Colors.white,
-                  ),
+                  color: Colors.transparent,
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
                     Row(
@@ -795,10 +786,6 @@ class _MainPagesState extends State<MainPages> {
                           ),
                         ]
                     ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    Image.network("https://i.postimg.cc/j2frSnhd/smiley-main.png", height: 150),
                     // if (userHasPremium())
                     //   const SizedBox(
                     //     height: 40,
@@ -814,7 +801,7 @@ class _MainPagesState extends State<MainPages> {
                     borderRadius: BorderRadius.circular(5.0),
                     border: Border.all(
                         color: darkTheme ? Colors.white : Colors.black),
-                    color: darkTheme ? Colors.grey[900] : Colors.white,
+                    color: Colors.transparent,
                   ),
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
@@ -831,6 +818,7 @@ class _MainPagesState extends State<MainPages> {
                         onPressed: () => showDialog<String>(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
+                            backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
                             title: const Text('Referrals', textAlign: TextAlign.center),
                             content: Container(
                               height: 183,
@@ -904,7 +892,7 @@ class _MainPagesState extends State<MainPages> {
                           ),
                         ),
                         // onPressed:() {},
-                        child: const Text('Referral (Benefits soon!)'),
+                        child: Text('Referral (Benefits soon!)', style: TextStyle(color: darkTheme ? Colors.white : Colors.black)),
                       ),
                     ),
                   ])),
@@ -916,12 +904,7 @@ class _MainPagesState extends State<MainPages> {
               child: Container(
                 height: 360,
                 width: 350,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  border: Border.all(
-                      color: darkTheme ? Colors.white : Colors.black),
-                  color: darkTheme ? Colors.grey[900] : Colors.white,
-                ),
+                color: Colors.transparent,
                 padding: const EdgeInsets.all(5),
                 child: Column(
                   children: <Widget> [
@@ -965,7 +948,7 @@ class _MainPagesState extends State<MainPages> {
                           );
                         }
                       },
-                      child: const Text('Change Password'),
+                      child: Text('Change Password',  style: TextStyle(color: darkTheme ? Colors.white : Colors.black)),
                     ),
                   ],
                 ),
@@ -985,7 +968,7 @@ class _MainPagesState extends State<MainPages> {
 
                 setState(() {});
               },
-              child: const Text('Log Out'),
+              child: Text('Log Out', style: TextStyle(color: darkTheme ? Colors.white : Colors.black)),
             ),
             const SizedBox(height:150),
           ],
@@ -1303,7 +1286,7 @@ class _MainPagesState extends State<MainPages> {
                   if (darkTheme) {
                     Get.changeTheme(customDark);
                   } else {
-                    Get.changeTheme(ThemeData.light());
+                    Get.changeTheme(customWhite);
                   }
                 },
               ),
@@ -1312,16 +1295,6 @@ class _MainPagesState extends State<MainPages> {
           SettingsSection(
             title: const Text('Information'),
             tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                  leading: Icon(Icons.rule_rounded),
-                  title: Text('Metrics Meaning'),
-                  value: Text(Platform.isAndroid ? 'Learn more about the metrics!' : ""),
-                  onPressed: (context) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Information()),
-                    );
-                  }),
               SettingsTile.navigation(
                   leading: Icon(Icons.book_outlined),
                   title: Text('App Intro'),
@@ -1336,20 +1309,20 @@ class _MainPagesState extends State<MainPages> {
                   leading: Icon(Icons.question_answer_sharp),
                   title: Text('Support'),
                   value: Text('Join our discord server!'),
-                  onPressed: (context) => launch('https://discord.gg/Xu9PsPG69T')),
+                  onPressed: (context) => launch('https://dicord.io/retrospect')),
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('App Version'),
                 value: Text(app_version),
               ),
-              SettingsTile.navigation(
-                  leading: Icon(Icons.book_outlined),
-                  title: Text('Clear Alerts'),
-                  value: Text(Platform.isAndroid ? 'Delete all active alerts' : ""),
-                  onPressed: (context) {
-                    introdata.write("alerts", <String, String> {});
-                    Workmanager().cancelAll();
-                  }),
+              // SettingsTile.navigation(
+              //     leading: Icon(Icons.book_outlined),
+              //     title: Text('Clear Alerts'),
+              //     value: Text(Platform.isAndroid ? 'Delete all active alerts' : ""),
+              //     onPressed: (context) {
+              //       introdata.write("alerts", <String, String> {});
+              //       Workmanager().cancelAll();
+              //     }),
             ],
           )
         ],

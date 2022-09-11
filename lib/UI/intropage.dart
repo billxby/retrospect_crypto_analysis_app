@@ -58,10 +58,10 @@ class _IntroPageState extends State<IntroPage> {
           pages: [
             PageViewModel(
               image: Image.network(
-                  'https://i.postimg.cc/kGrjYf6B/project-thumb.png'
+                  'https://i.postimg.cc/R0bW8fLD/App-Preview-Main-Crop.png',
               ),
               title: "Welcome to Retrospect!",
-              body: "Look back first, then look forward. \n \n Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based mainly on social metrics.",
+              body: "Your one stop for crypto analysis. \n \n Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based on social metrics.",
               footer: Text("Let's get started!"),
               decoration: const PageDecoration(
                 pageColor: Colors.black12,
@@ -69,21 +69,21 @@ class _IntroPageState extends State<IntroPage> {
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/fZbm9zjs/Retro-Spect-Text-Transparent-Background.png'
+                    'https://i.postimg.cc/QxPnXnx8/App-Preview-Main-2-Crop.png'
                 ),
                 title: "Metrics",
                 body: "Retrospect has 3 different metrics: \n RETRO-SCORE© (Quality), Market View score(Sentiment), and predicted 24h change",
-                footer: const Text("Learn more in Settings -> Information -> Metrics Meaning"),
+                footer: const Text("Learn more by clicking on title \"Analysis\""),
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/d3GhmKBN/Navigation.png'
+                    'https://i.postimg.cc/MZr8Q5K4/App-Preview-Main-Bottom-Crop.png'
                 ),
                 title: "Navigation",
-                body: "Go to list to view cryptos and their analysis, Earn to earn, Premium for premium, and Settings for settings",
+                body: "Use the Bottom Navigation Bar to make your way through the app!",
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
@@ -112,18 +112,6 @@ class _IntroPageState extends State<IntroPage> {
             //       pageColor: Colors.black12,
             //     )
             // ),
-            PageViewModel(
-                image: Image.network(
-                    'https://i.postimg.cc/26yTSgvq/Retro-Spect-Trans.png',
-                    width: 300,
-                ),
-                title: "One last thing!",
-                body: "Retrospect data updates every 30 minutes, because we want to provide the best quality analysis. Use a real-time price provider for real-time data. ",
-                footer: Text("Enjoy!"),
-                decoration: const PageDecoration(
-                  pageColor: Colors.black12,
-                )
-            ),
           ],
         ),
       )

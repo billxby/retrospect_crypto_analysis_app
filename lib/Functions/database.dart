@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto_app/Functions/premium.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ Future<bool> fetchDatabase() async {
       Sort["⬇Vol"] = [];
       Sort["⬆Rscr"] = [];
       Sort["⬇Rscr"] = [];
+      Sort["Starred"] = [];
 
       int count = 0;
 
@@ -104,6 +106,19 @@ Future<bool> fetchDatabase() async {
 
   // Sort cryptos by marketCap and Change
   List<CryptoInfo> copy = List.from(TopCryptos);
+
+  List<int> stars = introdata.read("starred").cast<int>() ?? [];
+
+  for (int idx in stars) {
+    print(idx);
+    Sort["Starred"]?.add(idx);
+  }
+
+  print("------------------------------");
+
+  // for (int i=0;i<Sort["Starred"]?.length;i++) {
+  //   print(Sort["Starred"]![i]);
+  // }
 
   // print(Sort["⬇Mrkt"]);
 

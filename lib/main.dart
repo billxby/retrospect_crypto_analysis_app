@@ -72,7 +72,7 @@ String sortBy = "⬆A-Z";
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.3.4";
+String app_version = "1.4.0";
 String new_version = app_version;
 late final NotificationService notificationService;
 
@@ -114,6 +114,7 @@ Future<void> main() async {
   introdata.writeIfNull("premiumUser", "");
   introdata.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
   introdata.writeIfNull("alerts", <String, String> {});
+  introdata.writeIfNull("starred", <int> []);
 
   DateTime now = DateTime.now();
   if (DateTime.fromMillisecondsSinceEpoch(introdata.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
@@ -145,7 +146,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
-      theme: ThemeData.light(),
+      theme: customWhite,
       // darkTheme: customDark,
       home: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
     );

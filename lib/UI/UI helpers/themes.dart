@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 
-Color appBarColor = Colors.black;
+ThemeData customWhite = ThemeData(
+  colorScheme: ColorScheme(
+    brightness: Brightness.light,
+    primary: Colors.white,
+    onPrimary: Colors.black,
+    // Colors that are not relevant to AppBar in LIGHT mode:
+    primaryVariant: Colors.grey,
+    secondary: Colors.grey,
+    secondaryVariant: Colors.grey,
+    onSecondary: Colors.grey,
+    background: Colors.grey,
+    onBackground: Colors.grey,
+    surface: Colors.grey,
+    onSurface: Colors.grey,
+    error: Colors.grey,
+    onError: Colors.grey,
+  )
+);
 
 ThemeData customDark = ThemeData(
   colorScheme: const ColorScheme(

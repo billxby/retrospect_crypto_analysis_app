@@ -6,199 +6,278 @@ import 'package:http/http.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:settings_ui/settings_ui.dart';
+import '../main.dart';
+import 'UI helpers/textelements.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
 import '../Functions/cryptoinfoclass.dart';
 import 'package:get/get.dart';
 
-class Information extends StatelessWidget {
-  const Information({Key? key}) : super(key: key);
-
-
-  @override
-  Widget build(BuildContext context) {
-    final introdata = GetStorage();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('General Information'),
-        centerTitle: true,
-        toolbarHeight: 35,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(
-                height: 30,
-              ),
-              Center(
-                child: Container(
-                    height: 120,
-                    width: 350,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 40,
-                                width: 30,
-                                child: Image.network(
-                                  'https://i.postimg.cc/sDw49xXG/Retro-Spect-Trans.png',
-                                  height: 40,
-                                  width: 40,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const Text(
-                                "ETRO",
-                                style: TextStyle(
-                                  height: 2,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.lightBlue,
-                                ),
-                              ),
-                              const Text(
-                                "-SCORE©: ",
-                                style: TextStyle(
-                                  height: 2,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          RichText(
-                            text: const TextSpan(
-                              text: "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The higher the better. When close to ",
-                              children: <TextSpan>[
-                                TextSpan(text: '100 it\'s excellent', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.greenAccent)),
-                                TextSpan(text: ', and close '),
-                                TextSpan(text: '-100 it\'s horrible.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
-                              ],
-                              style: TextStyle(
-                                fontSize: 15,
+SingleChildScrollView analysisInfo(Color defaultColor) {
+  return SingleChildScrollView(
+    child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: Container(
+                height: 155,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "Analysis Metrics",
+                        style: TextStyle(
+                          height: 2, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.5,),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          children: <Widget> [
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Image.network(
+                                'https://i.postimg.cc/6QCj5gVx/R-for-Retrospect-in-App.png',
+                                fit: BoxFit.cover,
+                                height: 26,
                               ),
                             ),
-                            textAlign: TextAlign.justify,
+                            RichText(
+                                text: TextSpan(
+                                    text: "etro",
+                                    style: blueRetroTitleStyle,
+                                    children: <TextSpan>[
+                                      TextSpan(text:"-Score©", style: TextStyle(
+                                        height: 2,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: defaultColor,
+                                      )),
+                                    ]
+                                )
+                            ),
+                          ]
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "A metric indicating a cryptocurrency's quality based on social metrics, such as Twitter Activity and Github Activity. The higher the better. When close to ",
+                          children: <TextSpan>[
+                            TextSpan(text: '100 it\'s excellent', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green[100])),
+                            const TextSpan(text: ', and close '),
+                            TextSpan(text: '-100 it\'s horrible.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red[100])),
+                          ],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
                           ),
-                        ])),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Center(
-                child: Container(
-                    height: 90,
-                    width: 350,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: const <Widget>[
-                              Text(
-                                "Market ",
-                                style: TextStyle(
-                                    height: 2,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "View ",
-                                style: TextStyle(
-                                  height: 2,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.lightBlue,
-                                ),
-                              ),
-                              Text(
-                                "score: ",
-                                style: TextStyle(
-                                    height: 2,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            "A metric indicating investors' view of a cryptocurrency. It is determined by compiling tweets sentiment analysis for each cryptocurrency. ",
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+                height: 80,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: const <Widget>[
+                          Text(
+                            "Market ",
                             style: TextStyle(
-                              fontSize: 15,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "View ",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.lightBlue,
                             ),
-                            textAlign: TextAlign.justify,
                           ),
-                        ])),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Center(
-                child: Container(
-                    height: 130,
-                    width: 350,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget> [
-                              Image.network(
-                                'https://i.postimg.cc/SNcFQTHG/bull.png',
-                                height: 30,
-                                width: 30,
-                              ),
-                              const Text(
-                                " Predicted Change (24h) ",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              Image.network(
-                                'https://i.postimg.cc/0yxgzGs1/bear.png',
-                                height: 30,
-                                width: 30,
-                              ),
-                            ]
+                          Text(
+                            "score: ",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
                           ),
-                          RichText(
-                            text: const TextSpan(
-                              text: "A metric indicating the market view of the cryptocurrency in the next 24h according to our ",
-                              children: <TextSpan>[
-                                TextSpan(text: '91%', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.lightBlue)),
-                                TextSpan(text: ' accurate model (according to back tests).'),
-                              ],
+                        ],
+                      ),
+                      Text(
+                        "A metric indicating investors' view of a cryptocurrency. It is determined by compiling tweets sentiment analysis for each cryptocurrency. ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: defaultColor,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+                height: 130,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                          children: <Widget> [
+                            const Text(
+                              "Prediction (24h) ",
                               style: TextStyle(
-                                fontSize: 15,
-                              ),
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            textAlign: TextAlign.justify,
-                          )
+                          ]
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "A metric indicating the market view of the cryptocurrency in the next 24h according to our ",
+                          children: <TextSpan>[
+                            TextSpan(text: '91%', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.lightBlue)),
+                            TextSpan(text: ' accurate model (according to back tests).'),
+                          ],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      )
 
-                        ])),
-              ),
-              const SizedBox(
-                height: 90,
-              ),
-              Center(
-                child: Image.network(
-                  'https://i.postimg.cc/vT8WhZ52/Retrospect-Text-Outline.png'
-                ),
-              ),
-              const SizedBox(
-                height: 500,
-              ),
-              const Center(
-                child: Text(
-                  "Still scrolling? lol 😀",
-                ),
-              ),
-              Center(
-                child: Text(
-                  "Forgot password? It's ${introdata.read("password")}",
-                ),
-              )
-            ]),
-      ),
-    );
-  }
+                    ])),
+          ),
+        ]),
+  );
+}
+
+SingleChildScrollView marketStatsInfo(Color defaultColor) {
+  return SingleChildScrollView(
+    child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: Container(
+                height: 150,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "Market Stats",
+                        style: TextStyle(
+                          height: 2, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.5,),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Text(
+                        "Market Cap",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "Market Cap = Current Price x Circulating Supply \n\nTotal market value of a cryptocurrency’s circulating supply. ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+                height: 70,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "Volume (24h)",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "A measure of a cryptocurrency trading volume across all tracked platforms in the last 24 hours. ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+                height: 80,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "Total supply",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "The amount of coins that have already been created, minus any coins that have been burned (removed from circulation). ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+                height: 80,
+                width: 350,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "All-time high",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "Highest value of the cryptocurrency during its lifetime. ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+        ]),
+  );
 }

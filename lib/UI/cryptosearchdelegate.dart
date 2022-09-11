@@ -51,23 +51,13 @@ class CryptosSearchDelegate extends SearchDelegate<String> {
             suggestions.elementAt(index),
           ),
           onTap: () {
-            if (userLimitAvailable(Sort[sortBy]?[index] ?? 0)) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DetailsPage(
-                      passedIndex: Sort[sortBy]?[index] ?? 0,
-                    )),
-              );
-            }
-            else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => limitDialog(context, index),
-                ),
-              );
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DetailsPage(
+                    passedIndex: Sort[sortBy]?[index] ?? 0,
+                  )),
+            );
           },
         );
       },

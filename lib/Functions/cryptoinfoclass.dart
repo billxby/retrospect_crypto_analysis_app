@@ -53,13 +53,13 @@ class CryptoInfo {
   });
 
   factory CryptoInfo.fromJson(Map<String, dynamic> json) {
+    String id = json['id'].toString();
     String marketCap = Numeral(json['market_cap']).format().toString();
     String volume = Numeral(json['total_volume']).format().toString();
     String price = json['current_price'].toString();
     String twtyFHigh = json['high_24h'].toString();
     String twtyFLow = json['low_24h'].toString();
     String twentyFourHours = json['price_change_percentage_24h'].toString();
-    String id = json['id'].toString();
     String prediction = json['prediction'].toString();
     String marketView = json['marketView'].toString();
     String tweets = json['tweets'].toString() == "updating database" ? '0' : json['tweets'].toString();
@@ -74,13 +74,13 @@ class CryptoInfo {
       if (pred == 0) {
         prediction = "Neutral";
       } else if (pred > 0 && pred <= 5) {
-        prediction = "Somewhat Bullish";
+        prediction = "Smwht Bullish";
       } else if (pred > 5 && pred <= 10) {
         prediction = "Bullish";
       } else if (pred > 10) {
         prediction = "Very Bullish";
       } else if (pred >= -5 && pred < 0) {
-        prediction = "Somewhat Bearish";
+        prediction = "Smwht Bearish";
       } else if (pred >= -10 && pred < -5) {
         prediction = "Bearish";
       } else if (pred < -10) {
@@ -100,11 +100,9 @@ class CryptoInfo {
       realVolume = realVolume.substring(0, realVolume.indexOf("."));
     }
 
-    if (price.length < 7) {
-      price = price.substring(0, price.length);
-    } else {
-      price = price.substring(0, 7);
-    }
+    price = double.parse(price).toStringAsFixed(3);
+    totalSupply = Numeral(double.tryParse(totalSupply) ?? -1).format().toString();
+
     if (twtyFHigh.length < 5) {
       twtyFHigh = twtyFHigh.substring(0, twtyFHigh.length);
     } else {

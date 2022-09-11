@@ -16,11 +16,11 @@ import '../UI/UI helpers/textelements.dart';
 import '../UI/detailspage.dart';
 
 Color getTextColor(String input) {
-  Color cur = Colors.green;
+  Color cur = cGreen;
 
   if (input != null) {
     if (input.contains("-")) {
-      cur = Colors.red;
+      cur = cRed;
     }
   }
 
@@ -28,11 +28,11 @@ Color getTextColor(String input) {
 }
 
 Color getSpecialTextColor(String input) {
-  Color cur = Colors.green;
+  Color cur = cGreen;
 
   if (input != null) {
     if (input.contains("-")) {
-      cur = Colors.red;
+      cur = cRed;
     }
     if (int.parse(input) > 100) {
       cur = Colors.lightBlue;
