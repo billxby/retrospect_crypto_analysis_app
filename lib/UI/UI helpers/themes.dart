@@ -33,6 +33,8 @@ ThemeData customDark = ThemeData(
     onBackground: Colors.grey,
     error: Colors.grey,
     onError: Colors.grey,
+    inverseSurface: Colors.grey,
+
   ),
   // primarySwatch: Colors.blue,
   scaffoldBackgroundColor: Colors.black,

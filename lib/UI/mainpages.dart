@@ -247,7 +247,7 @@ class _MainPagesState extends State<MainPages> {
                                         ],
                                       ),
                                       Container(
-                                        width: 120,
+                                        width: 110,
                                         color: Colors.transparent,
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.end,

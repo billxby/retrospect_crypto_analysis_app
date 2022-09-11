@@ -166,7 +166,7 @@ class _DetailsPageState extends State<DetailsPage> {
     }
 
     bool isStarred = false;
-    List<int> stars = introdata.read("starred").cast<int>() ?? [];
+    List<int> stars = introdata.read("starred")?.cast<int>() ?? [];
     if (stars.contains(widget.passedIndex)) {
       isStarred = true;
     }
@@ -212,7 +212,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     padding: const EdgeInsets.only(right: 20.0),
                     child: GestureDetector(
                       onTap: () {
-                        List<int> stars = introdata.read("starred").cast<int>() ?? [];
+                        List<int> stars = introdata.read("starred")?.cast<int>() ?? [];
                         if (stars.contains(widget.passedIndex)) {
                           stars.remove(widget.passedIndex);
                           Sort["Starred"]?.remove(widget.passedIndex);

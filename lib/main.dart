@@ -72,7 +72,7 @@ String sortBy = "⬆A-Z";
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.4.0";
+String app_version = "1.4.2";
 String new_version = app_version;
 late final NotificationService notificationService;
 
@@ -140,13 +140,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     // introdata.write("displayed", false);
-    if (darkTheme == true) {
-      Get.changeTheme(customDark);
+    if (darkTheme == false) {
+      Get.changeTheme(customWhite);
     }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
-      theme: customWhite,
+      theme: customDark,
       // darkTheme: customDark,
       home: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
     );
