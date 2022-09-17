@@ -7,9 +7,8 @@ ThemeData customWhite = ThemeData(
     onPrimary: Colors.black,
     // Colors that are not relevant to AppBar in LIGHT mode:
     primaryVariant: Colors.grey,
-    secondary: Colors.grey,
-    secondaryVariant: Colors.grey,
-    onSecondary: Colors.grey,
+    secondary: Colors.blue,
+    onSecondary: Colors.blue,
     background: Colors.grey,
     onBackground: Colors.grey,
     surface: Colors.grey,

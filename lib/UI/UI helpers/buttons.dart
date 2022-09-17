@@ -1,20 +1,18 @@
+import 'package:crypto_app/UI/UI%20helpers/alerts.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 import '../../Functions/premium.dart';
 import '../../main.dart';
 
-List<String> alertChoices = ['Very Bearish', 'Bearish', 'Somewhat Bearish', 'Somewhat Bullish', 'Bullish', 'Very Bullish'];
+List<String> alertChoices = ['Very Bearish', 'Bearish', 'Smwht Bearish', 'Smwht Bullish', 'Bullish', 'Very Bullish'];
 
-SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputData) {
+SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputData, BuildContext context) {
   return SizedBox(
     height: 20,
-    width: 30,
+    width: screenWidth*0.0809,
     child: ElevatedButton(
         onPressed: () {
-          print(introdata.read("alerts").runtimeType);
           Map<String, String> alert = Map<String, String>.from(introdata.read("alerts"));
-
-          print(inputData);
 
           if (alert.length < 20 || alert.containsKey(inputData['crypto'])) {
             if (alert.containsKey(inputData['crypto'])) {
@@ -25,9 +23,15 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
             }
 
             introdata.write("alerts", alert);
-
-            Workmanager().registerPeriodicTask("${inputData['crypto']}", "Alert", inputData: {"crypto":inputData['crypto'],"trigger":alertChoices[id]}, frequency: Duration(seconds: 5));
           }
+
+          Navigator.pop(context);
+
+          showDialog(
+            context: context,
+            builder: (context) => alertPage(context, inputData),
+          );
+
         },
         child: null,
         style: ElevatedButton.styleFrom(

@@ -172,6 +172,8 @@ class _DetailsPageState extends State<DetailsPage> {
     }
 
     bool canSee = userLimitAvailable(widget.passedIndex);
+    Map<String, String> alert = Map<String, String>.from(introdata.read("alerts"));
+    bool hasAlert = alert.containsKey(CryptosList[widget.passedIndex]);
 
     setState(() {});
 
@@ -198,12 +200,14 @@ class _DetailsPageState extends State<DetailsPage> {
                 Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: GestureDetector(
-                      onTap: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => alertPage(context, inputData),
-                      ),
+                      onTap: () {
+                        showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => alertPage(context, inputData),
+                        ).then((_)=>setState((){}));
+                      },
                       child: Icon(
-                        Icons.notification_add_outlined,
+                        hasAlert ? Icons.notifications_active : Icons.notification_add_outlined,
                         size: 26.0,
                       ),
                     )
@@ -241,7 +245,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 ),
                 Center(
                   child: Container(
-                    width: 360,
+                    width: screenWidth * 0.95,
                     height: 530,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,7 +307,7 @@ class _DetailsPageState extends State<DetailsPage> {
                           softWrap: false,
                         ),
                         Center(
-                          child: cryptoPriceChart(_trackballBehavior, _cryptoData[selectedIdx], false),
+                          child: cryptoPriceChart(_trackballBehavior, _cryptoData[selectedIdx], false, screenWidth * 0.93),
                         ),
                         Center(
                           child: ToggleButtons(
@@ -325,9 +329,9 @@ class _DetailsPageState extends State<DetailsPage> {
                             fillColor: Colors.white,
                             // color: Colors.white,
                             borderWidth: 2,
-                            constraints: const BoxConstraints(
+                            constraints: BoxConstraints(
                               minHeight: 40.0,
-                              minWidth: 68.0,
+                              minWidth: screenWidth * 0.15,
                             ),
                             isSelected: isSelected,
                             children: periods,
@@ -340,7 +344,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
                 Center(
                   child: Container(
-                    width: 360,
+                    width: screenWidth * 0.95,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget> [
@@ -384,7 +388,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
                 Center(
                   child: Container(
-                    width: 360,
+                    width: screenWidth * 0.95,
                     height: 255,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,8 +424,8 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                         Table(
                           // border: TableBorder.all(),
-                          columnWidths: const <int, TableColumnWidth>{
-                            0: FixedColumnWidth(360),
+                          columnWidths: <int, TableColumnWidth>{
+                            0: FixedColumnWidth(screenWidth * 0.95),
                           },
                           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                           children: <TableRow>[
@@ -457,7 +461,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 Center(
                     child: Container(
                       height: 1150,
-                      width: 360,
+                      width: screenWidth * 0.95,
                       child: Column(children: <Widget>[
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start, //Center Row contents horizontally,
@@ -495,8 +499,8 @@ class _DetailsPageState extends State<DetailsPage> {
                         if (canSee == true)
                           Table(
                           // border: TableBorder.all(),
-                          columnWidths: const <int, TableColumnWidth>{
-                            0: FixedColumnWidth(360),
+                          columnWidths: <int, TableColumnWidth>{
+                            0: FixedColumnWidth(screenWidth * 0.95),
                           },
                           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                           children: <TableRow>[
@@ -519,7 +523,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       Row(
                                         children: <Widget>[
                                           SizedBox(
-                                            width: 160,
+                                            width: screenWidth*0.431,
                                             child: Row(
                                               children: <Widget> [
                                                 Align(
@@ -547,9 +551,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                               ]
                                             ),
                                           ),
-                                          SizedBox(width:60),
+                                          SizedBox(width:screenWidth*0.161),
                                           SizedBox(
-                                            width: 120,
+                                            width: screenWidth*0.323,
                                             child: Text(
                                               "${double.parse(TopCryptos[widget.passedIndex].score).toStringAsFixed(3)}",
                                               textAlign: TextAlign.right,
@@ -591,7 +595,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                         Row(
                                           children: <Widget>[
                                             SizedBox(
-                                              width: 160,
+                                              width: screenWidth*0.431,
                                               child: RichText(
                                                   text: TextSpan(
                                                       text: "Market ",
@@ -608,9 +612,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                                   )
                                               ),
                                             ),
-                                            SizedBox(width:60),
+                                            SizedBox(width:screenWidth*0.161),
                                             SizedBox(
-                                              width: 120,
+                                              width: screenWidth*0.323,
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.end,
                                                 children: <Widget> [
@@ -659,9 +663,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                       children: <Widget> [
                                         Row(
                                           children: <Widget>[
-                                            const SizedBox(
-                                              width: 160,
-                                              child: Text(
+                                            SizedBox(
+                                              width: screenWidth*0.431,
+                                              child: const Text(
                                                 "Prediction (24h)",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -670,9 +674,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(width:50),
+                                            SizedBox(width:screenWidth*0.134),
                                             SizedBox(
-                                              width: 130,
+                                              width: screenWidth*0.359,
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.end,
                                                 children: <Widget> [
@@ -710,7 +714,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                         if (canSee == false)
                           Container(
-                            width: 360,
+                            width: screenWidth * 0.95,
                             height: 220,
                             child: Column(
                               children: <Widget> [
@@ -737,7 +741,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                   textAlign: TextAlign.center,
                                 ),
                                 SizedBox(
-                                  width: 300,
+                                  width: screenWidth * 0.8,
                                   child: Text(
                                     "${introdata.read("used")}",
                                     style: const TextStyle(
@@ -787,13 +791,13 @@ class _DetailsPageState extends State<DetailsPage> {
 
                         Center(
                           child: Container(
-                            width: 360,
+                            width: screenWidth * 0.95,
                             height: 530,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget> [
                                 Center(
-                                  child: cryptoInfoChart("Volume", _trackballBehavior2, _cryptoData[selectedIdxVol+5], false),
+                                  child: cryptoInfoChart("Volume", _trackballBehavior2, _cryptoData[selectedIdxVol+5], false, screenWidth * 0.93),
                                 ),
                                 Center(
                                   child: Text(subtitle, textAlign: TextAlign.right, style: const TextStyle(fontSize: 10, color: Colors.grey)),
@@ -818,9 +822,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                     fillColor: Colors.white,
                                     // color: Colors.white,
                                     borderWidth: 2,
-                                    constraints: const BoxConstraints(
+                                    constraints: BoxConstraints(
                                       minHeight: 40.0,
-                                      minWidth: 68.0,
+                                      minWidth: screenWidth*0.15,
                                     ),
                                     isSelected: isSelectedVol,
                                     children: periodsVol,

@@ -109,9 +109,10 @@ Future<bool> fetchDatabase() async {
 
   List<int> stars = introdata.read("starred")?.cast<int>() ?? [];
 
+  Sort["Starred"] = [];
+
   for (int idx in stars) {
-    print(idx);
-    // Sort["Starred"]?.add(idx);
+    Sort["Starred"]?.add(idx);
   }
 
   // print("------------------------------");

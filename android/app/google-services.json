@@ -1,46 +1,46 @@
 {
   "project_info": {
-    "project_number": "62265186094",
-    "project_id": "retrospect-accounts",
-    "storage_bucket": "retrospect-accounts.appspot.com"
+    "project_number": "465652700448",
+    "firebase_url": "https://crypto-project-001-default-rtdb.firebaseio.com",
+    "project_id": "crypto-project-001",
+    "storage_bucket": "crypto-project-001.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:62265186094:android:9ee7b526454039b4fc8cbf",
+        "mobilesdk_app_id": "1:465652700448:android:24938d1267ea8058643345",
         "android_client_info": {
           "package_name": "com.cryptos.crypto_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "62265186094-s9jt8scr044u17b5kgdkivksck3tcr4n.apps.googleusercontent.com",
+          "client_id": "465652700448-rfs32ldfhjcst5trkffg8oq9g13agr43.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCGH6lQEqrdbk_uJ8yZklrIu7EQzCZz1TM"
+          "current_key": "AIzaSyCeIRdAXYy1Gx0-vFqPddnWXgl1IdmFNAQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "62265186094-s9jt8scr044u17b5kgdkivksck3tcr4n.apps.googleusercontent.com",
+              "client_id": "465652700448-rfs32ldfhjcst5trkffg8oq9g13agr43.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "62265186094-goe1trbvmso12lsti12ob1iq2g3u7squ.apps.googleusercontent.com",
+              "client_id": "465652700448-0hf3eeeg3ckand16sjsvo23633m58lfi.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.crypto.cryptoApp"
+                "bundle_id": "com.example.cryptoApp"
               }
             }
           ]
         }
-      },
-      "admob_app_id": "ca-app-pub-9792887799877917~6551339905"
+      }
     }
   ],
   "configuration_version": "1"

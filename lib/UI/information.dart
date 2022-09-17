@@ -21,7 +21,7 @@ SingleChildScrollView analysisInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 155,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -82,7 +82,7 @@ SingleChildScrollView analysisInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 80,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -126,7 +126,7 @@ SingleChildScrollView analysisInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 130,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -168,7 +168,7 @@ SingleChildScrollView marketStatsInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 150,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -203,7 +203,7 @@ SingleChildScrollView marketStatsInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 70,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -230,7 +230,7 @@ SingleChildScrollView marketStatsInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 80,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -257,7 +257,7 @@ SingleChildScrollView marketStatsInfo(Color defaultColor) {
           Center(
             child: Container(
                 height: 80,
-                width: 350,
+                width: screenWidth * 0.93,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[

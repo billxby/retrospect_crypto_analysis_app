@@ -1,56 +1,88 @@
+import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../Functions/premium.dart';
 import '../../main.dart';
 import 'buttons.dart';
 
+List<Color> alertColorChoices = [cRed, Color(0xffe57662), Colors.red.shade200, Colors.green.shade300, Color(0xff27c772), cGreen];
+
 AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
+  if (!userHasPremium()) {
+    return AlertDialog(
+      title: const Text("Alerts", textAlign: TextAlign.center),
+      shape: const RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.all(Radius.circular(20.0))),
+      backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+      content: Text('This is a Premium Feature!', textAlign: TextAlign.center),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'OK'),
+          child: const Text('OK', style: TextStyle(color: Colors.blue)),
+        ),
+      ],
+    );
+  }
+
+  Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
+
   return AlertDialog(
     title: const Text("Alerts", textAlign: TextAlign.center),
+    shape: const RoundedRectangleBorder(
+        borderRadius:
+        BorderRadius.all(Radius.circular(20.0))),
     backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
-    content: Text('Alerts coming out soon!', textAlign: TextAlign.center),
+    content: SizedBox(
+      height: 100,
+      child: Column(
+        children: <Widget> [
+          const Text('Get alerted when prediction is...'),
+          Row(
+            children: [
+              Image.network("https://i.postimg.cc/mZVHWjHX/bear-v2.png", height: 35),
+              SizedBox(width: 5),
+              alertPredButton(0, alertColorChoices[0], inputData, context),
+              alertPredButton(1, alertColorChoices[1], inputData, context),
+              alertPredButton(2, alertColorChoices[2], inputData, context),
+              alertPredButton(3, alertColorChoices[3], inputData, context),
+              alertPredButton(4, alertColorChoices[4], inputData, context),
+              alertPredButton(5, alertColorChoices[5], inputData, context),
+              SizedBox(width: 5),
+              Image.network("https://i.postimg.cc/tCTVq6dX/bull-v2.png", height: 35),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 1,
+            width: screenWidth*0.54,
+            color: darkTheme ? Colors.white : Colors.black,
+          ),
+          const SizedBox(height: 15),
+          Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}"),
+        ],
+      ),
+    ),
     actions: <Widget>[
       TextButton(
-        onPressed: () => Navigator.pop(context, 'Cancel'),
-        child: const Text('Cancel'),
+        onPressed: () {
+          alerts.remove(inputData['crypto']);
+
+          introdata.write("alerts", alerts);
+
+          Navigator.pop(context);
+
+          showDialog(
+            context: context,
+            builder: (context) => alertPage(context, inputData),
+          );
+        },
+        child: const Text('Remove', style: TextStyle(color: Colors.blue)),
       ),
       TextButton(
         onPressed: () => Navigator.pop(context, 'OK'),
-        child: const Text('OK'),
+        child: const Text('OK', style: TextStyle(color: Colors.blue)),
       ),
     ],
   );
-  // return AlertDialog(
-  //   title: const Text("Alerts", textAlign: TextAlign.center),
-  //   content: SizedBox(
-  //     height: 100,
-  //     child: Column(
-  //       children: <Widget> [
-  //         Text('Get alerted when predictions go to...'),
-  //         Row(
-  //           children: [
-  //             Image.network("https://i.postimg.cc/0yxgzGs1/bear.png", height: 35),
-  //             SizedBox(width: 5),
-  //             alertPredButton(0, Colors.red.shade900, inputData),
-  //             alertPredButton(1, Colors.red.shade600, inputData),
-  //             alertPredButton(2, Colors.red.shade300, inputData),
-  //             alertPredButton(3, Colors.green.shade300, inputData),
-  //             alertPredButton(4, Colors.green.shade600, inputData),
-  //             alertPredButton(5, Colors.green.shade900, inputData),
-  //             SizedBox(width: 5),
-  //             Image.network("https://i.postimg.cc/SNcFQTHG/bull.png", height: 35),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   ),
-  //   actions: <Widget>[
-  //     TextButton(
-  //       onPressed: () => Navigator.pop(context, 'Cancel'),
-  //       child: const Text('Cancel'),
-  //     ),
-  //     TextButton(
-  //       onPressed: () => Navigator.pop(context, 'OK'),
-  //       child: const Text('OK'),
-  //     ),
-  //   ],
-  // );
 }

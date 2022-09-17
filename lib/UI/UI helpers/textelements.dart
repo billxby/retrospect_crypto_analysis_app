@@ -193,12 +193,12 @@ CircularPercentIndicator socialsChange(
 }
 
 Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
-    List<PriceData> cryptoData, bool showAxis) {
+    List<PriceData> cryptoData, bool showAxis, double width) {
   Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? cRed : cGreen;
 
   return Container(
     height: 300,
-    width: 350,
+    width: width,
     child: Column(
       children: <Widget>[
         Text(
@@ -213,7 +213,7 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
         ),
         SizedBox(
           height: 250,
-          width: 350,
+          width: width,
           child: SfCartesianChart(
             trackballBehavior: trackballBehavior,
             borderColor: Colors.transparent,
@@ -245,16 +245,16 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
 }
 
 Container cryptoPriceChart(TrackballBehavior trackballBehavior,
-    List<PriceData> cryptoData, bool showAxis) {
+    List<PriceData> cryptoData, bool showAxis, double width) {
   Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? cRed : cGreen;
   return Container(
     height: 350,
-    width: 350,
+    width: width,
     child: Column(
       children: <Widget>[
         SizedBox(
           height: 350,
-          width: 350,
+          width: width,
           child: SfCartesianChart(
             trackballBehavior: trackballBehavior,
             primaryXAxis: CategoryAxis(
@@ -326,7 +326,7 @@ TextStyle tableStyle({bool isHeader = false}) {
   return TextStyle(
     fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
     fontSize: 14,
-    height: 4,
+    height: 3,
   );
 }
 
@@ -341,12 +341,15 @@ TextStyle tableStyleBelow({bool isHeader = false}) {
 TableRow compareRow(String text1, String text2, String text3) {
   return TableRow(
       children: <Widget>[
-        Text(text1, style:tableStyle(isHeader: true), textAlign: TextAlign.center),
+        Container(
+          color: Colors.blue,
+          child: Text(text1, style:tableStyle(isHeader: true), textAlign: TextAlign.center),
+        ),
         Text(text2, style:tableStyle(), textAlign: TextAlign.center),
         Text(text3, style:const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 14,
-          height: 4,
+          height: 3,
           color: Colors.blue,
         ), textAlign: TextAlign.center),
       ]
@@ -371,7 +374,7 @@ TableRow infoRow(String stat, String text, Color borderColor) {
         child: Row(
           children: <Widget> [
             SizedBox(
-              width: 160,
+              width: screenWidth*0.431,
               child: Text(
                 stat,
                 textAlign: TextAlign.left,
@@ -382,9 +385,9 @@ TableRow infoRow(String stat, String text, Color borderColor) {
                 softWrap: false,
               ),
             ),
-            SizedBox(width:60),
+            SizedBox(width:screenWidth*0.161),
             SizedBox(
-              width: 120,
+              width: screenWidth*0.323,
               child: Text(
                 text,
                 textAlign: TextAlign.right,

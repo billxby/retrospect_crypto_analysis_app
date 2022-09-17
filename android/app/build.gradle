@@ -54,7 +54,7 @@ android {
         applicationId "com.cryptos.crypto_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -85,8 +85,9 @@ dependencies {
     implementation "com.android.support:multidex:1.0.3"
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.google.android.gms:play-services-ads:21.1.0'
-    implementation platform('com.google.firebase:firebase-bom:30.3.2')
+    implementation platform('com.google.firebase:firebase-bom:30.4.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
 

@@ -5,6 +5,7 @@ import 'package:crypto_app/Functions/purchase.dart';
 import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:numeral/numeral.dart';
@@ -28,6 +29,7 @@ import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:cron/cron.dart';
 
 import 'UI/cryptosearchdelegate.dart';
 import "UI/detailspage.dart";
@@ -72,17 +74,19 @@ String sortBy = "⬆A-Z";
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.4.2";
+String app_version = "1.4.4";
 String new_version = app_version;
-late final NotificationService notificationService;
+double screenWidth = 0.0;
+double screenHeight = 0.0;
+bool useMobileLayout = true;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    name: "Retrospect",
-    options: DefaultFirebaseOptions.currentPlatform,
+  final app = await Firebase.initializeApp(
+    // name: "Retrospect",
   );
   await initPlatformState();
+
   // MobileAds.instance
   //   ..initialize()
   //   ..updateRequestConfiguration(
@@ -115,6 +119,7 @@ Future<void> main() async {
   introdata.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
   introdata.writeIfNull("alerts", <String, String> {});
   introdata.writeIfNull("starred", <int> []);
+  introdata.writeIfNull("notificationN", 0);
 
   DateTime now = DateTime.now();
   if (DateTime.fromMillisecondsSinceEpoch(introdata.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
@@ -123,8 +128,6 @@ Future<void> main() async {
 
   darkTheme = introdata.read("darkTheme");
   introdata.write("last open", DateTime.now().millisecondsSinceEpoch);
-
-  Workmanager().initialize(callbackDispatcher);
 
   print(introdata.read("alerts"));
 
@@ -152,37 +155,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
-void callbackDispatcher() {
-
-  Workmanager().executeTask((taskName, inputData) async {
-    print("Task executing: $taskName with input $inputData"); //simpleTask will be emitted here.
-    if (taskName.contains("Alert")) {
-      //update server
-      bool worked = await fetchDatabase();
-
-      notificationService = NotificationService();
-
-      notificationService.initializePlatformNotifications();
-
-      if (worked) {
-        if (TopCryptos[CryptosIndex[inputData!['crypto']] ?? 0].prediction == inputData['trigger']) {
-
-          await notificationService.showLocalNotification(
-              id: 0,
-              title: "Predictions Alert!",
-              body: "${inputData['crypto']} just turned ${inputData['target']}!!",
-              payload: "You just took water! Huurray!");
-
-          Workmanager().cancelByUniqueName(inputData['crypto']);
-
-        }
-      }
-    }
-
-    return Future.value(true);
-  });
-}
-
