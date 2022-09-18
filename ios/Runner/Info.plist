@@ -49,5 +49,21 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIBackgroundModes</key>
+      <array>
+    	  <string>processing</string>
+      </array>
+
+      <!-- Task Schedulling -->
+      <key>BGTaskSchedulerPermittedIdentifiers</key>
+      <array>
+         <string>workmanager.background.task</string>
+      </array>
+
+      <!-- Background Fetching -->
+      <key>UIBackgroundModes</key>
+      <array>
+    	  <string>fetch</string>
+      </array>
 </dict>
 </plist>

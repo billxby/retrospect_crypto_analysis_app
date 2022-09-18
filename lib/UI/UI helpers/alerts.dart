@@ -34,7 +34,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
         BorderRadius.all(Radius.circular(20.0))),
     backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
     content: SizedBox(
-      height: 100,
+      height: 120,
       child: Column(
         children: <Widget> [
           const Text('Get alerted when prediction is...'),
@@ -59,7 +59,8 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
             color: darkTheme ? Colors.white : Colors.black,
           ),
           const SizedBox(height: 15),
-          Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}"),
+          Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}", textAlign: TextAlign.center),
+          const Text("alerts will not work if you kill the app (not running in bckgrd)", style: TextStyle(fontSize: 9, height:2,)),
         ],
       ),
     ),

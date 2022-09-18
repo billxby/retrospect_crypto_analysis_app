@@ -22,6 +22,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Functions/cloudfunctionshelper.dart';
+import 'Functions/premium.dart';
 import 'UI/UI helpers/pages.dart';
 import 'UI/UI helpers/themes.dart';
 import 'UI/notifications.dart';
@@ -63,6 +64,7 @@ List<int> ChangeD = [];
 DateTime lastRefreshed = DateTime.now();
 int globalIndex = 0;
 List<dynamic> data = [];
+const fetchBackground = "getAlerts";
 
 List<String> testDeviceIds = ["CFA4604CA7FDF96FC2E2B539F1B430E9"];
 
@@ -71,14 +73,16 @@ List<String> testDeviceIds = ["CFA4604CA7FDF96FC2E2B539F1B430E9"];
 //Settings variables
 bool darkTheme = true;
 String sortBy = "⬆A-Z";
+int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.4.4";
+String app_version = "1.5.0";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
 bool useMobileLayout = true;
+final LocalNotificationService service = LocalNotificationService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,6 +100,21 @@ Future<void> main() async {
   // RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
   // MobileAds.instance.updateRequestConfiguration(configuration);
 
+  service.intialize();
+  listenToNotification();
+
+  // await Workmanager().initialize(
+  //   callbackDispatcher,
+  // );
+  // await Workmanager().registerPeriodicTask(
+  //   "1",
+  //   fetchBackground,
+  //   constraints: Constraints(
+  //     networkType: NetworkType.connected,
+  //   ),
+  // );
+
+
   await GetStorage.init();
   final introdata = GetStorage();
 
@@ -107,6 +126,12 @@ Future<void> main() async {
   }
 
   DateTime lastRefreshed = DateTime.now();
+
+  final cron = Cron();
+  cron.schedule(Schedule.parse('*/5 * * * *'), () async {
+    print("Every 5 minutes");
+    getAlerts();
+  });
 
   introdata.writeIfNull("displayed", false);
   introdata.writeIfNull("darkTheme", true);
@@ -126,10 +151,11 @@ Future<void> main() async {
     introdata.write("used", <String> []);
   }
 
+  Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
+  List<String> toRemove = [];
+
   darkTheme = introdata.read("darkTheme");
   introdata.write("last open", DateTime.now().millisecondsSinceEpoch);
-
-  print(introdata.read("alerts"));
 
   runApp(MyApp());
 }
@@ -153,5 +179,57 @@ class MyApp extends StatelessWidget {
       // darkTheme: customDark,
       home: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
     );
+  }
+}
+
+// void callbackDispatcher() {
+//   Workmanager().executeTask((task, inputData) async {
+//     print("excecuting! every 15 minutes");
+//
+//     getAlerts();
+//
+//     return Future.value(true);
+//   });
+//
+//
+// }
+
+Future<void> getAlerts() async {
+  await GetStorage.init();
+  final introdata = GetStorage();
+  List<String> toRemove = [];
+  Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
+  print(alerts);
+
+  await fetchDatabase();
+  for (String crypto in alerts.keys) {
+    int idx = CryptosIndex[crypto] ?? 0;
+
+    if (TopCryptos[idx].prediction == alerts[crypto]) {
+      toRemove.add(crypto);
+      await service.showNotificationWithPayload(
+          id: introdata.read("notificationN"),
+          title: '${crypto.capitalizeFirst} Predictions Change!',
+          body: '${crypto.capitalizeFirst}\'s rating is now ${alerts[crypto]}',
+          payload: idx.toString());
+      introdata.write("notificationN", introdata.read("notificationN")+1);
+    }
+  }
+
+  for (String remove in toRemove) {
+    alerts.remove(remove);
+  }
+
+  introdata.write("alerts", alerts);
+}
+
+void listenToNotification() =>
+    service.onNotificationClick.stream.listen(onNoticationListener);
+
+void onNoticationListener(String? payload) {
+  if (payload != null && payload.isNotEmpty) {
+    print('payload $payload');
+
+    Get.to(DetailsPage(passedIndex: int.tryParse(payload) ?? 0));
   }
 }

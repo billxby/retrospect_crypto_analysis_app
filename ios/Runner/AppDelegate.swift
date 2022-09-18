@@ -14,6 +14,7 @@ import Purchases
     }
 
     GeneratedPluginRegistrant.register(with: self)
+    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(/* Your Desired Interval for Background Tasks */))
     Purchases.debugLogsEnabled = true
       Purchases.configure(withAPIKey: "appl_pzRjjQWXGnjwWgIEvgOnXsYcvAF")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

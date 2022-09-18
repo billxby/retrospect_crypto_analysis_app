@@ -45,8 +45,22 @@ import '../Functions/database.dart';
 import '../main.dart';
 import 'UI helpers/textelements.dart';
 import '../Functions/premium.dart';
+import 'package:flutter/services.dart';
 
 bool fetching = false;
+List<String> sortOptions = <String>[
+  'Starred',
+  "⬆A-Z",
+  '⬇A-Z',
+  '⬆Mrkt',
+  '⬇Mrkt',
+  '⬆24h',
+  '⬇24h',
+  "⬆Rscr",
+  '⬇Rscr',
+  '⬆Vol',
+  '⬇Vol',
+];
 
 
 class MainPages extends StatefulWidget {
@@ -56,11 +70,10 @@ class MainPages extends StatefulWidget {
   State<MainPages> createState() => _MainPagesState();
 }
 
-class _MainPagesState extends State<MainPages> {
+class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   static final AdRequest request = AdRequest();
   late final FirebaseMessaging _messaging;
   late StreamSubscription iosSubscription;
-  late final LocalNotificationService service;
 
   Duration get loginTime => Duration(milliseconds: 2250);
 
@@ -72,39 +85,36 @@ class _MainPagesState extends State<MainPages> {
 
   @override
   void initState() {
-    service = LocalNotificationService();
-    service.intialize();
-    listenToNotification();
-
-    final cron = Cron();
-    cron.schedule(Schedule.parse('* * * * *'), () async {
-      print("every minute");
-      Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
-      List<String> toRemove = [];
-
-      refreshPage();
-      for (String crypto in alerts.keys) {
-        int idx = CryptosIndex[crypto] ?? 0;
-        if (TopCryptos[idx].prediction == alerts[crypto]) {
-          toRemove.add(crypto);
-          await service.showNotificationWithPayload(
-              id: introdata.read("notificationN"),
-              title: '${crypto.capitalizeFirst} Predictions Change!',
-              body: '${crypto.capitalizeFirst}\'s rating is now ${alerts[crypto]}',
-              payload: idx.toString());
-          introdata.write("notificationN", introdata.read("notificationN")+1);
-        }
-      }
-
-      for (String remove in toRemove) {
-        alerts.remove(remove);
-      }
-
-      introdata.write("alerts", alerts);
-    });
-
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+
     // _createRewardedAd();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.detached || state == AppLifecycleState.inactive) {
+      return;
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      return;
+    }
+
+    final isBackground = state == AppLifecycleState.paused;
+
+    if (isBackground) {
+      print("Now in background");
+    }
   }
 
   void _onItemTapped(int index) {
@@ -142,7 +152,7 @@ class _MainPagesState extends State<MainPages> {
                 appBar: AppBar(
                   title: const Text('Market'),
                   centerTitle: true,
-                  toolbarHeight: 50,
+                  toolbarHeight: 30,
                 ),
                 body: const Center(
                   child: CircularProgressIndicator(
@@ -156,44 +166,44 @@ class _MainPagesState extends State<MainPages> {
               appBar: AppBar(
                   title: const Text('Market'),
                   centerTitle: true,
-                  toolbarHeight: 50,
+                  toolbarHeight: 30,
                   leadingWidth: 80,
                   elevation: 0,
-                  leading: DropdownButton<String>(
-                    value: sortBy,
-                    isExpanded: true,
-                    icon: const Icon(Icons.sort),
-                    items: <String>[
-                      'Starred',
-                      "⬆A-Z",
-                      '⬇A-Z',
-                      '⬆Mrkt',
-                      '⬇Mrkt',
-                      '⬆24h',
-                      '⬇24h',
-                      "⬆Rscr",
-                      '⬇Rscr',
-                      '⬆Vol',
-                      '⬇Vol',
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        sortBy = newValue!;
-                      });
-                    },
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: darkTheme ? Colors.white : Colors.black,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                    itemHeight: 50,
-                    menuMaxHeight: 250,
-                  ),
+                  // leading: DropdownButton<String>(
+                  //   value: sortBy,
+                  //   isExpanded: true,
+                  //   icon: const Icon(Icons.sort),
+                  //   items: <String>[
+                  //     'Starred',
+                  //     "⬆A-Z",
+                  //     '⬇A-Z',
+                  //     '⬆Mrkt',
+                  //     '⬇Mrkt',
+                  //     '⬆24h',
+                  //     '⬇24h',
+                  //     "⬆Rscr",
+                  //     '⬇Rscr',
+                  //     '⬆Vol',
+                  //     '⬇Vol',
+                  //   ].map<DropdownMenuItem<String>>((String value) {
+                  //     return DropdownMenuItem<String>(
+                  //       value: value,
+                  //       child: Text(value),
+                  //     );
+                  //   }).toList(),
+                  //   onChanged: (String? newValue) {
+                  //     setState(() {
+                  //       sortBy = newValue!;
+                  //     });
+                  //   },
+                  //   style: TextStyle(
+                  //     fontSize: 15,
+                  //     color: darkTheme ? Colors.white : Colors.black,
+                  //   ),
+                  //   borderRadius: BorderRadius.circular(10),
+                  //   itemHeight: 50,
+                  //   menuMaxHeight: 250,
+                  // ),
                   actions: [
                     IconButton(
                         icon: const Icon(Icons.search),
@@ -205,126 +215,167 @@ class _MainPagesState extends State<MainPages> {
                   ]),
               body: RefreshIndicator(
                 onRefresh:refreshPage,
-                child: ListView.builder(
-                    itemCount: Sort[sortBy]?.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        tileColor: Colors.transparent,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DetailsPage(
-                                  passedIndex: Sort[sortBy]?[index] ?? 0,
-                                )),
-                          );
-                        },
-                        title: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.transparent,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            color: darkTheme ? Colors.white10 : Colors.grey[200],
-                          ),
-                          padding: const EdgeInsets.all(2),
-                          child: Center(
+                child: Column(
+                  children: <Widget> [
+                    SizedBox(
+                      height: 45,
+                      child: ListView.builder(
+                        // This next line does the trick.
+                        scrollDirection: Axis.horizontal,
+                        itemCount: sortOptions.length,
+                        itemBuilder: (context, index) {
+                          return SizedBox(
+                            width: sortOptions[index] == "Starred" ? 95 : 85,
                             child: Row(
                               children: <Widget> [
-                                SizedBox(
-                                  width: screenWidth*0.02,
+                                SizedBox(width: 5),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      sortByIdx = index;
+                                      sortBy = sortOptions[index];
+                                    });
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(sortByIdx == index ? Colors.white : (darkTheme ? Colors.white10 : Colors.grey[200])),
+                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(18.0),
+                                          )
+                                      )
+                                  ),
+                                  child: Text(sortOptions[index], style: TextStyle(color: sortByIdx == index ? Colors.black : Colors.white)),
                                 ),
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(TopCryptos[Sort[sortBy]![index]].image),
-                                  backgroundColor: Colors.transparent,
-                                  radius: 23,
+                              ]
+                            )
+                          );
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: Sort[sortBy]?.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              tileColor: Colors.transparent,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailsPage(
+                                        passedIndex: Sort[sortBy]?[index] ?? 0,
+                                      )),
+                                ).then((_)=>setState((){}));
+                              },
+                              title: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.transparent,
+                                  ),
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  color: darkTheme ? Colors.white10 : Colors.grey[200],
                                 ),
-                                SizedBox(
-                                  width: screenWidth*0.02,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    SizedBox(
-                                      width: useMobileLayout ? screenWidth*0.43 : screenWidth*0.47,
-                                      child: Text(
-                                        TopCryptos[Sort[sortBy]![index]].id.capitalizeFirst ?? TopCryptos[Sort[sortBy]![index]].id,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.5,
-                                        ),
-                                        softWrap: false,
+                                padding: const EdgeInsets.all(2),
+                                child: Center(
+                                  child: Row(
+                                    children: <Widget> [
+                                      SizedBox(
+                                        width: screenWidth*0.02,
                                       ),
-                                    ),
-                                    Text(
-                                      TopCryptos[Sort[sortBy]![index]].symbol.toUpperCase(),
-                                      style: const TextStyle(
-                                        fontSize: 14,
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(TopCryptos[Sort[sortBy]![index]].image),
+                                        backgroundColor: Colors.transparent,
+                                        radius: 23,
                                       ),
-                                      textAlign: TextAlign.left,
-                                      softWrap: false,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        listviewTextTitle("R "),
-                                        listviewTextInfo(
-                                            TopCryptos[Sort[sortBy]![index]].realScore,
-                                            TopCryptos[Sort[sortBy]![index]]
-                                                .realScore
-                                                .contains("-")
-                                                ? cRed
-                                                : Color(0xff0DC9AB)),
-                                        // listviewTextTitle(" Vol "),
-                                        // listviewTextInfo(
-                                        //     TopCryptos[Sort[sortBy]![index]].total_volume,
-                                        //     darkTheme ? Colors.white : Colors.black),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  width: useMobileLayout ? screenWidth*0.29 : screenWidth*0.39,
-                                  color: Colors.transparent,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(
-                                        TopCryptos[Sort[sortBy]![index]].current_price,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 0.8,
-                                        ),
-                                        softWrap: false,
+                                      SizedBox(
+                                        width: screenWidth*0.02,
                                       ),
-                                      Text(
-                                        "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? cRed : cGreen,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                        softWrap: false,
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: useMobileLayout ? screenWidth*0.43 : screenWidth*0.47,
+                                            child: Text(
+                                              TopCryptos[Sort[sortBy]![index]].id.capitalizeFirst ?? TopCryptos[Sort[sortBy]![index]].id,
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 1.5,
+                                              ),
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          Text(
+                                            TopCryptos[Sort[sortBy]![index]].symbol.toUpperCase(),
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                            textAlign: TextAlign.left,
+                                            softWrap: false,
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              listviewTextTitle("R "),
+                                              listviewTextInfo(
+                                                  TopCryptos[Sort[sortBy]![index]].realScore,
+                                                  TopCryptos[Sort[sortBy]![index]]
+                                                      .realScore
+                                                      .contains("-")
+                                                      ? cRed
+                                                      : Color(0xff0DC9AB)),
+                                              // listviewTextTitle(" Vol "),
+                                              // listviewTextInfo(
+                                              //     TopCryptos[Sort[sortBy]![index]].total_volume,
+                                              //     darkTheme ? Colors.white : Colors.black),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        TopCryptos[Sort[sortBy]![index]].market_cap,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          height: 2,
+                                      Container(
+                                        width: useMobileLayout ? screenWidth*0.29 : screenWidth*0.39,
+                                        color: Colors.transparent,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text(
+                                              TopCryptos[Sort[sortBy]![index]].current_price,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 0.8,
+                                              ),
+                                              softWrap: false,
+                                            ),
+                                            Text(
+                                              "${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                                              ),
+                                              textAlign: TextAlign.right,
+                                              softWrap: false,
+                                            ),
+                                            Text(
+                                              TopCryptos[Sort[sortBy]![index]].market_cap,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                height: 2,
+                                              ),
+                                              softWrap: false,
+                                            ),
+                                          ],
                                         ),
-                                        softWrap: false,
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                              ),
+                            );
+                          }),
+                    )
+                  ],
+                )
               ),
               bottomNavigationBar: getBar(),
             );
@@ -1031,51 +1082,6 @@ class _MainPagesState extends State<MainPages> {
               child: Text('Log Out', style: TextStyle(color: darkTheme ? Colors.white : Colors.black)),
             ),
 
-            Center(
-              child: SizedBox(
-                height: 300,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        await service.showNotification(
-                            id: introdata.read("notificationN"),
-                            title: 'Predictions Change!',
-                            body: '\'s rating is now Bearish');
-                        introdata.write("notificationN", introdata.read("notificationN")+1);
-                      },
-                      child: const Text('Show Local Notification'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await service.showScheduledNotification(
-                          id: introdata.read("notificationN"),
-                          title: 'Notification Title',
-                          body: 'Some body',
-                          seconds: 4,
-                        );
-                        introdata.write("notificationN", introdata.read("notificationN")+1);
-                      },
-                      child: const Text('Show Scheduled Notification'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await service.showNotificationWithPayload(
-                            id: introdata.read("notificationN"),
-                            title: 'Notification Title',
-                            body: 'Some body',
-                            payload: '0');
-                        introdata.write("notificationN", introdata.read("notificationN")+1);
-                      },
-                      child: const Text('Show Notification With Payload'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
             const SizedBox(height:150),
           ],
         ),
@@ -1436,20 +1442,6 @@ class _MainPagesState extends State<MainPages> {
       ),
       bottomNavigationBar: getBar(),
     );
-  }
-
-  void listenToNotification() =>
-      service.onNotificationClick.stream.listen(onNoticationListener);
-
-  void onNoticationListener(String? payload) {
-    if (payload != null && payload.isNotEmpty) {
-      print('payload $payload');
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: ((context) => DetailsPage(passedIndex: int.tryParse(payload) ?? 0))));
-    }
   }
 
 }

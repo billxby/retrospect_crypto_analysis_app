@@ -90,11 +90,11 @@ class _IntroPageState extends State<IntroPage> {
             ),
             PageViewModel(
                 image: Image.network(
-                  'https://i.postimg.cc/N0vc0vzn/Premium-Crown-Crisp.png',
+                  'https://i.postimg.cc/HWPrbqTn/Retrospect-Crowned.png',
                   height: 200,
                 ),
                 title: "Premium",
-                body: "Premium allows you to access more than 5 cryptocurrency analysis each day! \n \n You don't need premium to create an account.",
+                body: "Premium gives you more than 5 analysis/day and ALERTS for better trading! \n \n You don't need premium to create an account.",
                 footer: const Text("Learn more in the Premium section"),
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
