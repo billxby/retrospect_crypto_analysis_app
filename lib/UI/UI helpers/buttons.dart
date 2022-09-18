@@ -38,7 +38,7 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(0),
           ),
-          backgroundColor: targetColor,
+          primary: targetColor,
         )
     ),
   );
