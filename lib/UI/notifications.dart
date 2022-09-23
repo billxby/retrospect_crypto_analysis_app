@@ -15,8 +15,8 @@ class LocalNotificationService {
     const AndroidInitializationSettings androidInitializationSettings =
     AndroidInitializationSettings('@drawable/ic_stat_notifications_active');
 
-    IOSInitializationSettings iosInitializationSettings =
-    IOSInitializationSettings(
+    DarwinInitializationSettings iosInitializationSettings =
+    DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
@@ -30,7 +30,7 @@ class LocalNotificationService {
 
     await _localNotificationService.initialize(
       settings,
-      onSelectNotification: onSelectNotification,
+      // onSelectNotification: onSelectNotification,
     );
   }
 
@@ -42,12 +42,11 @@ class LocalNotificationService {
         priority: Priority.max,
         playSound: true);
 
-    const IOSNotificationDetails iosNotificationDetails =
-    IOSNotificationDetails();
+    const DarwinNotificationDetails iosNotificationDetails = DarwinNotificationDetails();
 
     return const NotificationDetails(
       android: androidNotificationDetails,
-      iOS: iosNotificationDetails,
+      // iOS: iosNotificationDetails,
     );
   }
 

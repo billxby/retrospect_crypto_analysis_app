@@ -715,7 +715,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         if (canSee == false)
                           Container(
                             width: screenWidth * 0.95,
-                            height: 220,
+                            height: 280,
                             child: Column(
                               children: <Widget> [
                                 SizedBox(height: 20),
@@ -742,6 +742,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                 ),
                                 SizedBox(
                                   width: screenWidth * 0.8,
+                                  height: 30,
                                   child: Text(
                                     "${introdata.read("used")}",
                                     style: const TextStyle(
@@ -749,6 +750,53 @@ class _DetailsPageState extends State<DetailsPage> {
                                       fontSize: 13,
                                     ),
                                     textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                  height: 30,
+                                  width: 135,
+                                  child: OutlinedButton(
+                                      onPressed: () async {
+                                        if (redeemCreditsDetails(widget.passedIndex ?? 0)) {
+                                          setState(() {});
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('You don\'t have enough Credits'),
+                                                shape: const RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.all(Radius.circular(20.0))),
+                                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                                content: const Text('You need at least 50 Credits to redeem that'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, 'OK'),
+                                                    child: const Text('OK'),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        primary: Colors.black,
+                                        onSurface: Colors.white,
+                                        backgroundColor: Colors.white,
+                                      ),
+                                      child: Row(
+                                          children: const <Widget> [
+                                            Text('Unlock: 50 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                            Icon(
+                                              Icons.donut_large,
+                                              size: 22,
+                                              color: Colors.black,
+                                            ),
+                                          ]
+                                      )
                                   ),
                                 ),
                               ],

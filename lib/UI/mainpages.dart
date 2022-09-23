@@ -88,7 +88,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
 
-    // _createRewardedAd();
+    _createRewardedAd();
   }
 
   @override
@@ -560,7 +560,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
     _rewardedAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
       setState(() {
-        introdata.write("credits", introdata.read("credits") + 20);
+        introdata.write("credits", introdata.read("credits") + 30);
       });
     });
     _rewardedAd = null;
@@ -621,7 +621,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             ),
             Center(
               child: Container(
-                  height: userHasPremium() ? 800 : 920,
+                  height: userHasPremium() ? 780 : 900,
                   width: screenWidth * 0.93,
                   color: Colors.transparent,
                   // decoration: BoxDecoration(
@@ -832,14 +832,169 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     Text("*Released VERY soon! ⚠️"),
                     SizedBox(height: 50),
                     Text("NOTE:", style: TextStyle(color: cRed, fontSize: 15)),
-                    Text("Premium is not associated with your Retrospect Account, but with your ${Platform.isAndroid ? 'Google Play' : 'Apple ID'} account. Thus, Premium is local. Your Retrospect log-in is for future updates!"),
+                    Text("Premium is not associated with your Retrospect Account, but with your ${Platform.isAndroid ? 'Google Play' : 'Apple ID'} account. Thus, Premium is local. Your Retrospect log-in is for future updates!",
+                    textAlign: TextAlign.center,),
                     // if (userHasPremium())
                     //   const SizedBox(
                     //     height: 40,
                     //   ),
                   ])),
             ),
-            const SizedBox(height:50),
+            Center(
+              child: Container(
+                  height: 100,
+                  width: screenWidth * 0.93,
+                  padding: const EdgeInsets.all(5),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          TextButton(
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Credits'),
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.all(Radius.circular(20.0))),
+                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                content: const Text(
+                                  'Credits can be used to access the analysis of more cryptocurrencies every day, or to get Premium for free! \n \nNOTE: Credits are local, so they are not saved onto your account.',
+                                  textAlign: TextAlign.justify,
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              "Credits:",
+                              style: hugeTitleStyle,
+                            ),
+                          ),
+                          Text(
+                            "${introdata.read("credits")} ",
+                            style: const TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const Icon(
+                            Icons.donut_large,
+                            size: 28,
+                            color: Colors.blue,
+                          ),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          SizedBox(
+                            height: 30,
+                            child: OutlinedButton(
+                              onPressed: () async {
+                                // _createRewardedAd();
+                                _showRewardedAd();
+                              },
+                              style: OutlinedButton.styleFrom(
+                                primary: Colors.black,
+                                onSurface: Colors.white,
+                                backgroundColor: Colors.white,
+                              ),
+                              child: Row(
+                                children: const <Widget> [
+                                  Text('Get 30 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                  Icon(
+                                    Icons.donut_large,
+                                    size: 22,
+                                    color: Colors.black,
+                                  ),
+                                ]
+                              )
+                            ),
+                          ),
+
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 23,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            Center(
+              child: Container(
+                  height: 321,
+                  width: screenWidth * 0.93,
+                  child: Column(children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget> [
+                        Text(
+                          "Redeem",
+                          style: hugeTitleStyle,
+                        ),
+                        SizedBox(
+                          width:20,
+                          child:IconButton(
+                            onPressed: () async {
+                              await checkPending(introdata.read("username"), introdata.read("password"));
+                              setState(() {});
+                            },
+                            // splashRadius: 0.1,
+                            icon: Icon(Icons.refresh, size: 20,),
+                          ),
+                        ),
+                      ]
+                    ),
+                    title("\n  1 week Premium: "),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: () => redeemPremiumDialog(context, 7, 1000),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            buttonBlueText("1000 "),
+                            creditImage,
+                          ],
+                        ),
+                      ),
+                    ),
+                    title("  2 weeks Premium: "),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: () => redeemPremiumDialog(context, 14, 1500),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            buttonBlueText("1500 "),
+                            creditImage,
+                          ],
+                        ),
+                      ),
+                    ),
+                    title("  3 weeks Premium: "),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: () => redeemPremiumDialog(context, 21, 1800),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            buttonBlueText("1800 "),
+                            creditImage,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ])),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
@@ -917,7 +1072,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   padding: const EdgeInsets.all(5),
                   child: Column(children: <Widget>[
                     Text(
-                      "REFERRAL",
+                      "Referral",
                       style: hugeTitleStyle,
                       textAlign: TextAlign.center,
                     ),
@@ -943,10 +1098,10 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                       ),
                                     ),
                                     const SizedBox(height: 20),
-                                    const Text('(You will get rewards in the future if you complete this!) \n\n',
+                                    const Text('You will get 100 C if you complete this! \n\n',
                                         style: TextStyle(fontSize: 12,)
                                     ),
-                                    const Text('Refer people, ask them to write your email here, and you and your friends will both earn rewards!)',
+                                    const Text('Refer people, ask them to write your email here, and you and your friends will both earn rewards! (You get 200 C/person)',
                                       style: TextStyle(fontSize: 14),
                                     ),
                                   ]
@@ -1003,7 +1158,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                           ),
                         ),
                         // onPressed:() {},
-                        child: Text('Referral (Benefits soon!)', style: TextStyle(color: darkTheme ? Colors.white : Colors.black)),
+                        child: Text('Referral (200 C)', style: TextStyle(color: darkTheme ? Colors.blueAccent : Colors.black)),
                       ),
                     ),
                   ])),
@@ -1317,7 +1472,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     title("\n  1 week Premium: "),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () => redeemPremiumDialog(context, 7, 1000),
+                        onPressed: () => redeemPremiumDialog(context, 7, 1000).then((_)=>getPending()),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -1330,7 +1485,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     title("  2 weeks Premium: "),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () => redeemPremiumDialog(context, 14, 1500),
+                        onPressed: () => redeemPremiumDialog(context, 14, 1500).then((_)=>getPending()),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -1343,7 +1498,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     title("  3 weeks Premium: "),
                     Center(
                       child: OutlinedButton(
-                        onPressed: () => redeemPremiumDialog(context, 21, 1800),
+                        onPressed: () => redeemPremiumDialog(context, 21, 1800).then((_)=>getPending()),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -1360,8 +1515,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             ),
             OutlinedButton(
               onPressed: () async {
-                await checkPending(introdata.read("username"), introdata.read("password"));
-                setState(() {});
+                getPending();
               },
               child: const Text("Refresh Credits \n (if someone use your referral)",
                 textAlign: TextAlign.center,
@@ -1374,6 +1528,11 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
     );
   }
 
+  void getPending() async {
+    await checkPending(introdata.read("username"), introdata.read("password"));
+    setState(() {});
+  }
+
   Scaffold settingsPage() {
     return Scaffold(
       appBar: AppBar(
@@ -1383,27 +1542,27 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
       ),
       body: SettingsList(
         sections: [
-          SettingsSection(
-            title: const Text('General'),
-            tiles: <SettingsTile>[
-              SettingsTile.switchTile(
-                initialValue: darkTheme,
-                leading: const Icon(Icons.format_paint),
-                title: const Text('Enable dark theme'),
-                onToggle: (value) {
-                  setState(() {
-                    darkTheme = value;
-                    introdata.write("darkTheme", value);
-                  });
-                  if (darkTheme) {
-                    Get.changeTheme(customDark);
-                  } else {
-                    Get.changeTheme(customWhite);
-                  }
-                },
-              ),
-            ],
-          ),
+          // SettingsSection(
+          //   title: const Text('General'),
+          //   tiles: <SettingsTile>[
+          //     SettingsTile.switchTile(
+          //       initialValue: darkTheme,
+          //       leading: const Icon(Icons.format_paint),
+          //       title: const Text('Enable dark theme'),
+          //       onToggle: (value) {
+          //         setState(() {
+          //           darkTheme = value;
+          //           introdata.write("darkTheme", value);
+          //         });
+          //         if (darkTheme) {
+          //           Get.changeTheme(customDark);
+          //         } else {
+          //           Get.changeTheme(customWhite);
+          //         }
+          //       },
+          //     ),
+          //   ],
+          // ),
           SettingsSection(
             title: const Text('Information'),
             tiles: <SettingsTile>[

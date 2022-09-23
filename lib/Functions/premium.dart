@@ -58,11 +58,11 @@ bool userLimitAvailable(int passedIndex) {
 }
 
 bool redeemCreditsDetails(int passedIndex) {
-  String selectedCrypto = TopCryptos[Sort[sortBy]![passedIndex]].id;
+  String selectedCrypto = TopCryptos[passedIndex].id;
   List<dynamic> used = introdata.read("used");
 
-  if (introdata.read("credits") >= 60) {
-    int newNum = introdata.read("credits") - 60;
+  if (introdata.read("credits") >= 50) {
+    int newNum = introdata.read("credits") - 50;
     introdata.write("credits", newNum);
     used.add(selectedCrypto);
     introdata.write("used", used);
@@ -90,6 +90,9 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
   return showDialog<String>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
+      shape: const RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.all(Radius.circular(20.0))),
       backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
       title: const Text('Redeem Premium?'),
       content: Text('Redeem $days days of Premium for $requirement credits?'),
@@ -106,6 +109,10 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AlertDialog(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(20.0))),
+                    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
                     title: const Text('Successful!'),
                     content: const Text('Enjoy your premium subscription!'),
                     actions: <Widget>[
@@ -122,6 +129,10 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AlertDialog(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(20.0))),
+                    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
                     title: const Text('An Error Occurred!'),
                     content: const Text(
                         'You either already have premium or do not have enough credits'),
@@ -154,38 +165,6 @@ limitDialog(BuildContext context, int index) {
         onPressed: () => Navigator.pop(context, 'Cancel'),
         child: const Text('Cancel'),
       ),
-      // TextButton(
-      //   onPressed: () {
-      //     Navigator.pop(context, '60 Credits');
-      //     if (redeemCreditsDetails(Sort[sortBy]?[index] ?? 0)) {
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //             builder: (context) => DetailsPage(
-      //                   passedIndex: Sort[sortBy]?[index] ?? 0,
-      //                 )),
-      //       );
-      //     } else {
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => AlertDialog(
-      //             title: const Text('You don\'t have enough Credits'),
-      //             content:
-      //                 const Text('You need at least 60 Credits to redeem that'),
-      //             actions: <Widget>[
-      //               TextButton(
-      //                 onPressed: () => Navigator.pop(context, 'OK'),
-      //                 child: const Text('OK'),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       );
-      //     }
-      //   },
-      //   child: const Text('60 Credits'),
-      // ),
     ],
   );
 }
@@ -194,7 +173,8 @@ Future<bool> redeemCreditsPremium(int days, int require) async {
   if (introdata.read("credits") >= require) {
     int newNum = introdata.read("credits") - require;
     introdata.write("credits", newNum);
-    bool worked = await redeemPremium(introdata.read("username"), days);
+
+    bool worked = await redeemPremium(introdata.read("username"), days~/7);
 
     return worked;
   }

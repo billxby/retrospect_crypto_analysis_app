@@ -132,6 +132,8 @@ Future<bool> redeemPremium(String username, int planN) async {
   }
 
   try {
+    print(planN);
+
     final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_premium?username=$username&plan=$planN'));
 
     Map<String, dynamic> works = jsonDecode(response.body);

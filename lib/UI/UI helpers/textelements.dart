@@ -114,15 +114,15 @@ Text buttonBlueText(String content) {
 }
 
 TextStyle hugeTitleStyle = TextStyle(
-  height: 2,
-  fontSize: 20,
+  fontSize: 24,
   fontWeight: FontWeight.bold,
+  color: Colors.white,
 );
 
-Image creditImage = Image.network(
-  "https://i.postimg.cc/D0PrC6Fz/Credits.png",
-  height: 20,
-  width: 20,
+Icon creditImage = const Icon(
+  Icons.donut_large,
+  size: 28,
+  color: Colors.blue,
 );
 
 const Color lightGreen = Color(0xffabf7c1);

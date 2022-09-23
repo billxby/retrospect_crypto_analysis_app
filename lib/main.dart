@@ -66,7 +66,7 @@ int globalIndex = 0;
 List<dynamic> data = [];
 const fetchBackground = "getAlerts";
 
-List<String> testDeviceIds = ["CFA4604CA7FDF96FC2E2B539F1B430E9"];
+List<String> testDeviceIds = ["F8A58E90D076195FF066127E3013260E"];
 
 //Declare styles
 
@@ -77,7 +77,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.5.0";
+String app_version = "1.5.2";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -91,14 +91,14 @@ Future<void> main() async {
   );
   await initPlatformState();
 
-  // MobileAds.instance
-  //   ..initialize()
-  //   ..updateRequestConfiguration(
-  //     RequestConfiguration(testDeviceIds: testDeviceIds),
-  //   );
-  // MobileAds.instance.initialize();
-  // RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
-  // MobileAds.instance.updateRequestConfiguration(configuration);
+  MobileAds.instance
+    ..initialize()
+    ..updateRequestConfiguration(
+      RequestConfiguration(testDeviceIds: testDeviceIds),
+    );
+  MobileAds.instance.initialize();
+  RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
+  MobileAds.instance.updateRequestConfiguration(configuration);
 
   service.intialize();
   listenToNotification();
