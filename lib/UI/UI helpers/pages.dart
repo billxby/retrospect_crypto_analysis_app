@@ -1,5 +1,7 @@
 import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UpdateApp extends StatelessWidget {
   const UpdateApp({Key? key}) : super(key: key);
@@ -11,16 +13,29 @@ class UpdateApp extends StatelessWidget {
         const SizedBox(
           height: 200,
         ),
-        Center(
-            child: Text("Please update your app!", style: titleStyle)
+        const Center(
+            child: Text("A new version is available!", style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ))
         ),
         Center(
-          child: detailsPageTitle("A new version is available now!"),
+          child: OutlinedButton(
+            onPressed: () async {
+              await launchUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.cryptos.crypto_app"));
+            },
+            child: const Text(
+              "Update my App!",
+              style: TextStyle(
+                fontSize: 14,
+              ),
+            ),
+          ),
         ),
         const SizedBox(
           height: 50,
         ),
-        Image.network("https://i.postimg.cc/y6SZ9YMF/Retro-Spect-Trans-BW.png", height: 300),
+        Image.asset("images/Logo.png", height: 300),
       ],
     );
   }

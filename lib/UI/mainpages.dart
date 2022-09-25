@@ -154,11 +154,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   centerTitle: true,
                   toolbarHeight: 30,
                 ),
-                body: const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color> (Colors.blue),
-                  ),
-                ),
+                body: null,
                 bottomNavigationBar: getBar(),
               );
             }
@@ -169,41 +165,6 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   toolbarHeight: 30,
                   leadingWidth: 80,
                   elevation: 0,
-                  // leading: DropdownButton<String>(
-                  //   value: sortBy,
-                  //   isExpanded: true,
-                  //   icon: const Icon(Icons.sort),
-                  //   items: <String>[
-                  //     'Starred',
-                  //     "⬆A-Z",
-                  //     '⬇A-Z',
-                  //     '⬆Mrkt',
-                  //     '⬇Mrkt',
-                  //     '⬆24h',
-                  //     '⬇24h',
-                  //     "⬆Rscr",
-                  //     '⬇Rscr',
-                  //     '⬆Vol',
-                  //     '⬇Vol',
-                  //   ].map<DropdownMenuItem<String>>((String value) {
-                  //     return DropdownMenuItem<String>(
-                  //       value: value,
-                  //       child: Text(value),
-                  //     );
-                  //   }).toList(),
-                  //   onChanged: (String? newValue) {
-                  //     setState(() {
-                  //       sortBy = newValue!;
-                  //     });
-                  //   },
-                  //   style: TextStyle(
-                  //     fontSize: 15,
-                  //     color: darkTheme ? Colors.white : Colors.black,
-                  //   ),
-                  //   borderRadius: BorderRadius.circular(10),
-                  //   itemHeight: 50,
-                  //   menuMaxHeight: 250,
-                  // ),
                   actions: [
                     IconButton(
                         icon: const Icon(Icons.search),
@@ -1543,27 +1504,6 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
       ),
       body: SettingsList(
         sections: [
-          // SettingsSection(
-          //   title: const Text('General'),
-          //   tiles: <SettingsTile>[
-          //     SettingsTile.switchTile(
-          //       initialValue: darkTheme,
-          //       leading: const Icon(Icons.format_paint),
-          //       title: const Text('Enable dark theme'),
-          //       onToggle: (value) {
-          //         setState(() {
-          //           darkTheme = value;
-          //           introdata.write("darkTheme", value);
-          //         });
-          //         if (darkTheme) {
-          //           Get.changeTheme(customDark);
-          //         } else {
-          //           Get.changeTheme(customWhite);
-          //         }
-          //       },
-          //     ),
-          //   ],
-          // ),
           SettingsSection(
             title: const Text('Information'),
             tiles: <SettingsTile>[

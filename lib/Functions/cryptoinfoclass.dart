@@ -100,18 +100,29 @@ class CryptoInfo {
       realVolume = realVolume.substring(0, realVolume.indexOf("."));
     }
 
-    price = double.parse(price).toStringAsFixed(3);
+    if (double.parse(price) < 0.0001) {}
+    else {
+      price = double.parse(price).toStringAsFixed(3);
+    }
+
     totalSupply = Numeral(double.tryParse(totalSupply) ?? -1).format().toString();
 
     if (twtyFHigh.length < 5) {
       twtyFHigh = twtyFHigh.substring(0, twtyFHigh.length);
     } else {
-      twtyFHigh = twtyFHigh.substring(0, 5);
+      if (double.parse(twtyFHigh) < 0.0001) {}
+      else {
+        twtyFHigh = twtyFHigh.substring(0, 5);
+      }
+
     }
     if (twtyFLow.length < 5) {
       twtyFLow = twtyFLow.substring(0, twtyFLow.length);
     } else {
-      twtyFLow = twtyFLow.substring(0, 5);
+      if (double.parse(twtyFLow) < 0.0001) {}
+      else {
+        twtyFLow = twtyFLow.substring(0, 5);
+      }
     }
     if (twentyFourHours.contains('.')) {
       twentyFourHours = twentyFourHours.substring(0, twentyFourHours.indexOf('.')+2);

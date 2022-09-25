@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:crypto_app/Functions/purchase.dart';
 import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
 import 'package:crypto_app/UI/intropage.dart';
@@ -77,7 +79,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.6.0";
+String app_version = "1.6.1";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -177,7 +179,7 @@ class MyApp extends StatelessWidget {
       title: 'Retrospect',
       theme: customDark,
       // darkTheme: customDark,
-      home: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
+      home: SplashScreen(),
     );
   }
 }
@@ -231,5 +233,26 @@ void onNoticationListener(String? payload) {
     print('payload $payload');
 
     Get.to(DetailsPage(passedIndex: int.tryParse(payload) ?? 0));
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key : key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSplashScreen(
+      splash: Container(
+        height: 250,
+        width: 250,
+        child: Image.asset(
+          "images/Loading.gif"
+        )
+      ),
+      nextScreen: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
+      backgroundColor: Colors.black,
+      animationDuration: Duration(milliseconds: 50),
+      splashIconSize: 250,
+    );
   }
 }
