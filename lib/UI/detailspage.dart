@@ -30,6 +30,7 @@ List<String> sub = <String> ["in units", "in thousands", "in millions"];
 List<double> numbers = <double> [1, 1000, 1000000];
 List<Widget> periods = <Widget> [Text("Day"), Text("Week"), Text("Month"), Text("Year"), Text("YTD")];
 List<Widget> periodsVol = <Widget> [Text("Week"), Text("Month"), Text("Year"), Text("YTD")];
+List<Widget> periodsScore = <Widget> [Text("Week"), Text("Month"), Text("Year")];
 
 
 class DetailsPage extends StatefulWidget {
@@ -44,6 +45,7 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   late TrackballBehavior _trackballBehavior;
   late TrackballBehavior _trackballBehavior2;
+  late TrackballBehavior _trackballBehavior3;
   late List<List<PriceData>> _cryptoData = [];
   late BannerAd _bannerAd;
   late BannerAd _endBannerAd;
@@ -52,8 +54,10 @@ class _DetailsPageState extends State<DetailsPage> {
   bool _isBannerAd2Ready = false;
   List<bool> isSelected = [false, false, true, false, false];
   List<bool> isSelectedVol = [false, true, false, false];
+  List<bool> isSelectedScore = [true, false, false];
   int selectedIdx = 2;
   int selectedIdxVol = 1;
+  int selectedIdxScore = 0;
 
   @override
   initState() {
@@ -74,6 +78,21 @@ class _DetailsPageState extends State<DetailsPage> {
       ),
     );
     _trackballBehavior2 = TrackballBehavior(
+      enable: true,
+      activationMode: ActivationMode.singleTap,
+      lineColor: Colors.transparent,
+      shouldAlwaysShow: true,
+      tooltipSettings: InteractiveTooltip(
+        enable: true,
+        color: darkTheme ? Colors.black : Colors.white,
+        // color: Colors.transparent,
+        textStyle: TextStyle(
+          color: darkTheme ? Colors.white : Colors.black,
+        ),
+        format: 'point.y  (point.x)',
+      ),
+    );
+    _trackballBehavior3 = TrackballBehavior(
       enable: true,
       activationMode: ActivationMode.singleTap,
       lineColor: Colors.transparent,
@@ -460,7 +479,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
                 Center(
                     child: Container(
-                      height: 1150,
+                      height: 1400,
                       width: screenWidth * 0.95,
                       child: Column(children: <Widget>[
                         Row(
@@ -840,12 +859,95 @@ class _DetailsPageState extends State<DetailsPage> {
                         Center(
                           child: Container(
                             width: screenWidth * 0.95,
-                            height: 530,
+                            height: 400,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget> [
                                 Center(
-                                  child: cryptoInfoChart("Volume", _trackballBehavior2, _cryptoData[selectedIdxVol+5], false, screenWidth * 0.93),
+                                  child: Column(
+                                    children: <Widget> [
+                                      const Text(
+                                        "Retro-Score History",
+                                        style: TextStyle(
+                                          height: 2, fontSize: 20, fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      selectedIdxScore != 0 ?
+                                      (userHasPremium() ?
+                                      cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxScore+9], false, screenWidth * 0.93) :
+                                      Column(
+                                        children: <Widget> [
+                                          SizedBox(height: 60),
+                                          Image.network(
+                                            "https://i.postimg.cc/VkpYychz/Lock.png",
+                                            height:60,
+                                          ),
+                                          const Text(
+                                            "You discovered a Premium Feature!",
+                                            style: TextStyle(
+                                              height: 3,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                          const Text(
+                                            "Get Premium to access more Retro-Score History! \n Go to the Premium Page to Learn more.",
+                                            style: TextStyle(
+                                              height: 1,
+                                              fontSize: 13,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 62),
+                                        ],
+                                      )) : cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxScore+9], false, screenWidth * 0.93)
+                                    ],
+                                  ),
+                                ),
+                                Center(
+                                  child: ToggleButtons(
+                                    direction: Axis.horizontal,
+                                    onPressed: (int index) {
+                                      setState(() {
+                                        // The button that is tapped is set to true, and the others to false.
+                                        for (int i = 0; i < isSelectedScore.length; i++) {
+                                          isSelectedScore[i] = i == index;
+                                          if (isSelectedScore[i] == true) {
+                                            selectedIdxScore = i;
+                                          }
+                                        }
+                                      });
+                                    },
+                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                    selectedBorderColor: Colors.transparent,
+                                    selectedColor: Colors.black,
+                                    fillColor: Colors.white,
+                                    // color: Colors.white,
+                                    borderWidth: 2,
+                                    constraints: BoxConstraints(
+                                      minHeight: 40.0,
+                                      minWidth: screenWidth*0.15,
+                                    ),
+                                    isSelected: isSelectedScore,
+                                    children: periodsScore,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        Center(
+                          child: Container(
+                            width: screenWidth * 0.95,
+                            height: 400,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget> [
+                                Center(
+                                  child: cryptoInfoChart("Volume", _trackballBehavior3, _cryptoData[selectedIdxVol+5], false, screenWidth * 0.93),
                                 ),
                                 Center(
                                   child: Text(subtitle, textAlign: TextAlign.right, style: const TextStyle(fontSize: 10, color: Colors.grey)),
@@ -885,14 +987,6 @@ class _DetailsPageState extends State<DetailsPage> {
 
                       ]),
                     )),
-                if (_isBannerAd2Ready)
-                  Center(
-                    child: Container(
-                      width: _endBannerAd.size.width.toDouble(),
-                      height: _endBannerAd.size.height.toDouble(),
-                      child: AdWidget(ad: _endBannerAd),
-                    ),
-                  ),
               ]),
             ),
           );
@@ -910,16 +1004,20 @@ class _DetailsPageState extends State<DetailsPage> {
     List<PriceData> volumeDataW = [];
     List<PriceData> volumeDataM = [];
     List<PriceData> volumeDataYTD = [];
+    List<PriceData> scoreDataW = [];
+    List<PriceData> scoreDataM = [];
+    List<PriceData> scoreDataY = [];
 
     final String url = "https://api.coingecko.com/api/v3/coins/${TopCryptos[widget.passedIndex].id}/market_chart?vs_currency=usd&days=365&interval=daily";
     final String url2 = "https://api.coingecko.com/api/v3/coins/${TopCryptos[widget.passedIndex].id}/market_chart?vs_currency=usd&days=7&interval=hourly";
+    final String url3 = "https://crypto-project-001-default-rtdb.firebaseio.com/history/main/${TopCryptos[widget.passedIndex].id}.json";
 
     for (int i=0;i<maxFetchTries;i++) {
       try {
         final response = await http.get(Uri.parse(url));
 
         if (response.statusCode != 200) {
-          throw Exception('Could not fetch data!');
+          throw Exception('Could not fetch data (1)!');
         }
 
         Map<String, dynamic> data = json.decode(response.body);
@@ -987,7 +1085,7 @@ class _DetailsPageState extends State<DetailsPage> {
         final response2 = await http.get(Uri.parse(url2));
 
         if (response2.statusCode != 200) {
-          throw Exception('Could not fetch data!');
+          throw Exception('Could not fetch data (2)!');
         }
 
         Map<String, dynamic> data2 = json.decode(response2.body);
@@ -1009,6 +1107,27 @@ class _DetailsPageState extends State<DetailsPage> {
           }
         }
 
+        final response3 = await http.get(Uri.parse(url3));
+
+        if (response3.statusCode != 200) {
+          throw Exception('Could not fetch data (3)!');
+        }
+
+        Map<String, dynamic> data3 = Map<String, dynamic>. from(json.decode(response3.body));
+
+        for (String key in data3.keys) {
+          PriceData adding = PriceData(DateTime.fromMillisecondsSinceEpoch(int.parse(key)*1000),data3[key]['score']);
+          if (adding.time.compareTo(now.subtract(Duration(days: 7))) > 0) {
+            scoreDataW.add(adding);
+          }
+          if (adding.time.compareTo(now.subtract(Duration(days: 31))) > 0) {
+            scoreDataM.add(adding);
+          }
+          if (adding.time.compareTo(now.subtract(Duration(days: 365))) > 0) {
+            scoreDataY.add(adding);
+          }
+        }
+
         cryptoData.add(priceDataD);
         cryptoData.add(priceDataW);
         cryptoData.add(priceDataM);
@@ -1018,6 +1137,9 @@ class _DetailsPageState extends State<DetailsPage> {
         cryptoData.add(volumeDataM);
         cryptoData.add(volumeDataY);
         cryptoData.add(volumeDataYTD);
+        cryptoData.add(scoreDataW);
+        cryptoData.add(scoreDataM);
+        cryptoData.add(scoreDataY);
         break;
       }
       catch (e) {

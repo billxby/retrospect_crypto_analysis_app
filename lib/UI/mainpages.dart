@@ -539,6 +539,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   void _showRewardedAd() {
     if (_rewardedAd == null) {
       print('Warning: attempt to show rewarded before loaded.');
+      _createRewardedAd();
       return;
     }
     _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -810,7 +811,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                           ),
                           compareRow("Analysis","5","∞"),
                           compareRow("Alerts","0","20"),
-                          compareRow("History*","7d","365d"),
+                          compareRow("History","7d","365d"),
                           TableRow(
                               children: <Widget>[
                                 Container(
@@ -829,7 +830,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                         ],
                       ),
                     ),
-                    Text("*Released VERY soon! ⚠️"),
+                    // Text("*Released VERY soon! ⚠️"),
                     SizedBox(height: 50),
                     Text("NOTE:", style: TextStyle(color: cRed, fontSize: 15)),
                     Text("Premium is not associated with your Retrospect Account, but with your ${Platform.isAndroid ? 'Google Play' : 'Apple ID'} account. Thus, Premium is local. Your Retrospect log-in is for future updates!",

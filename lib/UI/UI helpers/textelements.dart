@@ -244,6 +244,51 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
   );
 }
 
+Container cryptoAnalChart(TrackballBehavior trackballBehavior,
+    List<PriceData> cryptoData, bool showAxis, double width) {
+  Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? Colors.blueAccent : Colors.lightBlueAccent;
+
+  return Container(
+    height: 265,
+    width: width,
+    child: Column(
+      children: <Widget>[
+        const SizedBox(
+          height: 5,
+        ),
+        SizedBox(
+          height: 250,
+          width: width,
+          child: SfCartesianChart(
+            trackballBehavior: trackballBehavior,
+            borderColor: Colors.transparent,
+            plotAreaBorderColor: Colors.transparent,
+            primaryXAxis: CategoryAxis(
+              majorGridLines: const MajorGridLines(width: 0),
+              isVisible: showAxis,
+            ),
+            primaryYAxis: NumericAxis(
+              isVisible: showAxis,
+              majorGridLines: const MajorGridLines(width: 0),
+              rangePadding: ChartRangePadding.round,
+            ),
+            legend: Legend(isVisible: false),
+            series: <LineSeries<PriceData, String>>[
+              LineSeries<PriceData, String>(
+                color: lineColor,
+                dataSource: cryptoData,
+                xValueMapper: (PriceData prices, _) =>
+                    DateFormat('MM-dd').format(prices.time),
+                yValueMapper: (PriceData prices, _) => prices.price,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 Container cryptoPriceChart(TrackballBehavior trackballBehavior,
     List<PriceData> cryptoData, bool showAxis, double width) {
   Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? cRed : cGreen;
@@ -403,3 +448,4 @@ TableRow infoRow(String stat, String text, Color borderColor) {
     ],
   );
 }
+

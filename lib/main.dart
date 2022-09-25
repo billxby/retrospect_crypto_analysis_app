@@ -66,7 +66,7 @@ int globalIndex = 0;
 List<dynamic> data = [];
 const fetchBackground = "getAlerts";
 
-List<String> testDeviceIds = ["F8A58E90D076195FF066127E3013260E"];
+List<String> testDeviceIds = ["F8A58E90D076195FF066127E3013260E", "6C2862513BCA301941632F666CE4292F"];
 
 //Declare styles
 
@@ -77,7 +77,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.5.2";
+String app_version = "1.6.0";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
