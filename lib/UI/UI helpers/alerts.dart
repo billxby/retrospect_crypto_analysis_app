@@ -1,4 +1,4 @@
-import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
+import 'package:crypto_app/UI/UI%20helpers/style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../Functions/premium.dart';
@@ -25,7 +25,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
     );
   }
 
-  Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
+  Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
 
   return AlertDialog(
     title: const Text("Alerts", textAlign: TextAlign.center),
@@ -40,7 +40,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           const Text('Get alerted when prediction is...'),
           Row(
             children: [
-              Image.network("https://i.postimg.cc/mZVHWjHX/bear-v2.png", height: 35),
+              Image.network("https://i.postimg.cc/mZVHWjHX/bear-v2.png", height: screenWidth*0.08),
               SizedBox(width: 5),
               alertPredButton(0, alertColorChoices[0], inputData, context),
               alertPredButton(1, alertColorChoices[1], inputData, context),
@@ -49,7 +49,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
               alertPredButton(4, alertColorChoices[4], inputData, context),
               alertPredButton(5, alertColorChoices[5], inputData, context),
               SizedBox(width: 5),
-              Image.network("https://i.postimg.cc/tCTVq6dX/bull-v2.png", height: 35),
+              Image.network("https://i.postimg.cc/tCTVq6dX/bull-v2.png", height: screenWidth*0.08),
             ],
           ),
           const SizedBox(height: 10),
@@ -60,7 +60,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           ),
           const SizedBox(height: 15),
           Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}", textAlign: TextAlign.center),
-          const Text("alerts will not work if you kill the app (not running in bckgrd)", style: TextStyle(fontSize: 9, height:2,)),
+          const Text("alerts will not work if the app is not running in bckgrd", style: TextStyle(fontSize: 9, height:2,)),
         ],
       ),
     ),
@@ -69,7 +69,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
         onPressed: () {
           alerts.remove(inputData['crypto']);
 
-          introdata.write("alerts", alerts);
+          localStorage.write("alerts", alerts);
 
           Navigator.pop(context);
 

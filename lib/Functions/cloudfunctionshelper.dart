@@ -5,6 +5,7 @@ import 'package:crypto_app/Functions/premium.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:crypto_app/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart';
@@ -23,52 +24,22 @@ import 'package:flutter_login/flutter_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
-Future<List<bool>> checkLogin(String username, String password) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/check_login?username=$username&password=$password'));
-    print(response.body);
+import '../UI/get_premium.dart';
+import '../UI/mainpages.dart';
 
-    Map<String, dynamic> works = jsonDecode(response.body);
+Future<bool> checkExpire() async {
+  User? user = FirebaseAuth.instance.currentUser;
+  final db = FirebaseFirestore.instance;
 
-    List<bool> back = [];
-
-    back.add(works['username'] == "True");
-    back.add(works['password'] == "True");
-    back.add(works['verified'] == "True");
-
-    return back;
-
-  } catch (e){
-
-
-    return <bool>[false, false];
-  }
-}
-
-Future<bool> register(String username, String password) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/register?username=$username&password=$password'));
-    print(response.body);
-
-    Map<String, dynamic> works = jsonDecode(response.body);
-    if (works['exist'] == "False") {
-      return true;
-    }
-
-  } catch (e){
+  if (user?.uid == null) {
+    premiumExpire = 0;
     return false;
   }
 
-  return false;
-}
+  db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
 
-Future<int> checkExpire(String username) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/get_expire?username=$username'));
-
-    Map<String, dynamic> works = jsonDecode(response.body);
-
-    premiumExpire = works['expire'];
+    premiumExpire = data['expire'];
 
     CustomerInfo purchaserInfo = await Purchases.getCustomerInfo();
     final entitlements = purchaserInfo.entitlements.active.values.toList();
@@ -85,27 +56,13 @@ Future<int> checkExpire(String username) async {
       if (entitlements[0].toJson()['productIdentifier'].contains("1y")) {
         premiumExpire = dt1.millisecondsSinceEpoch+(365*24*60*60*1000);
       }
-
-      if (original.millisecondsSinceEpoch + (2629743000*3) > dt1.millisecondsSinceEpoch) {
-        refferalProgram(introdata.read("username"), entitlements[0].toJson()['productIdentifier']);
-      }
-      // DateTime dt1 = DateTime.tryParse(entitlements[0].toJson()['latestPurchaseDate']) ?? DateTime(2000,07,07);
-      // int newEpoch = dt1.millisecondsSinceEpoch;
-      //
-      // if (newEpoch  + (86400000*5) > premiumExpire) {
-      //   String p = "Monthly";
-      //   if (entitlements[0].toJson()['productIdentifier'] == "retrospect_premium_1y") {
-      //     p = "Yearly";
-      //   }
-      //   updateExistingPremium(introdata.read("premiumUser"), p, newEpoch);
-      // }
     }
 
-    return works['expire'];
-
-  } catch (e){
-    return 0;
-  }
+    return true;
+  },
+    onError: (e) => print("Error getting document: $e"),
+  );
+  return false;
 }
 
 Future<bool> appVersion() async {
@@ -126,15 +83,13 @@ Future<bool> appVersion() async {
   }
 }
 
-Future<bool> redeemPremium(String username, int planN) async {
-  if (userHasPremium()) {
+Future<bool> refferalProgram(String packageTitle) async {
+  if (currentCode == "none") {
     return false;
   }
 
   try {
-    print(planN);
-
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_premium?username=$username&plan=$planN'));
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/referral-program?code=$currentCode&yearly=${packageTitle.contains("Yearly") ? 1 : 0}'));
 
     Map<String, dynamic> works = jsonDecode(response.body);
 
@@ -146,64 +101,25 @@ Future<bool> redeemPremium(String username, int planN) async {
   }
 
   return false;
-}
-
-Future<bool> refferalProgram(String username, String packageTitle) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/referral-program?username=$username&package=$packageTitle'));
-
-    Map<String, dynamic> works = jsonDecode(response.body);
-
-    if (works['worked'] == "True") {
-      return true;
-    }
-  } catch (e){
-    return false;
-  }
-
-  return false;
-}
-
-Future<List<bool>> getReferer(String username, String target) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/update_ref?username=$username&target=$target'));
-    print(response.body);
-
-    Map<String, dynamic> works = jsonDecode(response.body);
-
-    print(works);
-
-    List<bool> back = [];
-
-    back.add(works['verified'] == "True");
-    back.add(works['refed'] == "False");
-    back.add(works['exist'] == "True");
-
-    print("here");
-
-    return back;
-
-  } catch (e){
-
-
-    return <bool>[false, false, false];
-  }
 }
 
 Future<int> checkPending(String username, String password) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/get_pending_credits?username=$username&password=$password'));
+  User? user = FirebaseAuth.instance.currentUser;
 
-    Map<String, dynamic> works = jsonDecode(response.body);
+  final db = FirebaseFirestore.instance;
+  await db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
 
-    int cur = introdata.read("credits") + works['pending'];
-    introdata.write("credits", cur);
+    credits = data['credits'];
+    return data['credits'];
+  },
+    onError: (e) {
+      print("error getting doc");
+      return 0;
+    },
+  );
 
-    return works['pending'];
-
-  } catch (e){
-    return 0;
-  }
+  return 0;
 }
 
 Future<bool> forgotPassword(String username) async {

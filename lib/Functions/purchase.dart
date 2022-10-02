@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:crypto_app/Functions/premium.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -18,18 +19,13 @@ Future<void> initPlatformState() async {
   } else {
     configuration = PurchasesConfiguration("apiKey");
   }
+
   await Purchases.configure(configuration);
 }
 
 Future<List<Offering>> fetchCurrentOffers() async {
   try {
     Offerings offerings = await Purchases.getOfferings();
-
-    // print(offerings.toJson()['all']['subscriptions-50-off']);
-
-    // offerings.toJson()['all'].forEach((key) {
-    //   print(key);
-    // });
 
     var current = offerings.current;
 
@@ -54,7 +50,7 @@ Future<bool> purchasePackage(Package package) async {
     print(entitlements);
 
     if (isPro == true) {
-      refferalProgram(introdata.read("username"), package.storeProduct.title);
+      refferalProgram(package.storeProduct.title);
     }
 
     return true;

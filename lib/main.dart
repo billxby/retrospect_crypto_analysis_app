@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:crypto_app/Functions/purchase.dart';
-import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
+import 'package:crypto_app/UI/UI%20helpers/style.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -41,7 +42,6 @@ import 'UI/information.dart';
 import 'UI/updatelog.dart';
 import 'Functions/database.dart';
 import 'UI/mainpages.dart';
-import 'UI/adhelper.dart';
 import 'firebase_options.dart';
 
 //Program Settings
@@ -50,6 +50,8 @@ const int maxFetchTries = 4;
 final int limit = 5;
 int premiumExpire = 0;
 bool isPremium = false;
+bool loggedIn = false;
+bool rememberMe = false;
 
 //Declare variables
 List<String> CryptosList = [];
@@ -79,7 +81,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "1.6.1";
+String app_version = "2.0.0";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -93,32 +95,26 @@ Future<void> main() async {
   );
   await initPlatformState();
 
-  MobileAds.instance
-    ..initialize()
-    ..updateRequestConfiguration(
-      RequestConfiguration(testDeviceIds: testDeviceIds),
-    );
-  MobileAds.instance.initialize();
-  RequestConfiguration configuration = RequestConfiguration(testDeviceIds: testDeviceIds);
-  MobileAds.instance.updateRequestConfiguration(configuration);
+  await Firebase.initializeApp();
+
+  FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+    if (user == null) {
+      print('User is currently signed out!');
+      loggedIn = false;
+      await Purchases.logOut();
+    } else {
+      print('User is signed in with UID ${user.uid}!');
+      loggedIn = true;
+      LogInResult result = await Purchases.logIn(user.uid);
+      print(result.customerInfo);
+    }
+  });
 
   service.intialize();
   listenToNotification();
 
-  // await Workmanager().initialize(
-  //   callbackDispatcher,
-  // );
-  // await Workmanager().registerPeriodicTask(
-  //   "1",
-  //   fetchBackground,
-  //   constraints: Constraints(
-  //     networkType: NetworkType.connected,
-  //   ),
-  // );
-
-
   await GetStorage.init();
-  final introdata = GetStorage();
+  final localStorage = GetStorage();
 
   final worked = await fetchDatabase();
   await appVersion();
@@ -135,29 +131,26 @@ Future<void> main() async {
     getAlerts();
   });
 
-  introdata.writeIfNull("displayed", false);
-  introdata.writeIfNull("darkTheme", true);
-  introdata.writeIfNull("credits", 0);
-  introdata.writeIfNull("logged in", false);
-  introdata.writeIfNull("username", "");
-  introdata.writeIfNull("password", "");
-  introdata.writeIfNull("used", <String> []);
-  introdata.writeIfNull("premiumUser", "");
-  introdata.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
-  introdata.writeIfNull("alerts", <String, String> {});
-  introdata.writeIfNull("starred", <int> []);
-  introdata.writeIfNull("notificationN", 0);
+  localStorage.writeIfNull("displayed", false);
+  localStorage.writeIfNull("credits", 0);
+  localStorage.writeIfNull("username", "");
+  localStorage.writeIfNull("password", "");
+  localStorage.writeIfNull("used", <String> []);
+  localStorage.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
+  localStorage.writeIfNull("alerts", <String, String> {});
+  localStorage.writeIfNull("starred", <int> []);
+  localStorage.writeIfNull("notificationN", 0);
 
   DateTime now = DateTime.now();
-  if (DateTime.fromMillisecondsSinceEpoch(introdata.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
-    introdata.write("used", <String> []);
+  if (DateTime.fromMillisecondsSinceEpoch(localStorage.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
+    localStorage.write("used", <String> []);
   }
 
-  Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
+  Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
   List<String> toRemove = [];
 
-  darkTheme = introdata.read("darkTheme");
-  introdata.write("last open", DateTime.now().millisecondsSinceEpoch);
+  darkTheme = localStorage.read("darkTheme");
+  localStorage.write("last open", DateTime.now().millisecondsSinceEpoch);
 
   runApp(MyApp());
 }
@@ -165,12 +158,10 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
-  final introdata = GetStorage();
-
   @override
   Widget build(BuildContext context) {
 
-    // introdata.write("displayed", false);
+    // localStorage.write("displayed", false);
     if (darkTheme == false) {
       Get.changeTheme(customWhite);
     }
@@ -184,23 +175,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// void callbackDispatcher() {
-//   Workmanager().executeTask((task, inputData) async {
-//     print("excecuting! every 15 minutes");
-//
-//     getAlerts();
-//
-//     return Future.value(true);
-//   });
-//
-//
-// }
-
 Future<void> getAlerts() async {
   await GetStorage.init();
-  final introdata = GetStorage();
+  final localStorage = GetStorage();
   List<String> toRemove = [];
-  Map<String, String> alerts = Map<String, String>.from(introdata.read("alerts"));
+  Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
   print(alerts);
 
   await fetchDatabase();
@@ -210,11 +189,11 @@ Future<void> getAlerts() async {
     if (TopCryptos[idx].prediction == alerts[crypto]) {
       toRemove.add(crypto);
       await service.showNotificationWithPayload(
-          id: introdata.read("notificationN"),
+          id: localStorage.read("notificationN"),
           title: '${crypto.capitalizeFirst} Predictions Change!',
           body: '${crypto.capitalizeFirst}\'s rating is now ${alerts[crypto]}',
           payload: idx.toString());
-      introdata.write("notificationN", introdata.read("notificationN")+1);
+      localStorage.write("notificationN", localStorage.read("notificationN")+1);
     }
   }
 
@@ -222,7 +201,7 @@ Future<void> getAlerts() async {
     alerts.remove(remove);
   }
 
-  introdata.write("alerts", alerts);
+  localStorage.write("alerts", alerts);
 }
 
 void listenToNotification() =>
@@ -249,7 +228,7 @@ class SplashScreen extends StatelessWidget {
           "images/Loading.gif"
         )
       ),
-      nextScreen: app_version == new_version ? introdata.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
+      nextScreen: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
       backgroundColor: Colors.black,
       animationDuration: Duration(milliseconds: 50),
       splashIconSize: 250,

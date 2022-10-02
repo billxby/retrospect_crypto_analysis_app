@@ -61,7 +61,7 @@ class _PaywallWidgetState extends State<PaywallWidget> {
     final product = package.storeProduct;
 
     return Card(
-      color: Theme.of(context).accentColor,
+      color: Colors.blue,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -71,12 +71,12 @@ class _PaywallWidgetState extends State<PaywallWidget> {
           contentPadding: EdgeInsets.all(8),
           title: Text(
             product.title,
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 18, color: Colors.white),
           ),
-          subtitle: Text(product.description),
+          subtitle: Text(product.description, style: TextStyle(color: Colors.blue[900]),),
           trailing: Text(
             product.priceString,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
           ),
           onTap: () => widget.onClickedPackage(package),
         ),

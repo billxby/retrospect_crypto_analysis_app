@@ -23,16 +23,16 @@ class IntroPage extends StatefulWidget {
 
 class _IntroPageState extends State<IntroPage> {
 
-  final introdata = GetStorage();
+  final localStorage = GetStorage();
 
   void _EndWelcomePage(context) {
 
     Navigator.pop(context);
-    if (introdata.read("displayed") == true){
+    if (localStorage.read("displayed") == true){
       return;
     }
 
-    introdata.write("displayed", true);
+    localStorage.write("displayed", true);
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => MainPages())
     );

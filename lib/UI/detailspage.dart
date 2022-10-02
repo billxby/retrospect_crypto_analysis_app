@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crypto_app/Functions/premium.dart';
 import 'package:crypto_app/UI/UI%20helpers/alerts.dart';
+import 'package:crypto_app/UI/get_premium.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,12 +19,13 @@ import 'package:http/http.dart' as http;
 import '../Functions/detailspageassist.dart';
 import '../main.dart';
 import 'UI helpers/buttons.dart';
-import 'UI helpers/textelements.dart';
+import 'UI helpers/graphics.dart';
+import 'UI helpers/style.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'adhelper.dart';
 import 'information.dart';
+import 'login_page.dart';
 
 List<String> types = <String> ["","(in K)","(in M)"];
 List<String> sub = <String> ["in units", "in thousands", "in millions"];
@@ -108,11 +110,6 @@ class _DetailsPageState extends State<DetailsPage> {
       ),
     );
     super.initState();
-    bool loadAds = false;
-    if (userHasPremium() == false && loadAds == true) {
-      _loadBannerAd1();
-      _loadBannerAd2();
-    }
   }
 
 
@@ -123,7 +120,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final introdata = GetStorage();
+    final localStorage = GetStorage();
     Color twentyFourColor = getTextColor(TopCryptos[widget.passedIndex].price_change_precentage_24h);
     Color scoreColor = getTextColor(TopCryptos[widget.passedIndex].score);
     Color predictionColor = cGreen;
@@ -185,13 +182,13 @@ class _DetailsPageState extends State<DetailsPage> {
     }
 
     bool isStarred = false;
-    List<int> stars = introdata.read("starred")?.cast<int>() ?? [];
+    List<int> stars = localStorage.read("starred")?.cast<int>() ?? [];
     if (stars.contains(widget.passedIndex)) {
       isStarred = true;
     }
 
     bool canSee = userLimitAvailable(widget.passedIndex);
-    Map<String, String> alert = Map<String, String>.from(introdata.read("alerts"));
+    Map<String, String> alert = Map<String, String>.from(localStorage.read("alerts"));
     bool hasAlert = alert.containsKey(CryptosList[widget.passedIndex]);
 
     setState(() {});
@@ -206,6 +203,751 @@ class _DetailsPageState extends State<DetailsPage> {
                 centerTitle: true,
                 elevation: 0,
                 toolbarHeight: 35,
+                actions: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => alertPage(context, inputData),
+                          ).then((_)=>setState((){}));
+                        },
+                        child: Icon(
+                          hasAlert ? Icons.notifications_active : Icons.notification_add_outlined,
+                          size: 26.0,
+                        ),
+                      )
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          List<int> stars = localStorage.read("starred")?.cast<int>() ?? [];
+                          if (stars.contains(widget.passedIndex)) {
+                            stars.remove(widget.passedIndex);
+                            Sort["Starred"]?.remove(widget.passedIndex);
+                          }
+                          else {
+                            stars.add(widget.passedIndex);
+                            Sort["Starred"]?.add(widget.passedIndex);
+                          }
+                          localStorage.write("starred", stars);
+
+                          setState(() {});
+                        },
+                        child: Icon(
+                          isStarred ? Icons.star : Icons.star_border_outlined,
+                          size: 26.0,
+                        ),
+                      )
+                  ),
+                ],
+              ),
+              body: SingleChildScrollView(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                    Widget>[
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Center(
+                    child: Container(
+                      width: screenWidth * 0.95,
+                      height: 530,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget> [
+                          Row(
+                            children: <Widget> [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(TopCryptos[widget.passedIndex].image),
+                                backgroundColor: Colors.transparent,
+                                radius: 23,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      TopCryptos[widget.passedIndex].id.capitalizeFirst ?? TopCryptos[widget.passedIndex].id,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                      ),
+                                      softWrap: false,
+                                    ),
+                                  ),
+                                  Text(
+                                    TopCryptos[widget.passedIndex].symbol.toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    softWrap: false,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Text(
+                            " \$${TopCryptos[widget.passedIndex].current_price} USD",
+                            style: TextStyle(
+                              fontSize: 20,
+                              letterSpacing: 1.5,
+                              height: 2,
+                            ),
+                            textAlign: TextAlign.left,
+                            softWrap: false,
+                          ),
+                          Text(
+                            "  ${TopCryptos[widget.passedIndex].price_change_precentage_24h}%",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: twentyFourColor,
+                            ),
+                            textAlign: TextAlign.left,
+                            softWrap: false,
+                          ),
+                          const Center(
+                            child: SizedBox(height: 350),
+                          ),
+                          Center(
+                            child: ToggleButtons(
+                              direction: Axis.horizontal,
+                              onPressed: (int index) {
+                                setState(() {
+                                  // The button that is tapped is set to true, and the others to false.
+                                  for (int i = 0; i < isSelected.length; i++) {
+                                    isSelected[i] = i == index;
+                                    if (isSelected[i] == true) {
+                                      selectedIdx = i;
+                                    }
+                                  }
+                                });
+                              },
+                              borderRadius: const BorderRadius.all(Radius.circular(8)),
+                              selectedBorderColor: Colors.transparent,
+                              selectedColor: Colors.black,
+                              fillColor: Colors.white,
+                              // color: Colors.white,
+                              borderWidth: 2,
+                              constraints: BoxConstraints(
+                                minHeight: 40.0,
+                                minWidth: screenWidth * 0.15,
+                              ),
+                              isSelected: isSelected,
+                              children: periods,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Center(
+                    child: Container(
+                      width: screenWidth * 0.95,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget> [
+                          Text(
+                            "Range (24h)",
+                            style: TextStyle(
+                              height: 1, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.5,),
+                          ),
+                          SfLinearGauge(
+                            minimum: dTwL,
+                            maximum: dTwH,
+                            maximumLabels: 1,
+                            animateAxis: true,
+                            axisTrackStyle: const LinearAxisTrackStyle(
+                              color: Colors.transparent,
+                            ),
+                            ranges: <LinearGaugeRange>[
+                              LinearGaugeRange(
+                                  startValue: dTwL,
+                                  endValue: dPrice,
+                                  position: LinearElementPosition.outside,
+                                  color: cRed),
+                              LinearGaugeRange(
+                                  startValue: dPrice,
+                                  endValue: dTwH,
+                                  position: LinearElementPosition.outside,
+                                  color: cGreen),
+                            ],
+                            markerPointers: [
+                              LinearShapePointer(
+                                value: dPrice,
+                                animationType: LinearAnimationType.ease,
+                                color: darkTheme ? Colors.white : Colors.black,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Center(
+                    child: Container(
+                      width: screenWidth * 0.95,
+                      height: 255,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget> [
+                          Row(
+                            children: <Widget> [
+                              const Text(
+                                "Market Stats",
+                                style: TextStyle(
+                                  height: 4, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.5,),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          )
+                                      ),
+                                      builder: (context) => Center(
+                                        child: marketStatsInfo(darkTheme ? Colors.white : Colors.black),
+                                      )
+                                  );
+                                },
+                                icon: const Icon(Icons.info_outlined),
+                                iconSize: 15,
+                                padding: EdgeInsets.all(5),
+                                constraints: BoxConstraints(maxHeight: 16, maxWidth: 16),
+                              ),
+                            ],
+                          ),
+                          Table(
+                            // border: TableBorder.all(),
+                            columnWidths: <int, TableColumnWidth>{
+                              0: FixedColumnWidth(screenWidth * 0.95),
+                            },
+                            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                            children: <TableRow>[
+                              infoRow("Market cap", "\$${TopCryptos[widget.passedIndex].market_cap} USD", darkTheme ? Colors.white : Colors.black),
+                              infoRow("Volume (24h)", "\$${TopCryptos[widget.passedIndex].total_volume} USD", darkTheme ? Colors.white : Colors.black),
+                              infoRow("Total supply", "${TopCryptos[widget.passedIndex].total_supply} ${TopCryptos[widget.passedIndex].symbol.toUpperCase()}", darkTheme ? Colors.white : Colors.black),
+                              infoRow("All-time high", "\$${TopCryptos[widget.passedIndex].ath} USD", darkTheme ? Colors.white : Colors.black),
+                            ],
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: 25),
+                              child: TextButton(
+                                onPressed: () async {
+                                  await launchUrl(Uri.parse("https://www.coingecko.com/"));
+                                },
+                                child: Text(
+                                  "powered by CoinGecko",
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    color: darkTheme ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Center(
+                      child: Container(
+                        height: 1400,
+                        width: screenWidth * 0.95,
+                        child: Column(children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start, //Center Row contents horizontally,
+                            children: <Widget>[
+                              const Text(
+                                "Analysis",
+                                style: TextStyle(
+                                  height: 2, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.5,),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          )
+                                      ),
+                                      builder: (context) => Center(
+                                        child: analysisInfo(darkTheme ? Colors.white : Colors.black),
+                                      )
+                                  );
+                                },
+                                icon: const Icon(Icons.info_outlined),
+                                iconSize: 15,
+                                padding: EdgeInsets.all(5),
+                                constraints: BoxConstraints(maxHeight: 28, maxWidth: 16),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                              height: 5
+                          ),
+                          if (canSee == true)
+                            Table(
+                              // border: TableBorder.all(),
+                              columnWidths: <int, TableColumnWidth>{
+                                0: FixedColumnWidth(screenWidth * 0.95),
+                              },
+                              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                              children: <TableRow>[
+                                TableRow(
+                                  children: <Widget> [
+                                    Container(
+                                        margin: const EdgeInsets.all(1.0),
+                                        padding: const EdgeInsets.all(3.0),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: darkTheme ? Colors.white : Colors.black,
+                                              width: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                        height: 100,
+                                        child: Column(
+                                          children: <Widget> [
+                                            Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  width: screenWidth*0.431,
+                                                  child: Row(
+                                                      children: <Widget> [
+                                                        Align(
+                                                          alignment: Alignment.bottomCenter,
+                                                          child: Image.network(
+                                                            'https://i.postimg.cc/6QCj5gVx/R-for-Retrospect-in-App.png',
+                                                            fit: BoxFit.cover,
+                                                            height: 22,
+                                                          ),
+                                                        ),
+                                                        RichText(
+                                                            text: TextSpan(
+                                                                text: "etro",
+                                                                style: blueRetroTitleStyle,
+                                                                children: <TextSpan>[
+                                                                  TextSpan(text:"-Score©", style: TextStyle(
+                                                                    height: 2,
+                                                                    fontSize: 15,
+                                                                    fontWeight: FontWeight.bold,
+                                                                    color: darkTheme ? Colors.white : Colors.black,
+                                                                  )),
+                                                                ]
+                                                            )
+                                                        ),
+                                                      ]
+                                                  ),
+                                                ),
+                                                SizedBox(width:screenWidth*0.161),
+                                                SizedBox(
+                                                  width: screenWidth*0.323,
+                                                  child: Text(
+                                                    "${double.parse(TopCryptos[widget.passedIndex].score).toStringAsFixed(3)}",
+                                                    textAlign: TextAlign.right,
+                                                    softWrap: false,
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: scoreColor,
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            analysisGauge(scoreGge[0], scoreGge[1], scoreGge[2], scoreGge[3], darkTheme ? Colors.white : Colors.black),
+                                          ],
+                                        )
+                                    ),
+
+                                  ],
+                                ),
+                                TableRow(
+                                  children: <Widget> [
+                                    Container(
+                                        margin: const EdgeInsets.all(1.0),
+                                        padding: const EdgeInsets.all(3.0),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: darkTheme ? Colors.white : Colors.black,
+                                              width: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                        height: 100,
+                                        child: Column(
+                                          children: <Widget> [
+                                            Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  width: screenWidth*0.431,
+                                                  child: RichText(
+                                                      text: TextSpan(
+                                                          text: "Market ",
+                                                          style: TextStyle(
+                                                            height: 2,
+                                                            fontSize: 15,
+                                                            fontWeight: FontWeight.bold,
+                                                            color: darkTheme ? Colors.white : Colors.black,
+                                                          ),
+                                                          children: <TextSpan>[
+                                                            TextSpan(text:"View ", style: blueTitleStyle),
+                                                            TextSpan(text:"score: "),
+                                                          ]
+                                                      )
+                                                  ),
+                                                ),
+                                                SizedBox(width:screenWidth*0.161),
+                                                SizedBox(
+                                                  width: screenWidth*0.323,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: <Widget> [
+                                                      Image.network(
+                                                        marketUrl,
+                                                        height: 15,
+                                                      ),
+                                                      Text(
+                                                        " ${double.parse(TopCryptos[widget.passedIndex].marketView).toStringAsFixed(3)}",
+                                                        textAlign: TextAlign.right,
+                                                        softWrap: false,
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          color: marketViewColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            analysisGauge(marketviewGge[0], marketviewGge[1], marketviewGge[2], marketviewGge[3], darkTheme ? Colors.white : Colors.black),
+                                          ],
+                                        )
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: <Widget> [
+                                    Container(
+                                        margin: const EdgeInsets.all(1.0),
+                                        padding: const EdgeInsets.all(3.0),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: darkTheme ? Colors.white : Colors.black,
+                                              width: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                        height: 47,
+                                        child: Column(
+                                          children: <Widget> [
+                                            Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  width: screenWidth*0.431,
+                                                  child: const Text(
+                                                    "Prediction (24h)",
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15,
+                                                      height: 2,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width:screenWidth*0.134),
+                                                SizedBox(
+                                                  width: screenWidth*0.359,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: <Widget> [
+                                                      Align(
+                                                        alignment: Alignment.bottomCenter,
+                                                        child: SizedBox(
+                                                          height: 30,
+                                                          width: 20,
+                                                          child: Image.network(
+                                                            predUrl,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        " ${TopCryptos[widget.passedIndex].prediction}",
+                                                        textAlign: TextAlign.right,
+                                                        softWrap: false,
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          height: 2,
+                                                          color: predictionColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          if (canSee == false)
+                            Container(
+                              width: screenWidth * 0.95,
+                              height: 280,
+                              child: Column(
+                                children: <Widget> [
+                                  SizedBox(height: 20),
+                                  Image.network(
+                                    "https://i.postimg.cc/VkpYychz/Lock.png",
+                                    height:60,
+                                  ),
+                                  const Text(
+                                    "You have reached your daily limit!",
+                                    style: TextStyle(
+                                      height: 3,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Get Premium to access more analysis!\n\nYou still have access to:",
+                                    style: TextStyle(
+                                      height: 1,
+                                      fontSize: 13,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(
+                                    width: screenWidth * 0.8,
+                                    height: 30,
+                                    child: Text(
+                                      "${localStorage.read("used")}",
+                                      style: const TextStyle(
+                                        height: 1,
+                                        fontSize: 13,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  SizedBox(
+                                    height: 30,
+                                    width: 135,
+                                    child: OutlinedButton(
+                                        onPressed: () async {
+                                          bool worked = await redeemCreditsDetails(widget.passedIndex ?? 0);
+
+                                          if (worked) {
+                                            setState(() {});
+                                          }
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('You don\'t have enough Credits'),
+                                                shape: const RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.all(Radius.circular(20.0))),
+                                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                                content: const Text('You need at least 50 Credits to redeem that'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, 'OK'),
+                                                    child: const Text('OK'),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          primary: Colors.black,
+                                          onSurface: Colors.white,
+                                          backgroundColor: Colors.white,
+                                        ),
+                                        child: Row(
+                                            children: const <Widget> [
+                                              Text('Unlock: 50 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                              Icon(
+                                                Icons.donut_large,
+                                                size: 22,
+                                                color: Colors.black,
+                                              ),
+                                            ]
+                                        )
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          if (canSee == true)
+                            Row(children: <Widget>[
+                              const SizedBox(
+                                width: 50,
+                              ),
+                              socialsChange(percentageTw, "${baTw[0]}${TopCryptos[widget.passedIndex].tweets}%${baTw[1]}", tweetsColor, "Tweets count (7d)"),
+                              const SizedBox(
+                                width: 50,
+                              ),
+                              socialsChange(percentageCm, "${baCm[0]}${TopCryptos[widget.passedIndex].commits}%${baCm[1]}", commitsColor, "Commit count (7d)"),
+                            ]),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          if (_isBannerAd1Ready)
+                            Center(
+                              child: Container(
+                                width: _bannerAd.size.width.toDouble(),
+                                height: _bannerAd.size.height.toDouble(),
+                                child: AdWidget(ad: _bannerAd),
+                              ),
+                            ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          // Center(
+                          //   child: cryptoInfoChart("Price Chart", _trackballBehavior, _cryptoData[0], true, Colors.blue),
+                          // ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+
+                          Center(
+                            child: Container(
+                              width: screenWidth * 0.95,
+                              height: 400,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget> [
+                                  Center(
+                                    child: Column(
+                                      children: const <Widget> [
+                                        Text(
+                                          "Retro-Score History",
+                                          style: TextStyle(
+                                            height: 2, fontSize: 20, fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        SizedBox(height: 265),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                    child: ToggleButtons(
+                                      direction: Axis.horizontal,
+                                      onPressed: (int index) {
+                                        setState(() {
+                                          // The button that is tapped is set to true, and the others to false.
+                                          for (int i = 0; i < isSelectedScore.length; i++) {
+                                            isSelectedScore[i] = i == index;
+                                            if (isSelectedScore[i] == true) {
+                                              selectedIdxScore = i;
+                                            }
+                                          }
+                                        });
+                                      },
+                                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                      selectedBorderColor: Colors.transparent,
+                                      selectedColor: Colors.black,
+                                      fillColor: Colors.white,
+                                      // color: Colors.white,
+                                      borderWidth: 2,
+                                      constraints: BoxConstraints(
+                                        minHeight: 40.0,
+                                        minWidth: screenWidth*0.15,
+                                      ),
+                                      isSelected: isSelectedScore,
+                                      children: periodsScore,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Center(
+                            child: Container(
+                              width: screenWidth * 0.95,
+                              height: 400,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget> [
+                                  Center(
+                                    child: SizedBox(height: 265),
+                                  ),
+                                  Center(
+                                    child: Text(subtitle, textAlign: TextAlign.right, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                  ),
+                                  Center(
+                                    child: ToggleButtons(
+                                      direction: Axis.horizontal,
+                                      onPressed: (int index) {
+                                        setState(() {
+                                          // The button that is tapped is set to true, and the others to false.
+                                          for (int i = 0; i < isSelectedVol.length; i++) {
+                                            isSelectedVol[i] = i == index;
+                                            if (isSelectedVol[i] == true) {
+                                              selectedIdxVol = i;
+                                            }
+                                          }
+                                        });
+                                      },
+                                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                      selectedBorderColor: Colors.transparent,
+                                      selectedColor: Colors.black,
+                                      fillColor: Colors.white,
+                                      // color: Colors.white,
+                                      borderWidth: 2,
+                                      constraints: BoxConstraints(
+                                        minHeight: 40.0,
+                                        minWidth: screenWidth*0.15,
+                                      ),
+                                      isSelected: isSelectedVol,
+                                      children: periodsVol,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                        ]),
+                      )),
+                ]),
               ),
             );
           }
@@ -235,7 +977,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     padding: const EdgeInsets.only(right: 20.0),
                     child: GestureDetector(
                       onTap: () {
-                        List<int> stars = introdata.read("starred")?.cast<int>() ?? [];
+                        List<int> stars = localStorage.read("starred")?.cast<int>() ?? [];
                         if (stars.contains(widget.passedIndex)) {
                           stars.remove(widget.passedIndex);
                           Sort["Starred"]?.remove(widget.passedIndex);
@@ -244,7 +986,7 @@ class _DetailsPageState extends State<DetailsPage> {
                           stars.add(widget.passedIndex);
                           Sort["Starred"]?.add(widget.passedIndex);
                         }
-                        introdata.write("starred", stars);
+                        localStorage.write("starred", stars);
 
                         setState(() {});
                       },
@@ -763,7 +1505,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                   width: screenWidth * 0.8,
                                   height: 30,
                                   child: Text(
-                                    "${introdata.read("used")}",
+                                    "${localStorage.read("used")}",
                                     style: const TextStyle(
                                       height: 1,
                                       fontSize: 13,
@@ -772,14 +1514,38 @@ class _DetailsPageState extends State<DetailsPage> {
                                   ),
                                 ),
                                 SizedBox(height: 5),
-                                SizedBox(
+                                if (!loggedIn)
+                                  SizedBox(
                                   height: 30,
                                   width: 135,
                                   child: OutlinedButton(
                                       onPressed: () async {
-                                        if (redeemCreditsDetails(widget.passedIndex ?? 0)) {
-                                          setState(() {});
-                                        } else {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => LoginPage()),
+                                        ).then((_)=>setState((){}));
+                                        return;
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        primary: Colors.black,
+                                        onSurface: Colors.white,
+                                        backgroundColor: Colors.white,
+                                      ),
+                                      child: Text('Log In', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                  ),
+                                ),
+                                if (loggedIn)
+                                  SizedBox(
+                                    height: 30,
+                                    width: 135,
+                                    child: OutlinedButton(
+                                        onPressed: () async {
+                                          bool worked = await redeemCreditsDetails(widget.passedIndex ?? 0);
+
+                                          if (worked) {
+                                            setState(() {});
+                                            return;
+                                          }
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -799,25 +1565,24 @@ class _DetailsPageState extends State<DetailsPage> {
                                               ),
                                             ),
                                           );
-                                        }
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        primary: Colors.black,
-                                        onSurface: Colors.white,
-                                        backgroundColor: Colors.white,
-                                      ),
-                                      child: Row(
-                                          children: const <Widget> [
-                                            Text('Unlock: 50 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-                                            Icon(
-                                              Icons.donut_large,
-                                              size: 22,
-                                              color: Colors.black,
-                                            ),
-                                          ]
-                                      )
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          primary: Colors.black,
+                                          onSurface: Colors.white,
+                                          backgroundColor: Colors.white,
+                                        ),
+                                        child: Row(
+                                            children: const <Widget> [
+                                              Text('Unlock: 50 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                              Icon(
+                                                Icons.donut_large,
+                                                size: 22,
+                                                color: Colors.black,
+                                              ),
+                                            ]
+                                        )
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ),
@@ -900,7 +1665,48 @@ class _DetailsPageState extends State<DetailsPage> {
                                             ),
                                             textAlign: TextAlign.center,
                                           ),
-                                          SizedBox(height: 62),
+                                          SizedBox(height: 10,),
+                                          if (!loggedIn)
+                                            SizedBox(
+                                              height: 30,
+                                              width: 135,
+                                              child: OutlinedButton(
+                                                onPressed: () async {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => LoginPage()),
+                                                  ).then((_)=>setState((){}));
+                                                  return;
+                                                },
+                                                style: OutlinedButton.styleFrom(
+                                                  primary: Colors.black,
+                                                  onSurface: Colors.white,
+                                                  backgroundColor: Colors.white,
+                                                ),
+                                                child: Text('Log In', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                              ),
+                                            ),
+                                          if (loggedIn)
+                                            SizedBox(
+                                              height: 30,
+                                              width: 135,
+                                              child: OutlinedButton(
+                                                onPressed: () async {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => GetPremiumPage()),
+                                                  ).then((_)=>setState((){}));
+                                                  return;
+                                                },
+                                                style: OutlinedButton.styleFrom(
+                                                  primary: Colors.black,
+                                                  onSurface: Colors.white,
+                                                  backgroundColor: Colors.white,
+                                                ),
+                                                child: Text('Learn More', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+                                              ),
+                                            ),
+                                          SizedBox(height: 30),
                                         ],
                                       )) : cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxScore+9], false, screenWidth * 0.93)
                                     ],
@@ -1151,49 +1957,6 @@ class _DetailsPageState extends State<DetailsPage> {
     }
 
     return cryptoData;
-  }
-
-  void _loadBannerAd1() {
-    _bannerAd = BannerAd(
-      adUnitId: AdHelper.bannerAdUnitId1,
-      request: AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAd1Ready = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          print(err);
-          _isBannerAd1Ready = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _bannerAd.load();
-  }
-
-  void _loadBannerAd2() {
-    _endBannerAd = BannerAd(
-      adUnitId: AdHelper.bannerAdUnitId2,
-      request: AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAd2Ready = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          _isBannerAd2Ready = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _endBannerAd.load();
   }
 
 }

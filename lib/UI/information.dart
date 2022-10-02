@@ -7,7 +7,7 @@ import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../main.dart';
-import 'UI helpers/textelements.dart';
+import 'UI helpers/style.dart';
 import 'cryptosearchdelegate.dart';
 import "detailspage.dart";
 import '../Functions/cryptoinfoclass.dart';

@@ -12,7 +12,7 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
     width: screenWidth*0.0809,
     child: ElevatedButton(
         onPressed: () {
-          Map<String, String> alert = Map<String, String>.from(introdata.read("alerts"));
+          Map<String, String> alert = Map<String, String>.from(localStorage.read("alerts"));
 
           if (alert.length < 20 || alert.containsKey(inputData['crypto'])) {
             if (alert.containsKey(inputData['crypto'])) {
@@ -22,7 +22,7 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
               alert[inputData['crypto']!] = alertChoices[id];
             }
 
-            introdata.write("alerts", alert);
+            localStorage.write("alerts", alert);
           }
 
           Navigator.pop(context);

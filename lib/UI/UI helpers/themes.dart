@@ -25,9 +25,9 @@ ThemeData customDark = ThemeData(
     onSurface: Colors.white,
     // Colors that are not relevant to AppBar in DARK mode:
     primary: Colors.blue,
-    onPrimary: Colors.blue,
-    secondary: Colors.blue,
-    onSecondary: Colors.blue,
+    onPrimary: Colors.white,
+    secondary: Colors.white,
+    onSecondary: Colors.white,
     background: Colors.grey,
     onBackground: Colors.grey,
     error: Colors.grey,

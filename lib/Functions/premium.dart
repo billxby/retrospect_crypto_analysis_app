@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto_app/Functions/cloudfunctionshelper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,17 +17,17 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
-import '../UI/UI helpers/textelements.dart';
+import '../UI/UI helpers/style.dart';
 import '../UI/detailspage.dart';
 
-final introdata = GetStorage();
+final localStorage = GetStorage();
 
 bool userHasPremium() {
   if (isPremium) {
     return true;
   }
 
-  if (introdata.read("username") != "") {
+  if (localStorage.read("username") != "") {
     DateTime now = DateTime.now();
     DateTime begin = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -43,33 +44,45 @@ bool userLimitAvailable(int passedIndex) {
     return true;
   }
   String selectedCrypto = TopCryptos[Sort["⬆A-Z"]![passedIndex]].id;
-  List<dynamic> used = introdata.read("used");
-  if (introdata.read("used").contains(selectedCrypto)) {
+  List<dynamic> used = localStorage.read("used");
+  if (localStorage.read("used").contains(selectedCrypto)) {
     return true;
-  } else if (introdata.read("used").length < limit) {
+  } else if (localStorage.read("used").length < limit) {
     used.add(selectedCrypto);
-    introdata.write("used", used);
+    localStorage.write("used", used);
     return true;
   } else {
     return false;
   }
-
-  return false;
 }
 
-bool redeemCreditsDetails(int passedIndex) {
+Future<bool> redeemCreditsDetails(int passedIndex) async {
   String selectedCrypto = TopCryptos[passedIndex].id;
-  List<dynamic> used = introdata.read("used");
+  List<dynamic> used = localStorage.read("used");
 
-  if (introdata.read("credits") >= 50) {
-    int newNum = introdata.read("credits") - 50;
-    introdata.write("credits", newNum);
-    used.add(selectedCrypto);
-    introdata.write("used", used);
-    return true;
-  } else {
-    return false;
-  }
+  User? user = FirebaseAuth.instance.currentUser;
+
+  final db = FirebaseFirestore.instance;
+  await db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) {
+      final data = doc.data() as Map<String, dynamic>;
+
+      if (data['credits'] >= 50) {
+        db.collection("users").doc(user?.uid).update({'credits': data['credits']-50}).then((value) {},
+            onError: (e) {
+              return false;
+            }
+        );
+        used.add(selectedCrypto);
+        localStorage.write("used", used);
+        return true;
+      }
+    },
+    onError: (e) {
+      print("error getting doc");
+      return false;
+    },
+  );
+  return false;
 }
 
 refDialog(BuildContext context, String title, String content) {
@@ -154,30 +167,33 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
   );
 }
 
-limitDialog(BuildContext context, int index) {
-  return AlertDialog(
-    title: const Text('Limit Reached'),
-    content: Text(
-        'You have reached your daily limit of cryptocurrency analysis ☹️  \n\nYou still have access to: ${introdata.read("used")}\n\nGet premium to access more!'),
-        //'You have reached your daily limit of cryptocurrency analysis ☹️  \n\nYou may use your credits or get premium to access more'),
-    actions: <Widget>[
-      TextButton(
-        onPressed: () => Navigator.pop(context, 'Cancel'),
-        child: const Text('Cancel'),
-      ),
-    ],
-  );
-}
-
 Future<bool> redeemCreditsPremium(int days, int require) async {
-  if (introdata.read("credits") >= require) {
-    int newNum = introdata.read("credits") - require;
-    introdata.write("credits", newNum);
-
-    bool worked = await redeemPremium(introdata.read("username"), days~/7);
-
-    return worked;
+  if (userHasPremium()) {
+    return false;
   }
 
+  User? user = FirebaseAuth.instance.currentUser;
+
+  final db = FirebaseFirestore.instance;
+  db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    if (data['credits'] >= require) {
+      db.collection("users").doc(user?.uid).update({'credits': data['credits']-require}).then((value) {},
+          onError: (e) {
+            return false;
+          }
+      );
+      db.collection("users").doc(user?.uid).update({'expire': DateTime.now().millisecondsSinceEpoch+days*86400000}).then((value) {},
+          onError: (e) {
+            return false;
+          }
+      );
+      return true;
+    }
+
+  },
+    onError: (e) => print("Error getting document: $e"),
+  );
   return false;
 }

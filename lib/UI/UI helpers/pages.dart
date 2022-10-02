@@ -1,4 +1,4 @@
-import 'package:crypto_app/UI/UI%20helpers/textelements.dart';
+import 'package:crypto_app/UI/UI%20helpers/style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,7 +22,7 @@ class UpdateApp extends StatelessWidget {
         Center(
           child: OutlinedButton(
             onPressed: () async {
-              await launchUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.cryptos.crypto_app"));
+              launch("https://play.google.com/store/apps/details?id=com.cryptos.crypto_app");
             },
             child: const Text(
               "Update my App!",

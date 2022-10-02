@@ -107,7 +107,7 @@ Future<bool> fetchDatabase() async {
   // Sort cryptos by marketCap and Change
   List<CryptoInfo> copy = List.from(TopCryptos);
 
-  List<int> stars = introdata.read("starred")?.cast<int>() ?? [];
+  List<int> stars = localStorage.read("starred")?.cast<int>() ?? [];
 
   Sort["Starred"] = [];
 

@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
-import '../UI/UI helpers/textelements.dart';
+import '../UI/UI helpers/style.dart';
 import '../UI/detailspage.dart';
 
 Color getTextColor(String input) {
