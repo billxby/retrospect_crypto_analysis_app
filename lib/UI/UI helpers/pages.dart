@@ -1,3 +1,6 @@
+
+import 'dart:io';
+import 'dart:async';
 import 'package:crypto_app/UI/UI%20helpers/style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,19 +22,20 @@ class UpdateApp extends StatelessWidget {
               fontSize: 20,
             ))
         ),
-        Center(
-          child: OutlinedButton(
-            onPressed: () async {
-              launch("https://play.google.com/store/apps/details?id=com.retrospectapps.retrospect");
-            },
-            child: const Text(
-              "Update my App!",
-              style: TextStyle(
-                fontSize: 14,
+        if (Platform.isAndroid)
+          Center(
+            child: OutlinedButton(
+              onPressed: () async {
+                launch("https://play.google.com/store/apps/details?id=com.retrospectapps.retrospect");
+              },
+              child: const Text(
+                "Update my App!",
+                style: TextStyle(
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
-        ),
         const SizedBox(
           height: 50,
         ),

@@ -92,7 +92,7 @@ final LocalNotificationService service = LocalNotificationService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final app = await Firebase.initializeApp(
     // name: "Retrospect",
   );

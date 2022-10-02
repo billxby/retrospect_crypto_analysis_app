@@ -67,7 +67,7 @@ Future<bool> checkExpire() async {
 
 Future<bool> appVersion() async {
   try {
-    String url = 'https://us-central1-crypto-project-001.cloudfunctions.net/new-version';
+    String url = 'https://us-central1-crypto-project-001.cloudfunctions.net/current-version-ios';
     if (Platform.isAndroid) {
       url = 'https://us-central1-crypto-project-001.cloudfunctions.net/current-android-version';
 

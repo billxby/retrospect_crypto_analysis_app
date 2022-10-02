@@ -232,7 +232,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             itemCount: sortOptions.length,
             itemBuilder: (context, index) {
               return SizedBox(
-                  width: sortOptions[index] == "Starred" ? 95 : 85,
+                  width: sortOptions[index] == "Starred" ? 95 : 87,
                   child: Row(
                       children: <Widget> [
                         SizedBox(width: 5),
@@ -251,7 +251,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                   )
                               )
                           ),
-                          child: Text(sortOptions[index], style: TextStyle(color: sortByIdx == index ? Colors.black : Colors.white)),
+                          child: Text(sortOptions[index], style: TextStyle(color: sortByIdx == index ? Colors.black : Colors.white,), softWrap: true,),
                         ),
                       ]
                   )
