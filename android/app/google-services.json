@@ -8,9 +8,45 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:465652700448:android:24938d1267ea8058643345",
+        "mobilesdk_app_id": "1:465652700448:android:5b4b127de30a87ab643345",
         "android_client_info": {
           "package_name": "com.cryptos.crypto_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "465652700448-rfs32ldfhjcst5trkffg8oq9g13agr43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeIRdAXYy1Gx0-vFqPddnWXgl1IdmFNAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "465652700448-rfs32ldfhjcst5trkffg8oq9g13agr43.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "465652700448-0hf3eeeg3ckand16sjsvo23633m58lfi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cryptoApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465652700448:android:8aac66c98b085781643345",
+        "android_client_info": {
+          "package_name": "com.retrospectapps.retrospect"
         }
       },
       "oauth_client": [

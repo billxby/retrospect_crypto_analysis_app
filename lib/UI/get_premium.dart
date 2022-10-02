@@ -108,7 +108,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                     ),
                     Text("Compare Plans", style: TextStyle(fontSize: 22, height: 2)),
                     SizedBox(
-                      height: 360,
+                      height: screenHeight*0.48,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -262,7 +262,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                         onPressed: () async {
                                           print(promoCode.text);
 
-                                          bool worked = await redeemPromocode(promoCode.text, localStorage.read("username"));
+                                          bool worked = await redeemPromocode(promoCode.text);
 
                                           if (worked == true) {
                                             Navigator.push(

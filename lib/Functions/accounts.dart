@@ -51,7 +51,7 @@ Future<String?> signupUser(String username, String password, String confirm) asy
 
     final createAccount = <String, dynamic>{
       "credits": 0,
-      "referred by": "no one",
+      "referredBy": "no one",
       "expire": 0,
     };
 

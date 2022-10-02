@@ -22,7 +22,7 @@ class UpdateApp extends StatelessWidget {
         Center(
           child: OutlinedButton(
             onPressed: () async {
-              launch("https://play.google.com/store/apps/details?id=com.cryptos.crypto_app");
+              launch("https://play.google.com/store/apps/details?id=com.retrospectapps.retrospect");
             },
             child: const Text(
               "Update my App!",

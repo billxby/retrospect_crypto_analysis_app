@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:crypto_app/Functions/purchase.dart';
 import 'package:crypto_app/UI/UI%20helpers/style.dart';
@@ -34,6 +35,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cron/cron.dart';
+import 'package:flutter/services.dart';
 
 import 'UI/cryptosearchdelegate.dart';
 import "UI/detailspage.dart";
@@ -81,7 +83,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "2.0.0";
+String app_version = "0.1.3";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -90,6 +92,7 @@ final LocalNotificationService service = LocalNotificationService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final app = await Firebase.initializeApp(
     // name: "Retrospect",
   );
@@ -149,7 +152,6 @@ Future<void> main() async {
   Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
   List<String> toRemove = [];
 
-  darkTheme = localStorage.read("darkTheme");
   localStorage.write("last open", DateTime.now().millisecondsSinceEpoch);
 
   runApp(MyApp());

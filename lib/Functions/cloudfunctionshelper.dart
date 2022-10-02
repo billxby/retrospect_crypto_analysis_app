@@ -69,7 +69,7 @@ Future<bool> appVersion() async {
   try {
     String url = 'https://us-central1-crypto-project-001.cloudfunctions.net/new-version';
     if (Platform.isAndroid) {
-      url = 'https://us-central1-crypto-project-001.cloudfunctions.net/new-version-android';
+      url = 'https://us-central1-crypto-project-001.cloudfunctions.net/current-android-version';
 
     }
     final response = await http.get(Uri.parse(url));
@@ -122,12 +122,13 @@ Future<int> checkPending(String username, String password) async {
   return 0;
 }
 
-Future<bool> forgotPassword(String username) async {
+Future<bool> addReferrer(String referrer) async {
   try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/forgot_password?username=$username'));
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/claim-referral-rewards?uid=${FirebaseAuth.instance.currentUser?.uid}&referrer=$referrer'));
     print(response.body);
 
     Map<String, dynamic> works = jsonDecode(response.body);
+
     if (works['worked'] == "True") {
       return true;
     }
@@ -139,27 +140,11 @@ Future<bool> forgotPassword(String username) async {
   return false;
 }
 
-Future<bool> changePassword(String username, String password, String newP) async {
-  try {
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/change_password?username=$username&password=$password&new=$newP'));
-    print(response.body);
 
-    Map<String, dynamic> works = jsonDecode(response.body);
-    if (works['worked'] == "True") {
-      return true;
-    }
-
-  } catch (e){
-    return false;
-  }
-
-  return false;
-}
-
-Future<bool> redeemPromocode(String code, String username) async {
+Future<bool> redeemPromocode(String code) async {
   try {
     print(code);
-    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/promocode?username=$username&promocode=$code'));
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/promocode?promocode=$code'));
     print(response.body);
 
     Map<String, dynamic> works = jsonDecode(response.body);

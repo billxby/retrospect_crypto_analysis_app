@@ -34,7 +34,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
         BorderRadius.all(Radius.circular(20.0))),
     backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
     content: SizedBox(
-      height: 120,
+      height: alerts.containsKey(inputData['crypto']) ? 140 : 120,
       child: Column(
         children: <Widget> [
           const Text('Get alerted when prediction is...'),

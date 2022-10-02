@@ -66,6 +66,8 @@ class MainPages extends StatefulWidget {
 class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   late final FirebaseMessaging _messaging;
   late StreamSubscription iosSubscription;
+  TextEditingController _referredByController = TextEditingController();
+  bool referredIdValid = false;
 
   int maxFailedLoadAttempts = 3;
   int _selectedIndex = 1;
@@ -75,6 +77,12 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+
+    _referredByController.addListener(() {
+      final String text = _referredByController.text;
+      referredIdValid = text.length > 8;
+      setState(() {});
+    });
   }
 
   @override
@@ -449,6 +457,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                       SizedBox(height: 15),
                       Expanded(
                         child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: 5,
                             itemBuilder: (context, index) {
                               return ListTile(
@@ -486,7 +495,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
                                             SizedBox(
-                                              width: useMobileLayout ? screenWidth*0.38 : screenWidth*0.43,
+                                              width: useMobileLayout ? screenWidth*0.38 : screenWidth*0.4,
                                               child: Text(
                                                 TopCryptos[Sort['⬇Mrkt']![index]].id.capitalizeFirst ?? TopCryptos[Sort['⬇Mrkt']![index]].id,
                                                 style: const TextStyle(
@@ -539,7 +548,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                                 softWrap: false,
                                               ),
                                               Text(
-                                                "${TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort[sortBy]![index]].price_change_precentage_24h}%",
+                                                "${TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h}%",
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h.contains("-") ? cRed : cGreen,
@@ -597,7 +606,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
               ),
               Center(
                 child: Container(
-                  height: 420,
+                  height: screenHeight*0.5,
                   width: screenWidth * 0.85,
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -658,9 +667,205 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                         child: ElevatedButton(
                           style: roundButton(Colors.white),
                           onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    )
+                                ),
+                                builder: (context) => Center(
+                                  child: SizedBox(
+                                    width: screenWidth*0.8,
+                                    child: Column(
+                                        children: <Widget> [
+                                          TextFormField(
+                                            controller: _referredByController,
+                                            decoration: const InputDecoration(
+                                              border: UnderlineInputBorder(),
+                                              labelText: 'Enter your Referrer\'s ID',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 3),
+                                          const Text('You will get 100 C if you complete this! \n\n',
+                                              style: TextStyle(fontSize: 12,)
+                                          ),
+                                          SizedBox(height: 2),
+                                          Image.asset(
+                                            "images/Rewards.png",
+                                            width: screenWidth*0.6,
+                                          ),
+                                          RichText(
+                                            text: const TextSpan(
+                                                text: 'For every person you refer, you will get Credits! Use credits to redeem',
+                                                style: TextStyle(fontSize: 15),
+                                                children: <TextSpan> [
+                                                  TextSpan(
+                                                    text: ' Premium ',
+                                                    style: TextStyle(color: Colors.blue),
+                                                  ),
+                                                  TextSpan(
+                                                    text: ', or even get paid back in ',
+                                                  ),
+                                                  TextSpan(
+                                                    text: 'Bitcoin!',
+                                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                                  )
+                                                ]
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              overlayColor: MaterialStateColor.resolveWith((states) => Colors.black12),
+                                              backgroundColor: MaterialStatePropertyAll<Color>(referredIdValid ? Colors.white : Colors.grey),
+                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(25.0),
+                                                  )
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              if (!referredIdValid) {
+                                                return;
+                                              }
 
+                                              bool worked = await addReferrer(_referredByController.text);
+
+                                              if (worked == false) {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => refDialog(context, "Referred", "You have already done that prompt or user does not exist")
+                                                  ),
+                                                );
+                                              } else {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => refDialog(context, "Successful", "You have completed the prompt! 😀")
+                                                    // builder: (context) => refDialog(context, "Successful", "You have completed the prompt. \n Refresh your credits (scroll down) :)")
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            child: Text('Submit!', style: TextStyle(color: Colors.black,)),
+                                          ),
+                                        ]
+                                    ),
+                                  )
+                                )
+                            );
                           },
                           child: Text('Someone Referred Me!', style: TextStyle(color: Colors.black,)),
+                        ),
+                      ),
+                      Center(
+                        child: ElevatedButton(
+                          style: roundButton(Colors.transparent),
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    )
+                                ),
+                                builder: (context) => Center(
+                                    child: SizedBox(
+                                      width: screenWidth*0.8,
+                                      child: Center(
+                                        child: SingleChildScrollView(
+                                          child: Column(children: <Widget>[
+                                            Text(
+                                              "Redeem",
+                                              style: hugeTitleStyle,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            title("  1 week Premium: "),
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () => redeemPremiumDialog(context, 7, 1000),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    buttonBlueText("1000 "),
+                                                    creditImage,
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            title("  2 weeks Premium: "),
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () => redeemPremiumDialog(context, 14, 1500),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    buttonBlueText("1500 "),
+                                                    creditImage,
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            title("  3 weeks Premium: "),
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () => redeemPremiumDialog(context, 21, 1800),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    buttonBlueText("1800 "),
+                                                    creditImage,
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            title("  \$5 in Bitcoin: "),
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () {},
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    buttonBlueText("Coming Soon!"),
+                                                    const Icon(
+                                                      Icons.currency_bitcoin,
+                                                      size: 24,
+                                                      color: Colors.blue,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            title("  \$10 in Bitcoin: "),
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () {},
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    buttonBlueText("Coming Soon!"),
+                                                    const Icon(
+                                                      Icons.currency_bitcoin,
+                                                      size: 24,
+                                                      color: Colors.blue,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ])
+                                        )
+                                      ),
+                                    ),
+                                )
+                            );
+                          },
+                          child: Text('Redeem', style: TextStyle(color: Colors.white,)),
                         ),
                       ),
                     ],
@@ -692,7 +897,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             SizedBox(height: 30),
             Center(
               child: Container(
-                height: 150,
+                height: loggedIn ? 185 : 150,
                 width: screenWidth * 0.9,
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -708,7 +913,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     children: <Widget> [
                       Row(
                         children: <Widget> [
-                          Text("  Account", style: TextStyle(color: Colors.white, fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
+                          Text("  Account ", style: TextStyle(color: Colors.white, fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
                           Image.network(
                             userHasPremium() ? "https://i.postimg.cc/N0vc0vzn/Premium-Crown-Crisp.png" : "https://i.postimg.cc/N0c8Wqrw/Empty-Pixel.png",
                             height: 20,
@@ -724,7 +929,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                               CircleAvatar(
                                 backgroundImage: AssetImage("images/Profile.png"),
                                 backgroundColor: Colors.grey,
-                                radius: screenWidth*0.07,
+                                radius: 25,
                               ),
                             ]
                           ),
@@ -786,6 +991,22 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                   ]
                                 ),
                                 Text(FirebaseAuth.instance.currentUser?.email ?? "Please log in"),
+                                if (FirebaseAuth.instance.currentUser?.uid != null)
+                                  Row(
+                                    children: [
+                                      Text(FirebaseAuth.instance.currentUser?.uid ?? "Log In"),
+                                      SizedBox(
+                                        width: screenWidth*0.05,
+                                        height: screenHeight*0.05,
+                                        child: IconButton(
+                                          icon: Icon(Icons.copy, size: screenWidth*0.05),
+                                          onPressed: () async {
+                                            await Clipboard.setData(ClipboardData(text: FirebaseAuth.instance.currentUser?.uid));
+                                          },
+                                        )
+                                      ),
+                                    ],
+                                  )
                               ]
                             )
                           else
@@ -838,6 +1059,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             ),
             settingsTile("Change Password", Icons.lock_open, 0, context),
             settingsTile("Retrospect Account", Icons.account_circle_outlined, 1, context),
+            settingsTile("Alerts", Icons.notifications_none_rounded, 5, context),
             settingsTile("Log Out", Icons.logout_rounded, 2, context),
             SizedBox(
               height: 30,
@@ -893,6 +1115,43 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             );
           } else if (functionN == 4) {
             launch("https://discord.io/retrospect");
+          } else if (functionN == 5) {
+            showModalBottomSheet(
+                context: context,
+                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    )
+                ),
+                builder: (context) => Center(
+                  child: !userHasPremium() ? Column(
+                    children: [
+                      SizedBox(
+                          height: 10
+                      ),
+                      Text(
+                        "Active Alerts",
+                        style: TextStyle(fontSize: 20,),
+                      ),
+                      SizedBox(height: 120,),
+                      Image.network("https://i.postimg.cc/VkpYychz/Lock.png", width: screenWidth*0.3),
+                      SizedBox(height: 20,),
+                      Text("This is a Premium Feature!", style: TextStyle(fontSize: 17)),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => GetPremiumPage()),
+                            ).then((_)=>setState((){}));
+                          },
+                          style: roundButton(Colors.white),
+                          child: Text("Learn more", style: TextStyle(color: Colors.black, fontSize: 15),)
+                      ),
+                    ],
+                  ) : configureAlerts()
+                )
+            );
           }
         },
         style: ButtonStyle(
@@ -929,7 +1188,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                       width: screenWidth*0.09,
                       child: Icon(
                         Icons.arrow_forward_ios_rounded,
-                        size: screenWidth*0.05,
+                        // size: screenWidth*0.05,
                       )
                   )
                 ]
@@ -975,6 +1234,101 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   )
               )
             ]
+        )
+    );
+  }
+
+  SingleChildScrollView configureAlerts() {
+    return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+                height: 10
+            ),
+            Text(
+              "Active Alerts",
+              style: TextStyle(fontSize: 20,),
+            ),
+            SizedBox(
+              width: screenWidth*0.93,
+              height: 400,
+              child: ListView.builder(
+                itemCount: localStorage.read("alerts").length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      title: Container(
+                          height: 50,
+                          decoration: const BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.white,
+                                    width: 1,
+                                  )
+                              )
+                          ),
+                          width: screenWidth*0.9,
+                          child: Row(
+                              children: <Widget> [
+                                SizedBox(width: screenWidth*0.01),
+                                const Icon(
+                                  Icons.notifications_none_rounded,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: screenWidth*0.03),
+                                SizedBox(
+                                    width: screenWidth*0.65,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            localStorage.read("alerts").keys.toList()[index], style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                                        ),
+                                        Text(
+                                            localStorage.read("alerts")[localStorage.read("alerts").keys.toList()[index]], style: TextStyle(color: localStorage.read("alerts")[localStorage.read("alerts").keys.toList()[index]].contains("Bullish") ? cGreen : cRed, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                                        ),
+                                      ],
+                                    )
+                                ),
+                                Container(
+                                    height: 20,
+                                    width: screenWidth*0.09,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.highlight_remove_rounded,
+                                      ),
+                                      onPressed: () {
+                                        Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
+                                        alerts.remove(localStorage.read("alerts").keys.toList()[index]);
+
+                                        setState(() {
+                                          localStorage.write("alerts", alerts);
+                                        });
+
+                                        Navigator.pop(context);
+
+                                        showModalBottomSheet(
+                                            context: context,
+                                            backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.vertical(
+                                                  top: Radius.circular(20),
+                                                )
+                                            ),
+                                            builder: (context) => configureAlerts()
+                                        );
+
+                                      },
+                                    )
+                                )
+                              ]
+                          )
+                      )
+                  );
+                },
+              ),
+            )
+          ],
         )
     );
   }

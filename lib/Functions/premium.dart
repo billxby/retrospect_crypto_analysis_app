@@ -117,6 +117,9 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
         TextButton(
           onPressed: () async {
             bool worked = await redeemCreditsPremium(days, requirement);
+
+            print("worked is $worked");
+
             if (worked == true) {
               Navigator.push(
                 context,
@@ -175,25 +178,35 @@ Future<bool> redeemCreditsPremium(int days, int require) async {
   User? user = FirebaseAuth.instance.currentUser;
 
   final db = FirebaseFirestore.instance;
-  db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) {
+  bool worked = await db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
     if (data['credits'] >= require) {
       db.collection("users").doc(user?.uid).update({'credits': data['credits']-require}).then((value) {},
           onError: (e) {
+            print("Error updating document: $e");
             return false;
           }
       );
+      if (data['expire'] > DateTime.now().millisecondsSinceEpoch) {
+        return false;
+      }
       db.collection("users").doc(user?.uid).update({'expire': DateTime.now().millisecondsSinceEpoch+days*86400000}).then((value) {},
           onError: (e) {
+            print("Error updating document: $e");
             return false;
           }
       );
       return true;
     }
+    return false;
 
   },
-    onError: (e) => print("Error getting document: $e"),
+    onError: (e) {
+      print("Error getting document: $e");
+      return false;
+    },
   );
-  return false;
+  return worked;
+
 }

@@ -128,7 +128,7 @@ TextStyle hugeTitleStyle = TextStyle(
 
 Icon creditImage = const Icon(
   Icons.donut_large,
-  size: 28,
+  size: 24,
   color: Colors.blue,
 );
 

@@ -58,7 +58,7 @@ class _IntroPageState extends State<IntroPage> {
           pages: [
             PageViewModel(
               image: Image.network(
-                  'https://i.postimg.cc/R0bW8fLD/App-Preview-Main-Crop.png',
+                  'https://i.postimg.cc/V6PKzB1b/App-Preview-Main-Crop.png',
               ),
               title: "Welcome to Retrospect!",
               body: "Your one stop for crypto analysis. \n \n Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based on social metrics.",
@@ -80,38 +80,26 @@ class _IntroPageState extends State<IntroPage> {
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/MZr8Q5K4/App-Preview-Main-Bottom-Crop.png'
+                    'https://i.postimg.cc/zvqfpzKG/Settings-Page.png'
                 ),
-                title: "Navigation",
-                body: "Use the Bottom Navigation Bar to make your way through the app!",
+                title: "Settings",
+                body: "Go to the Settings Page to Log In and configure your app!",
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
             ),
             PageViewModel(
-                image: Image.network(
-                  'https://i.postimg.cc/HWPrbqTn/Retrospect-Crowned.png',
+                image: Image.asset(
+                  'images/Premium Crown.gif',
                   height: 200,
                 ),
                 title: "Premium",
-                body: "Premium gives you more than 5 analysis/day and ALERTS for better trading! \n \n You don't need premium to create an account.",
-                footer: const Text("Learn more in the Premium section"),
+                body: "Premium gives you more than 5 analysis/day, alerts, and price history for better trading! \n \n You don't need premium to create an account.",
+                footer: const Text("Learn more by clicking Upgrade"),
                 decoration: const PageDecoration(
                   pageColor: Colors.black12,
                 )
             ),
-            // PageViewModel(
-            //     image: Image.network(
-            //         'https://i.postimg.cc/D0PrC6Fz/Credits.png',
-            //       height: 200,
-            //     ),
-            //     title: "Credits",
-            //     body: "Credits allow you to access more than 5 analysis every day, or to get Premium for free! \n \n You can create an account without needing Premium!",
-            //     footer: const Text("Learn more in the Earn section"),
-            //     decoration: const PageDecoration(
-            //       pageColor: Colors.black12,
-            //     )
-            // ),
           ],
         ),
       )
