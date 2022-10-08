@@ -78,6 +78,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+
     super.initState();
 
     _referredByController.addListener(() {
@@ -1115,6 +1116,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
                   localStorage.write("darkTheme", !localStorage.read("darkTheme"));
                   setState(() {
+
                   });
                   localStorage.read("darkTheme") ? themeProvider.setDarkmode() : themeProvider.setLightMode();
                 },

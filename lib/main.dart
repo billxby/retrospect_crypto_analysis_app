@@ -84,11 +84,12 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "0.1.6";
+String app_version = "0.1.7";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
 bool useMobileLayout = true;
+bool darkTheme = true;
 final LocalNotificationService service = LocalNotificationService();
 
 Future<void> main() async {
@@ -149,6 +150,7 @@ Future<void> main() async {
   bool isDarkMode = brightness == Brightness.dark;
 
   localStorage.writeIfNull("darkTheme", isDarkMode);
+  darkTheme = localStorage.read("darkTheme");
 
   DateTime now = DateTime.now();
   if (DateTime.fromMillisecondsSinceEpoch(localStorage.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
@@ -178,8 +180,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localStorage = GetStorage();
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    localStorage.read("darkTheme") ? themeProvider.setDarkmode() : themeProvider.setLightMode();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

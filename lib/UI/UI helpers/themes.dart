@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../main.dart';
+
 class ThemeProvider extends ChangeNotifier {
-  ThemeData? currentTheme;
+  ThemeData? currentTheme = darkTheme ? customDark : customWhite;
 
   setLightMode() {
     currentTheme = customWhite;
