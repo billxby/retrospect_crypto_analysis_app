@@ -925,7 +925,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             SizedBox(height: 30),
             Center(
               child: Container(
-                height: loggedIn ? 185 : 150,
+                height: loggedIn ? 195 : 160,
                 width: screenWidth * 0.9,
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -1378,10 +1378,10 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   return ListTile(
                       title: Container(
                           height: 50,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.secondary,
                                     width: 1,
                                   )
                               )
@@ -1392,7 +1392,6 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                 SizedBox(width: screenWidth*0.01),
                                 const Icon(
                                   Icons.notifications_none_rounded,
-                                  color: Colors.white,
                                 ),
                                 SizedBox(width: screenWidth*0.03),
                                 SizedBox(
@@ -1401,7 +1400,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            localStorage.read("alerts").keys.toList()[index], style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                                            localStorage.read("alerts").keys.toList()[index], style: TextStyle( fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
                                         ),
                                         Text(
                                             localStorage.read("alerts")[localStorage.read("alerts").keys.toList()[index]], style: TextStyle(color: localStorage.read("alerts")[localStorage.read("alerts").keys.toList()[index]].contains("Bullish") ? cGreen : cRed, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)

@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                   const TextSpan(text: 'By Signing up, you agree to our '),
                   TextSpan(
                       text: 'Terms of Service',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       recognizer: TapGestureRecognizer()..onTap = () async {
                         await launchUrl(Uri.parse("https://www.retrospectapps.com/privacy-policy.html"));
                       }
@@ -300,7 +300,7 @@ class _LoginPageState extends State<LoginPage> {
                   const TextSpan(text: 'By Logging In, you agree to our '),
                   TextSpan(
                       text: 'Terms of Service',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       recognizer: TapGestureRecognizer()..onTap = () async {
                         await launchUrl(Uri.parse("https://www.retrospectapps.com/privacy-policy.html"));
                       }

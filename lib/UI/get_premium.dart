@@ -33,9 +33,11 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Premium'),
+        title: const Text('Premium', style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        backgroundColor: Colors.black,
         toolbarHeight: 40,
       ),
       body: SingleChildScrollView(
@@ -106,7 +108,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                       "images/Premium Crown.gif",
                       width: screenWidth*0.5,
                     ),
-                    Text("Compare Plans", style: TextStyle(fontSize: 22, height: 2)),
+                    Text("Compare Plans", style: TextStyle(fontSize: 22, height: 2, color: Colors.white)),
                     SizedBox(
                       height: screenHeight*0.52,
                       child: SingleChildScrollView(
@@ -145,11 +147,11 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                       width: screenWidth*0.55,
                                       child: Column(
                                         children: const <Widget> [
-                                          Text("\u2022 Unlimited Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
-                                          Text("\u2022 20 Alerts to Stay on Top of the Market\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
-                                          Text("\u2022 Keep Track of Cryptos Rating over 365 days\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
-                                          Text("\u2022 Exclusive Discord Roles & Trading Channels \n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
-                                          Text("\u2022 Fast Support & Assistance", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
+                                          Text("\u2022 Unlimited Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                          Text("\u2022 20 Alerts to Stay on Top of the Market\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                          Text("\u2022 Keep Track of Cryptos Rating over 365 days\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                          Text("\u2022 Exclusive Discord Roles & Trading Channels \n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                          Text("\u2022 Fast Support & Assistance", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                         ]
                                       )
                                     ),
@@ -192,7 +194,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                       Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget> [
-                                            Text("Free", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                            Text("Free", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                                           ]
                                       ),
                                       SizedBox(height: 20),
@@ -200,9 +202,9 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                           width: screenWidth*0.55,
                                           child: Column(
                                               children: const <Widget> [
-                                                Text("\u2022 5 Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
-                                                Text("\u2022 Keep Track of Cryptos Rating for 7 days\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
-                                                Text("\u2022 Discord Support & Assistance \n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
+                                                Text("\u2022 5 Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                                Text("\u2022 Keep Track of Cryptos Rating for 7 days\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                                Text("\u2022 Discord Support & Assistance \n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                               ]
                                           )
                                       ),
@@ -244,7 +246,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget> [
                                       SizedBox(height: 20),
-                                      Text("Enter Promocode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                      Text("Enter Promocode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
                                       SizedBox(
                                         width: screenWidth*0.8,
                                         child: TextFormField(
@@ -252,6 +254,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                           decoration: const InputDecoration(
                                             border: UnderlineInputBorder(),
                                             labelText: 'Enter Code',
+                                            labelStyle: TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ),
