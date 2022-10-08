@@ -14,7 +14,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
       shape: const RoundedRectangleBorder(
           borderRadius:
           BorderRadius.all(Radius.circular(20.0))),
-      backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
       content: Text('This is a Premium Feature!', textAlign: TextAlign.center),
       actions: <Widget>[
         TextButton(
@@ -32,7 +32,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
     shape: const RoundedRectangleBorder(
         borderRadius:
         BorderRadius.all(Radius.circular(20.0))),
-    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+    backgroundColor: Theme.of(context).colorScheme.tertiary,
     content: SizedBox(
       height: alerts.containsKey(inputData['crypto']) ? 140 : 120,
       child: Column(
@@ -56,7 +56,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           Container(
             height: 1,
             width: screenWidth*0.54,
-            color: darkTheme ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.secondary,
           ),
           const SizedBox(height: 15),
           Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}", textAlign: TextAlign.center),

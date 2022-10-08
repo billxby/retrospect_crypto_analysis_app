@@ -108,7 +108,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                     ),
                     Text("Compare Plans", style: TextStyle(fontSize: 22, height: 2)),
                     SizedBox(
-                      height: screenHeight*0.48,
+                      height: screenHeight*0.52,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -142,7 +142,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                     ),
                                     SizedBox(height: 20),
                                     SizedBox(
-                                      width: screenWidth*0.5,
+                                      width: screenWidth*0.55,
                                       child: Column(
                                         children: const <Widget> [
                                           Text("\u2022 Unlimited Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),
@@ -197,7 +197,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                       ),
                                       SizedBox(height: 20),
                                       SizedBox(
-                                          width: screenWidth*0.5,
+                                          width: screenWidth*0.55,
                                           child: Column(
                                               children: const <Widget> [
                                                 Text("\u2022 5 Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15), textAlign: TextAlign.left,),

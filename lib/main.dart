@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:crypto_app/Functions/purchase.dart';
@@ -16,6 +17,7 @@ import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
@@ -77,13 +79,12 @@ List<String> testDeviceIds = ["F8A58E90D076195FF066127E3013260E", "6C2862513BCA3
 //Declare styles
 
 //Settings variables
-bool darkTheme = true;
 String sortBy = "⬆A-Z";
 int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "0.1.3";
+String app_version = "0.1.5";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -92,7 +93,7 @@ final LocalNotificationService service = LocalNotificationService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final app = await Firebase.initializeApp(
     // name: "Retrospect",
   );
@@ -144,6 +145,11 @@ Future<void> main() async {
   localStorage.writeIfNull("starred", <int> []);
   localStorage.writeIfNull("notificationN", 0);
 
+  var brightness = SchedulerBinding.instance!.window.platformBrightness;
+  bool isDarkMode = brightness == Brightness.dark;
+
+  localStorage.writeIfNull("darkTheme", isDarkMode);
+
   DateTime now = DateTime.now();
   if (DateTime.fromMillisecondsSinceEpoch(localStorage.read("last open")).compareTo(DateTime(now.year, now.month, now.day, 0, 0, 0)) < 0) {
     localStorage.write("used", <String> []);
@@ -154,7 +160,16 @@ Future<void> main() async {
 
   localStorage.write("last open", DateTime.now().millisecondsSinceEpoch);
 
-  runApp(MyApp());
+  runApp(
+    MultiProvider( // create the provider
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(),
+        )
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -162,16 +177,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localStorage = GetStorage();
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    localStorage.read("darkTheme") ? themeProvider.setDarkmode() : themeProvider.setLightMode();
 
-    // localStorage.write("displayed", false);
-    if (darkTheme == false) {
-      Get.changeTheme(customWhite);
-    }
-    return GetMaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
-      theme: customDark,
-      // darkTheme: customDark,
+      theme: Provider.of<ThemeProvider>(context).currentTheme,
       home: SplashScreen(),
     );
   }
@@ -206,8 +219,7 @@ Future<void> getAlerts() async {
   localStorage.write("alerts", alerts);
 }
 
-void listenToNotification() =>
-    service.onNotificationClick.stream.listen(onNoticationListener);
+void listenToNotification() => service.onNotificationClick.stream.listen(onNoticationListener);
 
 void onNoticationListener(String? payload) {
   if (payload != null && payload.isNotEmpty) {

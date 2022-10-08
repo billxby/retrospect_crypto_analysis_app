@@ -106,7 +106,6 @@ TextStyle titleStyle = TextStyle(
   height: 2,
   fontSize: 16,
   fontWeight: FontWeight.bold,
-  color: darkTheme ? Colors.white : Colors.black,
 );
 
 Text buttonBlueText(String content) {
@@ -123,7 +122,6 @@ Text buttonBlueText(String content) {
 TextStyle hugeTitleStyle = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.bold,
-  color: Colors.white,
 );
 
 Icon creditImage = const Icon(
@@ -250,7 +248,7 @@ ButtonStyle roundButton(Color color) {
   );
 }
 
-Row infoWidget(String title, String description, String url, IconData icon) {
+Row infoWidget(String title, String description, String url, IconData icon, Color backgroundColor) {
   return Row(
     children: [
       Container(
@@ -260,7 +258,15 @@ Row infoWidget(String title, String description, String url, IconData icon) {
               color: Colors.transparent,
             ),
             borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: Colors.white10,
+            color: backgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(2),
           child: Column(
@@ -273,7 +279,7 @@ Row infoWidget(String title, String description, String url, IconData icon) {
                       SizedBox(
                         width: screenWidth*0.03,
                       ),
-                      Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,)),
                       Icon(
                         icon,
                       )

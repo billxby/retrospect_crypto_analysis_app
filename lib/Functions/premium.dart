@@ -23,20 +23,7 @@ import '../UI/detailspage.dart';
 final localStorage = GetStorage();
 
 bool userHasPremium() {
-  if (isPremium) {
-    return true;
-  }
-
-  if (localStorage.read("username") != "") {
-    DateTime now = DateTime.now();
-    DateTime begin = DateTime.fromMillisecondsSinceEpoch(0);
-
-    if ((DateTime.fromMillisecondsSinceEpoch(premiumExpire) ?? begin).compareTo(now) > 0) {
-      return true;
-    }
-  }
-
-  return false;
+  return isPremium;
 }
 
 bool userLimitAvailable(int passedIndex) {
@@ -88,12 +75,12 @@ Future<bool> redeemCreditsDetails(int passedIndex) async {
 refDialog(BuildContext context, String title, String content) {
   return AlertDialog(
     title: Text(title),
-    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+    backgroundColor: Theme.of(context).colorScheme.tertiary,
     content: Text(content),
     actions: <Widget>[
       TextButton(
         onPressed: () => Navigator.pop(context, 'OK'),
-        child: const Text('OK'),
+        child: const Text('OK', style: TextStyle(color: Colors.blue)),
       ),
     ],
   );
@@ -106,13 +93,13 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
       shape: const RoundedRectangleBorder(
           borderRadius:
           BorderRadius.all(Radius.circular(20.0))),
-      backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
       title: const Text('Redeem Premium?'),
       content: Text('Redeem $days days of Premium for $requirement credits?'),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
-          child: const Text('Cancel'),
+          child: const Text('Cancel', style: TextStyle(color: Colors.blue)),
         ),
         TextButton(
           onPressed: () async {
@@ -128,13 +115,13 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
                     shape: const RoundedRectangleBorder(
                         borderRadius:
                         BorderRadius.all(Radius.circular(20.0))),
-                    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
                     title: const Text('Successful!'),
-                    content: const Text('Enjoy your premium subscription!'),
+                    content: const Text('Go to Settings and click "REFRESH PREMIUM STATUS". \n Enjoy your premium subscription!', textAlign: TextAlign.center,),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
+                        child: const Text('OK', style: TextStyle(color: Colors.blue)),
                       ),
                     ],
                   ),
@@ -148,14 +135,14 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
                     shape: const RoundedRectangleBorder(
                         borderRadius:
                         BorderRadius.all(Radius.circular(20.0))),
-                    backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
                     title: const Text('An Error Occurred!'),
                     content: const Text(
                         'You either already have premium or do not have enough credits'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
+                        child: const Text('OK', style: TextStyle(color: Colors.blue)),
                       ),
                     ],
                   ),
@@ -163,7 +150,7 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
               );
             }
           },
-          child: const Text('OK'),
+          child: const Text('OK', style: TextStyle(color: Colors.blue)),
         ),
       ],
     ),
@@ -178,7 +165,7 @@ Future<bool> redeemCreditsPremium(int days, int require) async {
   User? user = FirebaseAuth.instance.currentUser;
 
   final db = FirebaseFirestore.instance;
-  bool worked = await db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) {
+  bool worked = await db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
 
     if (data['credits'] >= require) {
@@ -188,16 +175,17 @@ Future<bool> redeemCreditsPremium(int days, int require) async {
             return false;
           }
       );
-      if (data['expire'] > DateTime.now().millisecondsSinceEpoch) {
-        return false;
+      String duration = "daily";
+
+      switch(days) {
+        case 7: {duration = "weekly"; }
+          break;
+
+        case 28: {duration = "monthly"; }
+          break;
       }
-      db.collection("users").doc(user?.uid).update({'expire': DateTime.now().millisecondsSinceEpoch+days*86400000}).then((value) {},
-          onError: (e) {
-            print("Error updating document: $e");
-            return false;
-          }
-      );
-      return true;
+      bool worked = await redeemPremiumFunction(duration);
+      return worked;
     }
     return false;
 

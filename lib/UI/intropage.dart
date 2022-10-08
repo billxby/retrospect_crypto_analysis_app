@@ -46,9 +46,9 @@ class _IntroPageState extends State<IntroPage> {
           showDoneButton: true,
           showSkipButton: true,
           showNextButton: true,
-          next:Text("Next"),
-          skip:Text("Skip"),
-          done:Text("Done"),
+          next:Text("Next", style: TextStyle(color: Colors.blue)),
+          skip:Text("Skip", style: TextStyle(color: Colors.blue)),
+          done:Text("Done", style: TextStyle(color: Colors.blue)),
           onDone: (){
             _EndWelcomePage(context);
           },

@@ -17,6 +17,7 @@ import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -53,6 +54,7 @@ import '../Functions/premium.dart';
 import 'package:flutter/services.dart';
 
 bool fetching = false;
+bool reloading = false;
 List<String> sortOptions = <String>['Starred', "⬆A-Z", '⬇A-Z', '⬆Mrkt', '⬇Mrkt', '⬆24h', '⬇24h', "⬆Rscr", '⬇Rscr', '⬆Vol', '⬇Vol',];
 int credits = 0;
 
@@ -138,7 +140,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
 
     if (_selectedIndex == 0) {
       return FutureBuilder(
-          future: checkExpire(),
+          future: checkPremium(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return homePage();
@@ -149,7 +151,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
     }
     else if (_selectedIndex == 1) {
       return FutureBuilder(
-          future: checkExpire(),
+          future: checkPremium(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Scaffold(
@@ -188,7 +190,15 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
       );
     }
     else {
-        return settingsPage();
+      return FutureBuilder(
+          future: checkPremium(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return settingsPage();
+            }
+            return settingsPage();
+          }
+      );
       }
     }
 
@@ -196,28 +206,25 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
-      backgroundColor: Colors.black,
-      items: <BottomNavigationBarItem>[
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: const Icon(Icons.home_outlined),
           label: 'Home',
-          backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
         BottomNavigationBarItem(
           icon: const Icon(
             Icons.show_chart,
           ),
           label: 'Market',
-          backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
         BottomNavigationBarItem(
           icon: const Icon(Icons.settings_outlined),
           label: 'Settings',
-          backgroundColor: darkTheme ? Colors.black45 : Colors.grey[300],
         ),
       ],
       selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.white,
+      unselectedItemColor: Theme.of(context).colorScheme.secondary,
     );
   }
 
@@ -244,14 +251,14 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                             });
                           },
                           style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(sortByIdx == index ? Colors.white : (darkTheme ? Colors.white10 : Colors.grey[200])),
+                              backgroundColor: MaterialStateProperty.all(sortByIdx == index ? Theme.of(context).colorScheme.onBackground : (Theme.of(context).colorScheme.background)),
                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   )
                               )
                           ),
-                          child: Text(sortOptions[index], style: TextStyle(color: sortByIdx == index ? Colors.black : Colors.white,), softWrap: true,),
+                          child: Text(sortOptions[index], style: TextStyle(color: sortByIdx == index ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.secondary,), softWrap: true,),
                         ),
                       ]
                   )
@@ -280,7 +287,15 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                         color: Colors.transparent,
                       ),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: darkTheme ? Colors.white10 : Colors.grey[200],
+                      color: Theme.of(context).colorScheme.background,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 2,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
                     ),
                     padding: const EdgeInsets.all(2),
                     child: Center(
@@ -330,10 +345,6 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                           .contains("-")
                                           ? cRed
                                           : Color(0xff0DC9AB)),
-                                  // listviewTextTitle(" Vol "),
-                                  // listviewTextInfo(
-                                  //     TopCryptos[Sort[sortBy]![index]].total_volume,
-                                  //     darkTheme ? Colors.white : Colors.black),
                                 ],
                               ),
                             ],
@@ -408,6 +419,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
         title: const Text('Home'),
         centerTitle: true,
         toolbarHeight: 40,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -438,7 +450,15 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                       color: Colors.transparent,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: darkTheme ? Colors.white10 : Colors.grey[200],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 2,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    color: Theme.of(context).colorScheme.background,
                   ),
                   padding: const EdgeInsets.all(2),
                   child: Column(
@@ -451,7 +471,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                           SizedBox(
                             width: screenWidth*0.05,
                           ),
-                          Text("Market Overview", style: TextStyle(color: Colors.white, fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
+                          Text("Market Overview", style: TextStyle(fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
                         ],
                       ),
                       SizedBox(height: 15),
@@ -591,9 +611,9 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                         SizedBox(
                           width: screenWidth*0.1,
                         ),
-                        infoWidget("Exchanges ", "Check out our recommended Crypto Exchanges!", "https://www.investopedia.com/best-crypto-exchanges-5071855", Icons.currency_exchange),
-                        infoWidget("Charting ", "Chart out the Market for Technical Analysis!", "https://www.tradingview.com/", Icons.bar_chart),
-                        infoWidget("Support ", "Need help with anything? Join our discord!", "https://discord.io/retrospect", Icons.contact_support_outlined),
+                        infoWidget("Exchanges ", "Check out our recommended Crypto Exchanges!", "https://www.investopedia.com/best-crypto-exchanges-5071855", Icons.currency_exchange, Theme.of(context).colorScheme.background),
+                        infoWidget("Charting ", "Chart out the Market for Technical Analysis!", "https://www.tradingview.com/", Icons.bar_chart, Theme.of(context).colorScheme.background),
+                        infoWidget("Support ", "Need help with anything? Join our discord!", "https://discord.io/retrospect", Icons.contact_support_outlined, Theme.of(context).colorScheme.background),
                         SizedBox(
                           width: screenWidth*0.05,
                         ),
@@ -613,7 +633,15 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                       color: Colors.transparent,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: darkTheme ? Colors.white10 : Colors.grey[200],
+                    color: Theme.of(context).colorScheme.background,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 2,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
                   ),
                   padding: const EdgeInsets.all(2),
                   child: Column(
@@ -628,7 +656,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                           ),
                           SizedBox(
                             width: screenWidth*0.3,
-                            child: Text("Credits", style: TextStyle(color: Colors.white, fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
+                            child: Text("Credits", style: TextStyle(fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
                           ),
                           SizedBox(
                             width: screenWidth*0.44,
@@ -640,13 +668,12 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
                                   ),
                                 ),
-                                const Icon(
+                                Icon(
                                   Icons.donut_large,
                                   size: 23,
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                               ],
                             )
@@ -669,7 +696,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                           onPressed: () {
                             showModalBottomSheet(
                                 context: context,
-                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                backgroundColor: Theme.of(context).colorScheme.tertiary,
                                 shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(20),
@@ -697,10 +724,10 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                             width: screenWidth*0.6,
                                           ),
                                           RichText(
-                                            text: const TextSpan(
+                                            text: TextSpan(
                                                 text: 'For every person you refer, you will get Credits! Use credits to redeem',
-                                                style: TextStyle(fontSize: 15),
-                                                children: <TextSpan> [
+                                                style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.secondary,),
+                                                children: const <TextSpan> [
                                                   TextSpan(
                                                     text: ' Premium ',
                                                     style: TextStyle(color: Colors.blue),
@@ -718,7 +745,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                           ElevatedButton(
                                             style: ButtonStyle(
                                               overlayColor: MaterialStateColor.resolveWith((states) => Colors.black12),
-                                              backgroundColor: MaterialStatePropertyAll<Color>(referredIdValid ? Colors.white : Colors.grey),
+                                              backgroundColor: MaterialStatePropertyAll<Color>(referredIdValid ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.error),
                                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                                   RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(25.0),
@@ -749,7 +776,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                                 );
                                               }
                                             },
-                                            child: Text('Submit!', style: TextStyle(color: Colors.black,)),
+                                            child: Text('Submit!', style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
                                           ),
                                         ]
                                     ),
@@ -766,7 +793,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                           onPressed: () {
                             showModalBottomSheet(
                                 context: context,
-                                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                backgroundColor: Theme.of(context).colorScheme.tertiary,
                                 shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(20),
@@ -785,36 +812,36 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                             SizedBox(
                                               height: 10,
                                             ),
+                                            title("  1 day Premium: "),
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () => redeemPremiumDialog(context, 1, 250),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    buttonBlueText("250 "),
+                                                    creditImage,
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                             title("  1 week Premium: "),
                                             Center(
                                               child: OutlinedButton(
-                                                onPressed: () => redeemPremiumDialog(context, 7, 1000),
+                                                onPressed: () => redeemPremiumDialog(context, 7, 800),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: <Widget>[
-                                                    buttonBlueText("1000 "),
+                                                    buttonBlueText("800 "),
                                                     creditImage,
                                                   ],
                                                 ),
                                               ),
                                             ),
-                                            title("  2 weeks Premium: "),
+                                            title("  4 weeks Premium: "),
                                             Center(
                                               child: OutlinedButton(
-                                                onPressed: () => redeemPremiumDialog(context, 14, 1500),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    buttonBlueText("1500 "),
-                                                    creditImage,
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            title("  3 weeks Premium: "),
-                                            Center(
-                                              child: OutlinedButton(
-                                                onPressed: () => redeemPremiumDialog(context, 21, 1800),
+                                                onPressed: () => redeemPremiumDialog(context, 28, 1800),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: <Widget>[
@@ -890,6 +917,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
         title: const Text('Settings'),
         centerTitle: true,
         toolbarHeight: 40,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -904,7 +932,15 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     color: Colors.transparent,
                   ),
                   borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: darkTheme ? Colors.white10 : Colors.grey[200],
+                  color: Theme.of(context).colorScheme.background,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
                 ),
                 padding: const EdgeInsets.all(2),
                 child: Column(
@@ -913,11 +949,11 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                     children: <Widget> [
                       Row(
                         children: <Widget> [
-                          Text("  Account ", style: TextStyle(color: Colors.white, fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
+                          Text("  Account ", style: TextStyle(fontSize: 22, height: 1.2), textAlign: TextAlign.start,),
                           Image.network(
                             userHasPremium() ? "https://i.postimg.cc/N0vc0vzn/Premium-Crown-Crisp.png" : "https://i.postimg.cc/N0c8Wqrw/Empty-Pixel.png",
                             height: 20,
-                          )
+                          ),
                         ],
                       ),
                       Row(
@@ -950,7 +986,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius:
                                                 BorderRadius.all(Radius.circular(20.0))),
-                                            backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                            backgroundColor: Theme.of(context).colorScheme.tertiary,
                                             title: const Text('Set Name'),
                                             content: SizedBox(
                                               height: 100,
@@ -970,7 +1006,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                             actions: <Widget>[
                                               TextButton(
                                                 onPressed: () => Navigator.pop(context, 'Cancel'),
-                                                child: const Text('Cancel'),
+                                                child: const Text('Cancel', style: TextStyle(color: Colors.blue)),
                                               ),
                                               TextButton(
                                                 onPressed: () async {
@@ -979,7 +1015,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                                   }
                                                   Navigator.pop(context);
                                                 },
-                                                child: const Text('OK'),
+                                                child: const Text('OK', style: TextStyle(color: Colors.blue)),
                                               ),
                                             ],
                                           ),
@@ -1023,8 +1059,8 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                     MaterialPageRoute(builder: (context) => GetPremiumPage()),
                                   ).then((_)=>setState((){}));
                                 },
-                                style: roundButton(Colors.white),
-                                child: Text("Upgrade", style: TextStyle(color: Colors.black))
+                                style: roundButton(Theme.of(context).colorScheme.secondary),
+                                child: Text(userHasPremium() ? "See plans" : "Upgrade", style: TextStyle(color: Theme.of(context).colorScheme.primary))
                             ),
                         ),
                       if (!loggedIn)
@@ -1040,8 +1076,8 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                     MaterialPageRoute(builder: (context) => LoginPage()),
                                   ).then((_)=>setState((){}));
                                 },
-                                style: roundButton(Colors.white),
-                                child: Text("Log In", style: TextStyle(color: Colors.black)),
+                                style: roundButton(Theme.of(context).colorScheme.secondary),
+                                child: Text("Log In", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                               ),
                             ),
                             SizedBox(
@@ -1059,8 +1095,9 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             ),
             settingsTile("Change Password", Icons.lock_open, 0, context),
             settingsTile("Retrospect Account", Icons.account_circle_outlined, 1, context),
-            settingsTile("Alerts", Icons.notifications_none_rounded, 5, context),
-            settingsTile("Log Out", Icons.logout_rounded, 2, context),
+            settingsTile("Alerts", Icons.notifications_none_rounded, 2, context),
+            settingsTile("Refresh Premium Status", Icons.refresh_rounded, 3, context),
+            settingsTile("Log Out", Icons.logout_rounded, 4, context),
             SizedBox(
               height: 30,
             ),
@@ -1073,8 +1110,58 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                 Text("General", style: TextStyle(fontSize: 22,)),
               ],
             ),
-            settingsTile("App Intro", Icons.phone_android_rounded, 3, context),
-            settingsTile("Support", Icons.chat_bubble_outline_rounded, 4, context),
+            ElevatedButton(
+                onPressed:() async {
+                  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+                  localStorage.write("darkTheme", !localStorage.read("darkTheme"));
+                  setState(() {
+                  });
+                  localStorage.read("darkTheme") ? themeProvider.setDarkmode() : themeProvider.setLightMode();
+                },
+                style: ButtonStyle(
+                  backgroundColor: const MaterialStatePropertyAll<Color>(Colors.transparent),
+                  overlayColor: MaterialStateColor.resolveWith((states) => Colors.white24),
+                  shadowColor: const MaterialStatePropertyAll<Color>(Colors.transparent),
+                ),
+                child: Container(
+                    height: 45,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: 1,
+                            )
+                        )
+                    ),
+                    width: screenWidth*0.9,
+                    child: Row(
+                        children: <Widget> [
+                          SizedBox(width: screenWidth*0.01),
+                          Icon(
+                            Icons.dark_mode_outlined,
+                          ),
+                          SizedBox(width: screenWidth*0.03),
+                          SizedBox(
+                            width: screenWidth*0.7,
+                            child: Text(
+                                "Dark Theme", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                            ),
+                          ),
+                          Container(
+                              height: 20,
+                              width: screenWidth*0.09,
+                              child: Icon(
+                                localStorage.read("darkTheme") ? Icons.toggle_on : Icons.toggle_off,
+                                // size: screenWidth*0.05,
+                              )
+                          )
+                        ]
+                    )
+                )
+            ),
+            settingsTile("App Intro", Icons.phone_android_rounded, 5, context),
+            settingsTile("Support", Icons.chat_bubble_outline_rounded, 6, context),
+            settingsTile("Website", Icons.web_rounded, 7, context),
             settingsInfo("App Version", app_version, Icons.access_time_rounded),
           ],
         )
@@ -1086,7 +1173,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   ElevatedButton settingsTile(String value, IconData icon, int functionN, BuildContext context) {
     return ElevatedButton(
         onPressed:() async {
-          if (functionN < 3 && loggedIn == false) {
+          if (functionN < 5 && loggedIn == false) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => LoginPage()),
@@ -1094,76 +1181,110 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
             return;
           }
 
-          if (functionN == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => UpdatePasswordPage()),
-            );
-          } else if (functionN == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => DeleteAccountPage()),
-            );
-          } else if (functionN == 2) {
-            await FirebaseAuth.instance.signOut();
-            isPremium = false;
-            setState(() {});
-          } else if (functionN == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => IntroPage()),
-            );
-          } else if (functionN == 4) {
-            launch("https://discord.io/retrospect");
-          } else if (functionN == 5) {
-            showModalBottomSheet(
-                context: context,
-                backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    )
-                ),
-                builder: (context) => Center(
-                  child: !userHasPremium() ? Column(
-                    children: [
-                      SizedBox(
-                          height: 10
-                      ),
-                      Text(
-                        "Active Alerts",
-                        style: TextStyle(fontSize: 20,),
-                      ),
-                      SizedBox(height: 120,),
-                      Image.network("https://i.postimg.cc/VkpYychz/Lock.png", width: screenWidth*0.3),
-                      SizedBox(height: 20,),
-                      Text("This is a Premium Feature!", style: TextStyle(fontSize: 17)),
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => GetPremiumPage()),
-                            ).then((_)=>setState((){}));
-                          },
-                          style: roundButton(Colors.white),
-                          child: Text("Learn more", style: TextStyle(color: Colors.black, fontSize: 15),)
-                      ),
-                    ],
-                  ) : configureAlerts()
-                )
-            );
+          switch(functionN) {
+            case 0: {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UpdatePasswordPage()),
+              );
+            }
+              break;
+
+            case 1: {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DeleteAccountPage()),
+              );
+            }
+              break;
+
+            case 2: {
+              showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      )
+                  ),
+                  builder: (context) => Center(
+                      child: !userHasPremium() ? Column(
+                        children: [
+                          SizedBox(
+                              height: 10
+                          ),
+                          Text(
+                            "Active Alerts",
+                            style: TextStyle(fontSize: 20,),
+                          ),
+                          SizedBox(height: 120,),
+                          Image.network("https://i.postimg.cc/VkpYychz/Lock.png", width: screenWidth*0.3),
+                          SizedBox(height: 20,),
+                          Text("This is a Premium Feature!", style: TextStyle(fontSize: 17)),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => GetPremiumPage()),
+                                ).then((_)=>setState((){}));
+                              },
+                              style: roundButton(Colors.white),
+                              child: Text("Learn more", style: TextStyle(color: Colors.black, fontSize: 15),)
+                          ),
+                        ],
+                      ) : configureAlerts()
+                  )
+              );
+            }
+              break;
+
+            case 3: {
+              if (reloading == false) {
+                reloading = true;
+                await initPlatformState();
+                setState(() {});
+                await Future.delayed(Duration(seconds: 10));
+                reloading = false;
+              }
+            }
+              break;
+
+            case 4: {
+              await FirebaseAuth.instance.signOut();
+              isPremium = false;
+              setState(() {});
+            }
+              break;
+
+            case 5: {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => IntroPage()),
+              );
+            }
+              break;
+
+            case 6: {
+              launch("https://discord.io/retrospect");
+            }
+              break;
+
+            case 7: {
+              launch("https://www.retrospectapps.com");
+            }
           }
         },
         style: ButtonStyle(
           backgroundColor: const MaterialStatePropertyAll<Color>(Colors.transparent),
-          overlayColor: MaterialStateColor.resolveWith((states) => Colors.white24),
+          overlayColor: MaterialStateColor.resolveWith((states) => localStorage.read("darkTheme") ? Colors.white24 : Colors.black12),
+          shadowColor: const MaterialStatePropertyAll<Color>(Colors.transparent),
         ),
         child: Container(
             height: 45,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 border: Border(
                     bottom: BorderSide(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.secondary,
                       width: 1,
                     )
                 )
@@ -1174,13 +1295,12 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                   SizedBox(width: screenWidth*0.01),
                   Icon(
                     icon,
-                    color: Colors.white,
                   ),
                   SizedBox(width: screenWidth*0.03),
                   SizedBox(
                     width: screenWidth*0.7,
                     child: Text(
-                        value, style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                        value, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
                     ),
                   ),
                   Container(
@@ -1214,13 +1334,12 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
               SizedBox(width: screenWidth*0.01),
               Icon(
                 icon,
-                color: Colors.white,
               ),
               SizedBox(width: screenWidth*0.03),
               SizedBox(
                 width: screenWidth*0.7,
                 child: Text(
-                    value, style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                    value, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
                 ),
               ),
               Container(
@@ -1309,7 +1428,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
 
                                         showModalBottomSheet(
                                             context: context,
-                                            backgroundColor: darkTheme ? const Color(0xff1B1B1B) : Colors.grey[200],
+                                            backgroundColor: Theme.of(context).colorScheme.tertiary,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.vertical(
                                                   top: Radius.circular(20),

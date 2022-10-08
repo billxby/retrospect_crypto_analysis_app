@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto_app/Functions/premium.dart';
+import 'package:crypto_app/Functions/purchase.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:crypto_app/main.dart';
@@ -27,42 +28,19 @@ import 'package:cloud_functions/cloud_functions.dart';
 import '../UI/get_premium.dart';
 import '../UI/mainpages.dart';
 
-Future<bool> checkExpire() async {
-  User? user = FirebaseAuth.instance.currentUser;
-  final db = FirebaseFirestore.instance;
+Future<bool> checkPremium() async {
+  CustomerInfo purchaserInfo = await Purchases.getCustomerInfo();
+  final entitlements = purchaserInfo.entitlements.active.values.toList();
+  var isPro = purchaserInfo.entitlements.all['premium_membership']?.isActive;
 
-  if (user?.uid == null) {
-    premiumExpire = 0;
-    return false;
+  if (entitlements.length > 0) {
+    isPremium = true;
+  }
+  else {
+    isPremium = false;
   }
 
-  db.collection("users").doc(user?.uid).get().then((DocumentSnapshot doc) async {
-    final data = doc.data() as Map<String, dynamic>;
-
-    premiumExpire = data['expire'];
-
-    CustomerInfo purchaserInfo = await Purchases.getCustomerInfo();
-    final entitlements = purchaserInfo.entitlements.active.values.toList();
-    var isPro = purchaserInfo.entitlements.all['premium_membership']?.isActive;
-
-    if (entitlements.length > 0) {
-      isPremium = true;
-      print(entitlements[0].toJson());
-      DateTime original = DateTime.tryParse(entitlements[0].toJson()['originalPurchaseDate']) ?? DateTime(2000,07,07);
-      DateTime dt1 = DateTime.tryParse(entitlements[0].toJson()['latestPurchaseDate']) ?? DateTime(2000,07,07);
-
-      premiumExpire = dt1.millisecondsSinceEpoch+2629743000;
-
-      if (entitlements[0].toJson()['productIdentifier'].contains("1y")) {
-        premiumExpire = dt1.millisecondsSinceEpoch+(365*24*60*60*1000);
-      }
-    }
-
-    return true;
-  },
-    onError: (e) => print("Error getting document: $e"),
-  );
-  return false;
+  return true;
 }
 
 Future<bool> appVersion() async {
@@ -159,5 +137,21 @@ Future<bool> redeemPromocode(String code) async {
   }
 
   currentPromo = "none";
+  return false;
+}
+
+Future<bool> redeemPremiumFunction(String duration) async {
+  try {
+    final response = await http.get(Uri.parse('https://us-central1-crypto-project-001.cloudfunctions.net/redeem-premium?uid=${FirebaseAuth.instance.currentUser?.uid}&duration=$duration'));
+    print(response.body);
+
+    if (response.body == "True") {
+      return true;
+    }
+
+  } catch (e){
+    return false;
+  }
+
   return false;
 }
