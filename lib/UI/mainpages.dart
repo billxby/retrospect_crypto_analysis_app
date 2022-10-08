@@ -55,7 +55,7 @@ import 'package:flutter/services.dart';
 
 bool fetching = false;
 bool reloading = false;
-List<String> sortOptions = <String>['Starred', "⬆A-Z", '⬇A-Z', '⬆Mrkt', '⬇Mrkt', '⬆24h', '⬇24h', "⬆Rscr", '⬇Rscr', '⬆Vol', '⬇Vol',];
+List<String> sortOptions = <String>['Starred', "↑A-Z", '↓A-Z', '↑Mrkt', '↓Mrkt', '↑24h', '↓24h', "↑Rscr", '↓Rscr', '↑Vol', '↓Vol',];
 int credits = 0;
 
 class MainPages extends StatefulWidget {
@@ -488,7 +488,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => DetailsPage(
-                                          passedIndex: Sort['⬇Mrkt']?[index] ?? 0,
+                                          passedIndex: Sort['↓Mrkt']?[index] ?? 0,
                                         )),
                                   ).then((_)=>setState((){}));
                                 },
@@ -505,7 +505,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                     child: Row(
                                       children: <Widget> [
                                         CircleAvatar(
-                                          backgroundImage: NetworkImage(TopCryptos[Sort['⬇Mrkt']![index]].image),
+                                          backgroundImage: NetworkImage(TopCryptos[Sort['↓Mrkt']![index]].image),
                                           backgroundColor: Colors.transparent,
                                           radius: 20,
                                         ),
@@ -518,7 +518,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                             SizedBox(
                                               width: useMobileLayout ? screenWidth*0.38 : screenWidth*0.4,
                                               child: Text(
-                                                TopCryptos[Sort['⬇Mrkt']![index]].id.capitalizeFirst ?? TopCryptos[Sort['⬇Mrkt']![index]].id,
+                                                TopCryptos[Sort['↓Mrkt']![index]].id.capitalizeFirst ?? TopCryptos[Sort['↓Mrkt']![index]].id,
                                                 style: const TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
@@ -528,7 +528,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                               ),
                                             ),
                                             Text(
-                                              TopCryptos[Sort['⬇Mrkt']![index]].symbol.toUpperCase(),
+                                              TopCryptos[Sort['↓Mrkt']![index]].symbol.toUpperCase(),
                                               style: const TextStyle(
                                                 fontSize: 12,
                                               ),
@@ -539,8 +539,8 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                               children: <Widget>[
                                                 listviewTextTitle("R "),
                                                 listviewTextInfo(
-                                                    TopCryptos[Sort['⬇Mrkt']![index]].realScore,
-                                                    TopCryptos[Sort['⬇Mrkt']![index]]
+                                                    TopCryptos[Sort['↓Mrkt']![index]].realScore,
+                                                    TopCryptos[Sort['↓Mrkt']![index]]
                                                         .realScore
                                                         .contains("-")
                                                         ? cRed
@@ -560,7 +560,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                             crossAxisAlignment: CrossAxisAlignment.end,
                                             children: <Widget>[
                                               Text(
-                                                TopCryptos[Sort['⬇Mrkt']![index]].current_price,
+                                                TopCryptos[Sort['↓Mrkt']![index]].current_price,
                                                 style: const TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -569,16 +569,16 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                                 softWrap: false,
                                               ),
                                               Text(
-                                                "${TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h}%",
+                                                "${TopCryptos[Sort['↓Mrkt']![index]].price_change_precentage_24h.contains("-") ? "" : "+"}${TopCryptos[Sort['↓Mrkt']![index]].price_change_precentage_24h}%",
                                                 style: TextStyle(
                                                   fontSize: 12,
-                                                  color: TopCryptos[Sort['⬇Mrkt']![index]].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                                                  color: TopCryptos[Sort['↓Mrkt']![index]].price_change_precentage_24h.contains("-") ? cRed : cGreen,
                                                 ),
                                                 textAlign: TextAlign.right,
                                                 softWrap: false,
                                               ),
                                               Text(
-                                                TopCryptos[Sort['⬇Mrkt']![index]].market_cap,
+                                                TopCryptos[Sort['↓Mrkt']![index]].market_cap,
                                                 style: const TextStyle(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.bold,

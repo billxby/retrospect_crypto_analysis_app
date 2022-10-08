@@ -79,7 +79,7 @@ List<String> testDeviceIds = ["F8A58E90D076195FF066127E3013260E", "6C2862513BCA3
 //Declare styles
 
 //Settings variables
-String sortBy = "⬆A-Z";
+String sortBy = "↑A-Z";
 int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";

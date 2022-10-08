@@ -37,16 +37,16 @@ Future<bool> fetchDatabase() async {
 
       // print(data);
 
-      Sort["⬆A-Z"] = [];
-      Sort["⬇A-Z"] = [];
-      Sort["⬆Mrkt"] = [];
-      Sort["⬇Mrkt"] = [];
-      Sort["⬆24h"] = [];
-      Sort["⬇24h"] = [];
-      Sort["⬆Vol"] = [];
-      Sort["⬇Vol"] = [];
-      Sort["⬆Rscr"] = [];
-      Sort["⬇Rscr"] = [];
+      Sort["↑A-Z"] = [];
+      Sort["↓A-Z"] = [];
+      Sort["↑Mrkt"] = [];
+      Sort["↓Mrkt"] = [];
+      Sort["↑24h"] = [];
+      Sort["↓24h"] = [];
+      Sort["↑Vol"] = [];
+      Sort["↓Vol"] = [];
+      Sort["↑Rscr"] = [];
+      Sort["↓Rscr"] = [];
       Sort["Starred"] = [];
 
       int count = 0;
@@ -66,16 +66,16 @@ Future<bool> fetchDatabase() async {
       }
 
       for (int i=0;i<count;i++) {
-        Sort["⬆A-Z"]?.add(i);
-        Sort["⬇A-Z"]?.add(count-i-1);
+        Sort["↑A-Z"]?.add(i);
+        Sort["↓A-Z"]?.add(count-i-1);
       }
 
       // for (int i = 0; i < cryptosCap; i++) {
       //   late Future<CryptoInfo> Responses;
       //   Responses = getData(i);
       //   TopCryptos.add(await Responses);
-      //   Sort["⬆A-Z"]?.add(i);
-      //   Sort["⬇A-Z"]?.add(cryptosCap-i-1);
+      //   Sort["↑A-Z"]?.add(i);
+      //   Sort["↓A-Z"]?.add(cryptosCap-i-1);
       // }
 
       break;
@@ -121,50 +121,50 @@ Future<bool> fetchDatabase() async {
   //   print(Sort["Starred"]![i]);
   // }
 
-  // print(Sort["⬇Mrkt"]);
+  // print(Sort["↓Mrkt"]);
 
   copy.sort((a,b) => (int.tryParse(a.market_cap_rank) ?? 1000).compareTo((int.tryParse(b.market_cap_rank) ?? 1000)));
   for (CryptoInfo crypto in copy) {
-    Sort["⬇Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↓Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
-  // print(Sort["⬇Mrkt"]);
+  // print(Sort["↓Mrkt"]);
   //
   // print("-----------------------");
 
   copy.sort((a,b) => (int.tryParse(b.market_cap_rank) ?? 1000).compareTo((int.tryParse(a.market_cap_rank) ?? 1000)));
   for (CryptoInfo crypto in copy) {
-    Sort["⬆Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↑Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   copy.sort((a,b) => (double.tryParse(a.price_change_precentage_24h) ?? 0.0).compareTo(double.tryParse(b.price_change_precentage_24h) ?? 0.0));
   for (CryptoInfo crypto in copy) {
-    Sort["⬇24h"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↓24h"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   copy.sort((a,b) => (double.tryParse(b.price_change_precentage_24h) ?? 0.0).compareTo(double.tryParse(a.price_change_precentage_24h) ?? 0.0));
   for (CryptoInfo crypto in copy) {
-    Sort["⬆24h"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↑24h"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   copy.sort((a,b) => (int.tryParse(a.realVolume) ?? 0).compareTo(int.tryParse(b.realVolume) ?? 0));
   for (CryptoInfo crypto in copy) {
-    Sort["⬆Vol"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↑Vol"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   copy.sort((a,b) => (int.tryParse(b.realVolume) ?? 0).compareTo(int.tryParse(a.realVolume) ?? 0));
   for (CryptoInfo crypto in copy) {
-    Sort["⬇Vol"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↓Vol"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   copy.sort((a,b) => (double.tryParse(a.realScore) ?? 0).compareTo(double.tryParse(b.realScore) ?? 0));
   for (CryptoInfo crypto in copy) {
-    Sort["⬆Rscr"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↑Rscr"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   copy.sort((a,b) => (double.tryParse(b.realScore) ?? 0).compareTo(double.tryParse(a.realScore) ?? 0));
   for (CryptoInfo crypto in copy) {
-    Sort["⬇Rscr"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↓Rscr"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
   return worked;

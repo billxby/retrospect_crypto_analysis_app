@@ -30,7 +30,7 @@ bool userLimitAvailable(int passedIndex) {
   if (userHasPremium()) {
     return true;
   }
-  String selectedCrypto = TopCryptos[Sort["⬆A-Z"]![passedIndex]].id;
+  String selectedCrypto = TopCryptos[Sort["↑A-Z"]![passedIndex]].id;
   List<dynamic> used = localStorage.read("used");
   if (localStorage.read("used").contains(selectedCrypto)) {
     return true;
