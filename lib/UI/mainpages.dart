@@ -612,7 +612,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                         SizedBox(
                           width: screenWidth*0.1,
                         ),
-                        infoWidget("Exchanges ", "Check out our recommended Crypto Exchanges!", "https://www.investopedia.com/best-crypto-exchanges-5071855", Icons.currency_exchange, Theme.of(context).colorScheme.background),
+                        infoWidget("Exchanges ", "Check out our recommended Crypto Exchanges!", "https://www.retrospectapps.com/blogs/best-crypto-exchanges-2022.html", Icons.currency_exchange, Theme.of(context).colorScheme.background),
                         infoWidget("Charting ", "Chart out the Market for Technical Analysis!", "https://www.tradingview.com/", Icons.bar_chart, Theme.of(context).colorScheme.background),
                         infoWidget("Support ", "Need help with anything? Join our discord!", "https://discord.io/retrospect", Icons.contact_support_outlined, Theme.of(context).colorScheme.background),
                         SizedBox(
@@ -979,7 +979,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                   children: <Widget> [
                                     Text(FirebaseAuth.instance.currentUser?.displayName ?? "Set Name", style: TextStyle(fontSize: 17)),
                                     SizedBox(
-                                      width: screenWidth*0.03,
+                                      width: 12,
                                       child: IconButton(
                                         onPressed: () => showDialog<String>(
                                           context: context,
@@ -1036,7 +1036,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                         width: screenWidth*0.05,
                                         height: screenHeight*0.05,
                                         child: IconButton(
-                                          icon: Icon(Icons.copy, size: screenWidth*0.05),
+                                          icon: Icon(Icons.copy, size: 18),
                                           onPressed: () async {
                                             await Clipboard.setData(ClipboardData(text: FirebaseAuth.instance.currentUser?.uid));
                                           },
