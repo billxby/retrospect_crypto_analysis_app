@@ -1,6 +1,9 @@
 import 'package:crypto_app/UI/UI%20helpers/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../Functions/database.dart';
 import '../../Functions/premium.dart';
 import '../../main.dart';
 import 'buttons.dart';
@@ -25,8 +28,6 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
     );
   }
 
-  Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
-
   return AlertDialog(
     title: const Text("Alerts", textAlign: TextAlign.center),
     shape: const RoundedRectangleBorder(
@@ -40,16 +41,16 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           const Text('Get alerted when prediction is...'),
           Row(
             children: [
-              Image.network("https://i.postimg.cc/mZVHWjHX/bear-v2.png", height: screenWidth*0.08),
-              SizedBox(width: 5),
+              Image.network("https://i.postimg.cc/mZVHWjHX/bear-v2.png", height: screenWidth*0.078),
+              SizedBox(width: screenWidth*0.001),
               alertPredButton(0, alertColorChoices[0], inputData, context),
               alertPredButton(1, alertColorChoices[1], inputData, context),
               alertPredButton(2, alertColorChoices[2], inputData, context),
               alertPredButton(3, alertColorChoices[3], inputData, context),
               alertPredButton(4, alertColorChoices[4], inputData, context),
               alertPredButton(5, alertColorChoices[5], inputData, context),
-              SizedBox(width: 5),
-              Image.network("https://i.postimg.cc/tCTVq6dX/bull-v2.png", height: screenWidth*0.08),
+              SizedBox(width: screenWidth*0.001),
+              Image.network("https://i.postimg.cc/tCTVq6dX/bull-v2.png", height: screenWidth*0.078),
             ],
           ),
           const SizedBox(height: 10),
@@ -66,17 +67,15 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
     ),
     actions: <Widget>[
       TextButton(
-        onPressed: () {
+        onPressed: () async {
+          final ref = FirebaseDatabase.instance.ref('alerts/users/${FirebaseAuth.instance.currentUser?.uid}');
+          refreshAlerts();
+
           alerts.remove(inputData['crypto']);
 
-          localStorage.write("alerts", alerts);
+          ref.set(alerts);
 
           Navigator.pop(context);
-
-          showDialog(
-            context: context,
-            builder: (context) => alertPage(context, inputData),
-          );
         },
         child: const Text('Remove', style: TextStyle(color: Colors.blue)),
       ),

@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:crypto_app/Functions/purchase.dart';
 import 'package:crypto_app/UI/UI%20helpers/style.dart';
@@ -26,6 +28,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Functions/cloudfunctionshelper.dart';
 import 'Functions/premium.dart';
@@ -62,6 +65,7 @@ List<String> CryptosList = [];
 Map<String, int> CryptosIndex = {};
 List<CryptoInfo> TopCryptos = [];
 Map<String, List<int>> Sort = {};
+Map<dynamic, dynamic> alerts = {};
 List<int> Ascending = [];
 List<int> Descending = [];
 List<int> MarketCapA = [];
@@ -71,10 +75,8 @@ List<int> ChangeD = [];
 
 DateTime lastRefreshed = DateTime.now();
 int globalIndex = 0;
-List<dynamic> data = [];
+Map<String, dynamic> data = {};
 const fetchBackground = "getAlerts";
-
-List<String> testDeviceIds = ["F8A58E90D076195FF066127E3013260E", "6C2862513BCA301941632F666CE4292F"];
 
 //Declare styles
 
@@ -84,7 +86,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "0.1.8";
+String app_version = "0.2.0";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -92,15 +94,15 @@ bool useMobileLayout = true;
 bool darkTheme = true;
 final LocalNotificationService service = LocalNotificationService();
 
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  final app = await Firebase.initializeApp(
-    // name: "Retrospect",
-  );
-  await initPlatformState();
-
   await Firebase.initializeApp();
+  await initPlatformState();
 
   FirebaseAuth.instance.authStateChanges().listen((User? user) async {
     if (user == null) {
@@ -118,6 +120,12 @@ Future<void> main() async {
   service.intialize();
   listenToNotification();
 
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print(fcmToken);
+
+
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
+
   await GetStorage.init();
   final localStorage = GetStorage();
 
@@ -131,10 +139,13 @@ Future<void> main() async {
   DateTime lastRefreshed = DateTime.now();
 
   final cron = Cron();
+
   cron.schedule(Schedule.parse('*/5 * * * *'), () async {
     print("Every 5 minutes");
     getAlerts();
   });
+
+  // Workmanager().registerPeriodicTask("taskOne", "alerts");
 
   localStorage.writeIfNull("displayed", false);
   localStorage.writeIfNull("credits", 0);
@@ -145,6 +156,13 @@ Future<void> main() async {
   localStorage.writeIfNull("alerts", <String, String> {});
   localStorage.writeIfNull("starred", <int> []);
   localStorage.writeIfNull("notificationN", 0);
+  // final prefs = await SharedPreferences.getInstance();
+  // final int? notificationIdN = prefs.getInt('notificationN');
+  //
+  // if (notificationIdN == null) {
+  //   await prefs.setInt('notificationN', 0);
+  // }
+
 
   var brightness = SchedulerBinding.instance!.window.platformBrightness;
   bool isDarkMode = brightness == Brightness.dark;
@@ -161,6 +179,7 @@ Future<void> main() async {
   List<String> toRemove = [];
 
   localStorage.write("last open", DateTime.now().millisecondsSinceEpoch);
+
 
   runApp(
     MultiProvider( // create the provider
@@ -181,12 +200,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final localStorage = GetStorage();
 
-    return MaterialApp(
+    return OverlaySupport.global(child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
       theme: Provider.of<ThemeProvider>(context).currentTheme,
-      home: SplashScreen(),
-    );
+      home: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
+    ));
   }
 }
 
@@ -249,3 +268,4 @@ class SplashScreen extends StatelessWidget {
     );
   }
 }
+

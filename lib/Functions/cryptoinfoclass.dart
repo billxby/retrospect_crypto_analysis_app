@@ -52,22 +52,22 @@ class CryptoInfo {
     required this.realScore,
   });
 
-  factory CryptoInfo.fromJson(Map<String, dynamic> json) {
-    String id = json['id'].toString();
-    String marketCap = Numeral(json['market_cap']).format().toString();
-    String volume = Numeral(json['total_volume']).format().toString();
-    String price = json['current_price'].toString();
-    String twtyFHigh = json['high_24h'].toString();
-    String twtyFLow = json['low_24h'].toString();
-    String twentyFourHours = json['price_change_percentage_24h'].toString();
-    String prediction = json['prediction'].toString();
-    String marketView = json['marketView'].toString();
-    String tweets = json['tweets'].toString() == "updating database" ? '0' : json['tweets'].toString();
-    String commits = json['commits'].toString() == "updating database" ? '0' : json['commits'].toString();
-    String score = json['score'].toString();
-    String totalSupply = json['total_supply'].toString();
-    String realVolume = json['total_volume'].toString();
-    String realScore = json['score'].toString() == "updating database" ? 'Upd' : double.parse(json['score'].toString()).toStringAsFixed(1);
+  factory CryptoInfo.fromJson(Map<String, dynamic> predictions, Map<String, dynamic> data) {
+    String id = data['id'].toString();
+    String marketCap = Numeral(data['market_cap']).format().toString();
+    String volume = Numeral(data['total_volume']).format().toString();
+    String price = data['current_price'].toString();
+    String twtyFHigh = data['high_24h'].toString();
+    String twtyFLow = data['low_24h'].toString();
+    String twentyFourHours = data['price_change_percentage_24h'].toString();
+    String prediction = predictions['prediction'].toString();
+    String marketView = predictions['marketView'].toString();
+    String tweets = predictions['tweets'].toString() == "updating database" ? '0' : predictions['tweets'].toString();
+    String commits = predictions['commits'].toString() == "updating database" ? '0' : predictions['commits'].toString();
+    String score = predictions['score'].toString();
+    String totalSupply = data['total_supply'].toString();
+    String realVolume = data['total_volume'].toString();
+    String realScore = predictions['score'].toString() == "updating database" ? 'Upd' : double.parse(predictions['score'].toString()).toStringAsFixed(1);
 
     if (prediction != "updating database") {
       double pred = double.parse(prediction);
@@ -135,17 +135,17 @@ class CryptoInfo {
     CryptosList.add(id);
 
     return CryptoInfo(
-      market_cap_rank: json['market_cap_rank'].toString(),
-      ath: json['ath'].toString(),
+      market_cap_rank: data['market_cap_rank'].toString(),
+      ath: data['ath'].toString(),
       market_cap: marketCap,
       low_24h: twtyFLow,
       high_24h: twtyFHigh,
       current_price: price,
       total_volume: volume,
-      symbol: json['symbol'].toString(),
-      last_updated: json['last_updated'].toString(),
+      symbol: data['symbol'].toString(),
+      last_updated: data['last_updated'].toString(),
       id: id,
-      image: json['image'].toString(),
+      image: data['image'].toString(),
       total_supply: totalSupply,
       price_change_precentage_24h: twentyFourHours,
       prediction: prediction,

@@ -16,6 +16,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import '../Functions/database.dart';
 import '../Functions/detailspageassist.dart';
 import '../main.dart';
 import 'UI helpers/buttons.dart';
@@ -190,10 +191,13 @@ class _DetailsPageState extends State<DetailsPage> {
     if (stars.contains(widget.passedIndex)) {
       isStarred = true;
     }
+    else {
+      isStarred = false;
+    }
 
     canSee = userLimitAvailable(widget.passedIndex);
-    Map<String, String> alert = Map<String, String>.from(localStorage.read("alerts"));
-    hasAlert = alert.containsKey(CryptosList[widget.passedIndex]);
+    refreshAlerts();
+    hasAlert = alerts.containsKey(CryptosList[widget.passedIndex]);
 
     setState(() {
 
@@ -330,6 +334,7 @@ class _DetailsPageState extends State<DetailsPage> {
               padding: const EdgeInsets.only(right: 10.0),
               child: GestureDetector(
                 onTap: () {
+                  refreshAlerts();
                   showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => alertPage(context, inputData),

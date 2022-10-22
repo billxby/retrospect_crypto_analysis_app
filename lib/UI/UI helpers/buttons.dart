@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:crypto_app/UI/UI%20helpers/alerts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
+import '../../Functions/database.dart';
 import '../../Functions/premium.dart';
 import '../../main.dart';
 
@@ -11,18 +16,25 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
     height: 20,
     width: screenWidth*0.0809,
     child: ElevatedButton(
-        onPressed: () {
-          Map<String, String> alert = Map<String, String>.from(localStorage.read("alerts"));
+        onPressed: () async {
+          final ref = FirebaseDatabase.instance.ref('alerts/users/${FirebaseAuth.instance.currentUser?.uid}');
+          refreshAlerts();
 
-          if (alert.length < 20 || alert.containsKey(inputData['crypto'])) {
-            if (alert.containsKey(inputData['crypto'])) {
-              alert.update(inputData['crypto']!, (value) => value = alertChoices[id]);
+          if (alerts.length < 20 || alerts.containsKey(inputData['crypto'])) {
+            if (alerts.containsKey(inputData['crypto'])) {
+              print("contain");
+              alerts.update(inputData['crypto']!, (value) => value = alertChoices[id]);
             }
             else {
-              alert[inputData['crypto']!] = alertChoices[id];
+              print("doesn't contain");
+              alerts[inputData['crypto']!] = alertChoices[id];
             }
 
-            localStorage.write("alerts", alert);
+            print(alerts);
+
+            await ref.set(alerts);
+
+            // localStorage.write("alerts", alert);
           }
 
           Navigator.pop(context);

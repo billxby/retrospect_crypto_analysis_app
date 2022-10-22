@@ -12,8 +12,7 @@ class LocalNotificationService {
 
   Future<void> intialize() async {
     tz.initializeTimeZones();
-    const AndroidInitializationSettings androidInitializationSettings =
-    AndroidInitializationSettings('@drawable/ic_stat_notifications_active');
+    const AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings('launcher_notification');
 
     DarwinInitializationSettings iosInitializationSettings =
     DarwinInitializationSettings(

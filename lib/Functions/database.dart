@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:crypto_app/Functions/premium.dart';
 import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:numeral/numeral.dart';
@@ -23,11 +25,21 @@ import '../UI/information.dart';
 import '../UI/updatelog.dart';
 import '../main.dart';
 
+Future<void> refreshAlerts() async {
+  final ref = FirebaseDatabase.instance.ref('alerts/users/${FirebaseAuth.instance.currentUser?.uid}');
+  final snapshot = await ref.get();
+  alerts = {};
+  if (snapshot.exists) {
+    alerts = snapshot.value as Map<dynamic, dynamic>;
+  }
+}
+
 Future<bool> fetchDatabase() async {
   print("Refreshing");
+
   for (int tries = 0; tries < maxFetchTries; tries++) {
     try {
-      final response = await http.get(Uri.parse('http://3.142.236.93:5000/'));
+      final response = await http.get(Uri.parse('https://crypto-project-001-default-rtdb.firebaseio.com/database.json'));
       data = await jsonDecode(response.body);
       if (response.statusCode != 200) {
         throw Exception('Could not fetch data!');
@@ -59,8 +71,8 @@ Future<bool> fetchDatabase() async {
       // print(TopCryptos);
       // print(CryptosIndex);
 
-      for (Map<String, dynamic> idx in data) {
-        final Res = CryptoInfo.fromJson(idx);
+      for (String crypto in data['predictions'].keys) {
+        final Res = CryptoInfo.fromJson(data['predictions'][crypto], data['cryptos'][crypto]);
         TopCryptos.add(await Res);
         count+=1;
       }
@@ -168,9 +180,4 @@ Future<bool> fetchDatabase() async {
   }
 
   return worked;
-}
-
-Future<CryptoInfo> getData(int index) async {
-  final Res = CryptoInfo.fromJson(jsonDecode(data[index]));
-  return await Res;
 }

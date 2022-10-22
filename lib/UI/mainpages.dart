@@ -17,6 +17,7 @@ import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:get/get.dart';
@@ -81,6 +82,41 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
 
     super.initState();
 
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message received");
+      print(event.notification!.body);
+      print(event.notification!.android?.imageUrl);
+
+      if (event.notification == null) {
+        return;
+      }
+
+      showOverlayNotification((context) {
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          child: SafeArea(
+            child: ListTile(
+              leading: SizedBox.fromSize(
+                  size: const Size(40, 40),
+                  child: ClipOval(
+                      child: SizedBox(
+                        child: Image.network(event.notification!.android?.imageUrl ?? ""),
+                        width: 30,
+                      ),)),
+              title: Text('Predictions Change!'),
+              subtitle: Text(event.notification!.body ?? ""),
+              trailing: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    OverlaySupportEntry.of(context)?.dismiss();
+                  }),
+            ),
+          ),
+        );
+      }, duration: Duration(milliseconds: 8000));
+
+    });
+
     _referredByController.addListener(() {
       final String text = _referredByController.text;
       referredIdValid = text.length > 8;
@@ -122,6 +158,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
 
   Future refreshPage() async {
     DateTime currentTime = DateTime.now();
+    // Workmanager().registerOneOffTask("taskTwo", "alerts", initialDelay: Duration(seconds: 1));
 
     bool worked = await fetchDatabase();
 
@@ -445,7 +482,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
               Center(
                 child: Container(
                   height: 420,
-                  width: screenWidth * 0.85,
+                  width: screenWidth * 0.85+0.8,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.transparent,
@@ -612,7 +649,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                         SizedBox(
                           width: screenWidth*0.1,
                         ),
-                        infoWidget("Exchanges ", "Check out our recommended Crypto Exchanges!", "https://www.retrospectapps.com/blogs/best-crypto-exchanges-2022.html", Icons.currency_exchange, Theme.of(context).colorScheme.background),
+                        infoWidget("Exchanges ", "Check out our recommended Crypto Exchanges!", "https://www.retrospectapps.com/blog/best-crypto-exchanges-2022.html", Icons.currency_exchange, Theme.of(context).colorScheme.background),
                         infoWidget("Charting ", "Chart out the Market for Technical Analysis!", "https://www.tradingview.com/", Icons.bar_chart, Theme.of(context).colorScheme.background),
                         infoWidget("Support ", "Need help with anything? Join our discord!", "https://discord.io/retrospect", Icons.contact_support_outlined, Theme.of(context).colorScheme.background),
                         SizedBox(
@@ -1201,6 +1238,47 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
               break;
 
             case 2: {
+              FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+              NotificationSettings settings = await messaging.requestPermission(
+                alert: true,
+                announcement: false,
+                badge: true,
+                carPlay: false,
+                criticalAlert: false,
+                provisional: false,
+                sound: true,
+              );
+
+              if (settings.authorizationStatus == AuthorizationStatus.denied) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Please Enable Notifications!'),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(20.0))),
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: const <Widget>[
+                              Text('Please Allow Notifications to allow alerts!'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'OK'),
+                            child: const Text('OK', style: TextStyle(color: Colors.blue)),
+                          ),
+                        ],
+                      );
+                    });
+
+                return;
+              }
+
               showModalBottomSheet(
                   context: context,
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
@@ -1388,7 +1466,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                   )
                               )
                           ),
-                          width: screenWidth*0.9,
+                          width: screenWidth*0.92,
                           child: Row(
                               children: <Widget> [
                                 SizedBox(width: screenWidth*0.01),
@@ -1412,7 +1490,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                 ),
                                 Container(
                                     height: 20,
-                                    width: screenWidth*0.09,
+                                    width: 20,
                                     child: IconButton(
                                       icon: const Icon(
                                         Icons.highlight_remove_rounded,
