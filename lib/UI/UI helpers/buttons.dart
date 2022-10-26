@@ -20,6 +20,7 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
           final ref = FirebaseDatabase.instance.ref('alerts/users/${FirebaseAuth.instance.currentUser?.uid}');
           refreshAlerts();
 
+          Map<String, String> newAlert = {};
           if (alerts.length < 20 || alerts.containsKey(inputData['crypto'])) {
             if (alerts.containsKey(inputData['crypto'])) {
               print("contain");
@@ -30,12 +31,19 @@ SizedBox alertPredButton(int id, Color targetColor, Map<String, String> inputDat
               alerts[inputData['crypto']!] = alertChoices[id];
             }
 
-            print(alerts);
-
             await ref.set(alerts);
+
+            newAlert[FirebaseAuth.instance.currentUser?.uid ?? "None"] = alertChoices[id];
 
             // localStorage.write("alerts", alert);
           }
+
+          if (newAlert.containsKey("None")) {
+            return;
+          }
+
+          final secondRef = FirebaseDatabase.instance.ref('alerts/predictions/${inputData['crypto']}/');
+          secondRef.update(newAlert);
 
           Navigator.pop(context);
 

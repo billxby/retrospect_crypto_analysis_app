@@ -108,44 +108,40 @@ redeemPremiumDialog(BuildContext context, int days, int requirement) {
             print("worked is $worked");
 
             if (worked == true) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AlertDialog(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(20.0))),
-                    backgroundColor: Theme.of(context).colorScheme.tertiary,
-                    title: const Text('Successful!'),
-                    content: const Text('Go to Settings and click "REFRESH PREMIUM STATUS". \n Enjoy your premium subscription!', textAlign: TextAlign.center,),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK', style: TextStyle(color: Colors.blue)),
-                      ),
-                    ],
-                  ),
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.all(Radius.circular(20.0))),
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  title: const Text('Successful!'),
+                  content: const Text('Go to Settings and click "REFRESH PREMIUM STATUS". \n Enjoy your premium subscription!', textAlign: TextAlign.center,),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK', style: TextStyle(color: Colors.blue)),
+                    ),
+                  ],
                 ),
               );
             } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AlertDialog(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(20.0))),
-                    backgroundColor: Theme.of(context).colorScheme.tertiary,
-                    title: const Text('An Error Occurred!'),
-                    content: const Text(
-                        'You either already have premium or do not have enough credits'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK', style: TextStyle(color: Colors.blue)),
-                      ),
-                    ],
-                  ),
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.all(Radius.circular(20.0))),
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  title: const Text('An Error Occurred!'),
+                  content: const Text(
+                      'You either already have premium or do not have enough credits'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK', style: TextStyle(color: Colors.blue)),
+                    ),
+                  ],
                 ),
               );
             }

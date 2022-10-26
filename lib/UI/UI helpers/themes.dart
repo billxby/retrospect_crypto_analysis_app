@@ -34,7 +34,7 @@ ThemeData customWhite = ThemeData(
     secondaryVariant: Colors.black12,
     error: Colors.grey,
     onError: Colors.grey,
-  )
+  ),
 );
 
 ThemeData customDark = ThemeData(

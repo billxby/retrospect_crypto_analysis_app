@@ -124,14 +124,13 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
               rangePadding: ChartRangePadding.round,
             ),
             legend: Legend(isVisible: false),
-            series: <LineSeries<PriceData, String>>[
-              LineSeries<PriceData, String>(
-                color: lineColor,
+            series: <ColumnSeries<PriceData, String>>[
+              ColumnSeries(
                 dataSource: cryptoData,
-                xValueMapper: (PriceData prices, _) =>
-                    DateFormat('MM-dd').format(prices.time),
+                color: lineColor,
+                xValueMapper: (PriceData prices, _) => DateFormat('MM-dd').format(prices.time),
                 yValueMapper: (PriceData prices, _) => prices.price,
-              ),
+              )
             ],
           ),
         ),
@@ -143,6 +142,16 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
 Container cryptoAnalChart(TrackballBehavior trackballBehavior,
     List<PriceData> cryptoData, bool showAxis, double width) {
   Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? Colors.blueAccent : Colors.lightBlueAccent;
+  List<PriceData> horizontalLine = [];
+
+  for (PriceData data in cryptoData) {
+    horizontalLine.add(
+      PriceData(
+        data.time,
+        0,
+      )
+    );
+  }
 
   return Container(
     height: 265,
@@ -169,14 +178,32 @@ Container cryptoAnalChart(TrackballBehavior trackballBehavior,
               rangePadding: ChartRangePadding.round,
             ),
             legend: Legend(isVisible: false),
+            onTrackballPositionChanging: (TrackballArgs args) {
+              ChartSeries<dynamic, dynamic> series = args.chartPointInfo.series as ChartSeries;
+              if (series.name == 'Line') {
+                args.chartPointInfo.header = '';
+                args.chartPointInfo.label = '';
+              }
+            },
             series: <LineSeries<PriceData, String>>[
               LineSeries<PriceData, String>(
-                color: lineColor,
-                dataSource: cryptoData,
+                color: Colors.grey[200],
+                width: 0.2,
+                dataSource: horizontalLine,
+                name: "Line",
                 xValueMapper: (PriceData prices, _) =>
                     DateFormat('MM-dd').format(prices.time),
                 yValueMapper: (PriceData prices, _) => prices.price,
               ),
+              LineSeries<PriceData, String>(
+                color: lineColor,
+                dataSource: cryptoData,
+                name: "Data",
+                xValueMapper: (PriceData prices, _) =>
+                    DateFormat('MM-dd').format(prices.time),
+                yValueMapper: (PriceData prices, _) => prices.price,
+              ),
+
             ],
           ),
         ),
@@ -185,44 +212,4 @@ Container cryptoAnalChart(TrackballBehavior trackballBehavior,
   );
 }
 
-Container cryptoPriceChart(TrackballBehavior trackballBehavior,
-    List<PriceData> cryptoData, bool showAxis, double width) {
-  Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? cRed : cGreen;
-  return Container(
-    height: 350,
-    width: width,
-    child: Column(
-      children: <Widget>[
-        SizedBox(
-          height: 350,
-          width: width,
-          child: SfCartesianChart(
-            trackballBehavior: trackballBehavior,
-            primaryXAxis: CategoryAxis(
-              majorGridLines: const MajorGridLines(width: 0),
-              isVisible: showAxis,
-            ),
-            primaryYAxis: NumericAxis(
-              isVisible: showAxis,
-              majorGridLines: const MajorGridLines(width: 0),
-              rangePadding: ChartRangePadding.round,
-              // labelFormat: '\${value}',
-            ),
-            borderColor: Colors.transparent,
-            plotAreaBorderColor: Colors.transparent,
-            legend: Legend(isVisible: false),
-            series: <LineSeries<PriceData, String>>[
-              LineSeries<PriceData, String>(
-                color: lineColor,
-                dataSource: cryptoData,
-                xValueMapper: (PriceData prices, _) =>
-                    DateFormat('MM-dd HH:00').format(prices.time),
-                yValueMapper: (PriceData prices, _) => prices.price,
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+

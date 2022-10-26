@@ -294,7 +294,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                               ),
                           );
                         },
-                        child: const Text('Promo Code'),
+                        child: Text('Promo Code', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                       ),
                     ),
                     const SizedBox(height: 20,),

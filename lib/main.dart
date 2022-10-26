@@ -77,6 +77,7 @@ DateTime lastRefreshed = DateTime.now();
 int globalIndex = 0;
 Map<String, dynamic> data = {};
 const fetchBackground = "getAlerts";
+bool configuringAccounts = false;
 
 //Declare styles
 
@@ -101,27 +102,62 @@ Future<void> _messageHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await Purchases.setDebugLogsEnabled(false);
   await Firebase.initializeApp();
   await initPlatformState();
 
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  final db = FirebaseFirestore.instance;
+
   FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+    if (configuringAccounts == true) {
+      return;
+    }
+    configuringAccounts = true;
+
     if (user == null) {
       print('User is currently signed out!');
       loggedIn = false;
-      await Purchases.logOut();
+      try {
+        await Purchases.logOut();
+      } catch (e) {
+        print("No user at that time");
+      }
+
+      print("Logging out?");
     } else {
       print('User is signed in with UID ${user.uid}!');
       loggedIn = true;
       LogInResult result = await Purchases.logIn(user.uid);
-      print(result.customerInfo);
+
+      final docRef = db.collection("users").doc(user?.uid);
+      docRef.get().then((DocumentSnapshot doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          List<dynamic> fcmTokens = [];
+          if (data.containsKey("fcm_tokens")) {
+            fcmTokens = data["fcm_tokens"];
+          }
+          if (!fcmTokens.contains(fcmToken)) {
+            fcmTokens.add(fcmToken!);
+            Map<String, dynamic> entry = {};
+            entry["fcm_tokens"] = fcmTokens;
+            docRef.update(
+              entry
+            );
+            print("Updated token for user");
+          }
+        },
+        onError: (e) => print("Error getting document: $e"),
+      );
     }
+    await Future.delayed(Duration(milliseconds: 50));
+    configuringAccounts = false;
   });
 
   service.intialize();
   listenToNotification();
 
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  print(fcmToken);
+
 
 
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
