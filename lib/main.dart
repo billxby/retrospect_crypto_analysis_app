@@ -87,7 +87,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "0.2.0";
+String app_version = "0.3.0";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -157,9 +157,6 @@ Future<void> main() async {
   service.intialize();
   listenToNotification();
 
-
-
-
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
   await GetStorage.init();
@@ -176,12 +173,7 @@ Future<void> main() async {
 
   final cron = Cron();
 
-  cron.schedule(Schedule.parse('*/5 * * * *'), () async {
-    print("Every 5 minutes");
-    getAlerts();
-  });
 
-  // Workmanager().registerPeriodicTask("taskOne", "alerts");
 
   localStorage.writeIfNull("displayed", false);
   localStorage.writeIfNull("credits", 0);
@@ -216,6 +208,8 @@ Future<void> main() async {
 
   localStorage.write("last open", DateTime.now().millisecondsSinceEpoch);
 
+  refreshAlerts();
+
 
   runApp(
     MultiProvider( // create the provider
@@ -243,35 +237,6 @@ class MyApp extends StatelessWidget {
       home: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
     ));
   }
-}
-
-Future<void> getAlerts() async {
-  await GetStorage.init();
-  final localStorage = GetStorage();
-  List<String> toRemove = [];
-  Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
-  print(alerts);
-
-  await fetchDatabase();
-  for (String crypto in alerts.keys) {
-    int idx = CryptosIndex[crypto] ?? 0;
-
-    if (TopCryptos[idx].prediction == alerts[crypto]) {
-      toRemove.add(crypto);
-      await service.showNotificationWithPayload(
-          id: localStorage.read("notificationN"),
-          title: '${crypto.capitalizeFirst} Predictions Change!',
-          body: '${crypto.capitalizeFirst}\'s rating is now ${alerts[crypto]}',
-          payload: idx.toString());
-      localStorage.write("notificationN", localStorage.read("notificationN")+1);
-    }
-  }
-
-  for (String remove in toRemove) {
-    alerts.remove(remove);
-  }
-
-  localStorage.write("alerts", alerts);
 }
 
 void listenToNotification() => service.onNotificationClick.stream.listen(onNoticationListener);

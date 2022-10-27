@@ -140,8 +140,11 @@ Container cryptoInfoChart(String title, TrackballBehavior trackballBehavior,
 }
 
 Container cryptoAnalChart(TrackballBehavior trackballBehavior,
-    List<PriceData> cryptoData, bool showAxis, double width) {
+    List<PriceData> cryptoData, bool showAxis, double width, Color? upAccent, Color? downAccent) {
   Color lineColor = cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0 ? Colors.blueAccent : Colors.lightBlueAccent;
+  if (upAccent != null) {
+    lineColor = ((cryptoData[0].price - cryptoData[cryptoData.length - 1].price > 0) ? upAccent : downAccent) ?? Colors.blueAccent;
+  }
   List<PriceData> horizontalLine = [];
 
   for (PriceData data in cryptoData) {
@@ -154,7 +157,7 @@ Container cryptoAnalChart(TrackballBehavior trackballBehavior,
   }
 
   return Container(
-    height: 265,
+    height: 300,
     width: width,
     child: Column(
       children: <Widget>[
@@ -162,7 +165,7 @@ Container cryptoAnalChart(TrackballBehavior trackballBehavior,
           height: 5,
         ),
         SizedBox(
-          height: 250,
+          height: 285,
           width: width,
           child: SfCartesianChart(
             trackballBehavior: trackballBehavior,

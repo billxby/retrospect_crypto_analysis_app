@@ -300,8 +300,11 @@ Row infoWidget(String title, String description, String url, IconData icon, Colo
                     SizedBox(width: screenWidth*0.03),
                     ElevatedButton(
                       style: roundButton(Colors.white),
-                      onPressed: () {
-                        launch(url);
+                      onPressed: () async {
+                        final uri = Uri.parse(url);
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri);
+                        }
                       },
                       child: Text('Learn More', style: TextStyle(color: Colors.black,)),
                     ),

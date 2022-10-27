@@ -11,6 +11,8 @@ import 'buttons.dart';
 List<Color> alertColorChoices = [cRed, Color(0xffe57662), Colors.red.shade200, Colors.green.shade300, Color(0xff27c772), cGreen];
 
 AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
+  refreshAlerts();
+
   if (!userHasPremium()) {
     return AlertDialog(
       title: const Text("Alerts", textAlign: TextAlign.center),

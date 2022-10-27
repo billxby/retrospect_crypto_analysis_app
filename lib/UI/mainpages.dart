@@ -8,6 +8,7 @@ import 'package:crypto_app/UI/intropage.dart';
 import 'package:crypto_app/UI/updatelog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -1469,6 +1470,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
 
             case 7: {
               launch("https://www.retrospectapps.com");
+
             }
           }
         },
@@ -1558,6 +1560,8 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
   }
 
   SingleChildScrollView configureAlerts() {
+    refreshAlerts();
+
     return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -1573,7 +1577,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
               width: screenWidth*0.93,
               height: 400,
               child: ListView.builder(
-                itemCount: localStorage.read("alerts").length,
+                itemCount: alerts.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                       title: Container(
@@ -1600,10 +1604,10 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            localStorage.read("alerts").keys.toList()[index], style: TextStyle( fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                                            alerts.keys.toList()[index], style: TextStyle( fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
                                         ),
                                         Text(
-                                            localStorage.read("alerts")[localStorage.read("alerts").keys.toList()[index]], style: TextStyle(color: localStorage.read("alerts")[localStorage.read("alerts").keys.toList()[index]].contains("Bullish") ? cGreen : cRed, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
+                                            alerts[alerts.keys.toList()[index]], style: TextStyle(color: alerts[alerts.keys.toList()[index]].contains("Bullish") ? cGreen : cRed, fontWeight: FontWeight.normal, fontSize: 16, height: 1.5)
                                         ),
                                       ],
                                     )
@@ -1615,13 +1619,11 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
                                       icon: const Icon(
                                         Icons.highlight_remove_rounded,
                                       ),
-                                      onPressed: () {
-                                        Map<String, String> alerts = Map<String, String>.from(localStorage.read("alerts"));
-                                        alerts.remove(localStorage.read("alerts").keys.toList()[index]);
+                                      onPressed: () async {
+                                        alerts.remove(alerts.keys.toList()[index]);
 
-                                        setState(() {
-                                          localStorage.write("alerts", alerts);
-                                        });
+                                        final ref = FirebaseDatabase.instance.ref('alerts/users/${FirebaseAuth.instance.currentUser?.uid}');
+                                        ref.set(alerts);
 
                                         Navigator.pop(context);
 

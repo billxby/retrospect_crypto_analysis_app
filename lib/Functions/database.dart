@@ -28,9 +28,12 @@ import '../main.dart';
 Future<void> refreshAlerts() async {
   final ref = FirebaseDatabase.instance.ref('alerts/users/${FirebaseAuth.instance.currentUser?.uid}');
   final snapshot = await ref.get();
-  alerts = {};
+
   if (snapshot.exists) {
     alerts = snapshot.value as Map<dynamic, dynamic>;
+  }
+  else {
+    alerts = {};
   }
 }
 
