@@ -240,6 +240,7 @@ ButtonStyle roundButton(Color color) {
   return ButtonStyle(
     overlayColor: MaterialStateColor.resolveWith((states) => Colors.black12),
     backgroundColor: MaterialStatePropertyAll<Color>(color),
+    elevation: MaterialStatePropertyAll<double>(0),
     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25.0),

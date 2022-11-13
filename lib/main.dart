@@ -35,6 +35,7 @@ import 'Functions/premium.dart';
 import 'UI/UI helpers/pages.dart';
 import 'UI/UI helpers/themes.dart';
 import 'UI/notifications.dart';
+import 'UI/welcomepage.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -54,7 +55,7 @@ import 'firebase_options.dart';
 //Program Settings
 const int cryptosCap = 500;
 const int maxFetchTries = 4;
-final int limit = 5;
+int limit = 5;
 int premiumExpire = 0;
 bool isPremium = false;
 bool loggedIn = false;
@@ -87,7 +88,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "0.3.0";
+String app_version = "0.3.4";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -124,11 +125,15 @@ Future<void> main() async {
         print("No user at that time");
       }
 
-      print("Logging out?");
+      limit = 5;
+
+      print("Logging out");
     } else {
       print('User is signed in with UID ${user.uid}!');
       loggedIn = true;
       LogInResult result = await Purchases.logIn(user.uid);
+
+      limit = 7;
 
       final docRef = db.collection("users").doc(user?.uid);
       docRef.get().then((DocumentSnapshot doc) {
@@ -151,6 +156,7 @@ Future<void> main() async {
       );
     }
     await Future.delayed(Duration(milliseconds: 50));
+    //debunk
     configuringAccounts = false;
   });
 
@@ -173,8 +179,6 @@ Future<void> main() async {
 
   final cron = Cron();
 
-
-
   localStorage.writeIfNull("displayed", false);
   localStorage.writeIfNull("credits", 0);
   localStorage.writeIfNull("username", "");
@@ -182,7 +186,7 @@ Future<void> main() async {
   localStorage.writeIfNull("used", <String> []);
   localStorage.writeIfNull("last open", DateTime.now().millisecondsSinceEpoch);
   localStorage.writeIfNull("alerts", <String, String> {});
-  localStorage.writeIfNull("starred", <int> []);
+  localStorage.writeIfNull("starred_coins", <String> []);
   localStorage.writeIfNull("notificationN", 0);
   // final prefs = await SharedPreferences.getInstance();
   // final int? notificationIdN = prefs.getInt('notificationN');
@@ -234,7 +238,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
       theme: Provider.of<ThemeProvider>(context).currentTheme,
-      home: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
+      home: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : WelcomePage() : const UpdateApp(),
     ));
   }
 }
@@ -246,27 +250,6 @@ void onNoticationListener(String? payload) {
     print('payload $payload');
 
     Get.to(DetailsPage(passedIndex: int.tryParse(payload) ?? 0));
-  }
-}
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key : key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSplashScreen(
-      splash: Container(
-        height: 250,
-        width: 250,
-        child: Image.asset(
-          "images/Loading.gif"
-        )
-      ),
-      nextScreen: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : IntroPage() : const UpdateApp(),
-      backgroundColor: Colors.black,
-      animationDuration: Duration(milliseconds: 50),
-      splashIconSize: 250,
-    );
   }
 }
 

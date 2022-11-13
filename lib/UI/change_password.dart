@@ -134,6 +134,12 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
         decoration: InputDecoration(
           border: UnderlineInputBorder(),
           labelText: text,
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+          ),
           suffixIcon: TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateColor.resolveWith((states) => Colors.transparent),

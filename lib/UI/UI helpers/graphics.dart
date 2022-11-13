@@ -188,17 +188,8 @@ Container cryptoAnalChart(TrackballBehavior trackballBehavior,
                 args.chartPointInfo.label = '';
               }
             },
-            series: <LineSeries<PriceData, String>>[
-              LineSeries<PriceData, String>(
-                color: Colors.grey[200],
-                width: 0.2,
-                dataSource: horizontalLine,
-                name: "Line",
-                xValueMapper: (PriceData prices, _) =>
-                    DateFormat('MM-dd').format(prices.time),
-                yValueMapper: (PriceData prices, _) => prices.price,
-              ),
-              LineSeries<PriceData, String>(
+            series: <ColumnSeries<PriceData, String>>[
+              ColumnSeries<PriceData, String>(
                 color: lineColor,
                 dataSource: cryptoData,
                 name: "Data",

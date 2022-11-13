@@ -17,7 +17,7 @@ Future<void> initPlatformState() async {
   } else if (Platform.isIOS) {
     configuration = PurchasesConfiguration("appl_pzRjjQWXGnjwWgIEvgOnXsYcvAF");
   } else {
-    configuration = PurchasesConfiguration("apiKey");
+    configuration = PurchasesConfiguration("amzn_inmrnQiAZoTVjDyHJEAxcIiHyPf");
   }
 
   await Purchases.configure(configuration);

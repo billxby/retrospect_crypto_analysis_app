@@ -13,14 +13,14 @@ List<Color> alertColorChoices = [cRed, Color(0xffe57662), Colors.red.shade200, C
 AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
   refreshAlerts();
 
-  if (!userHasPremium()) {
+  if (!loggedIn) {
     return AlertDialog(
       title: const Text("Alerts", textAlign: TextAlign.center),
       shape: const RoundedRectangleBorder(
           borderRadius:
           BorderRadius.all(Radius.circular(20.0))),
       backgroundColor: Theme.of(context).colorScheme.tertiary,
-      content: Text('This is a Premium Feature!', textAlign: TextAlign.center),
+      content: Text('Please Log In!', textAlign: TextAlign.center),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, 'OK'),
@@ -63,7 +63,6 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           ),
           const SizedBox(height: 15),
           Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}", textAlign: TextAlign.center),
-          const Text("alerts will not work if the app is not running in bckgrd", style: TextStyle(fontSize: 9, height:2,)),
         ],
       ),
     ),
@@ -76,6 +75,9 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           alerts.remove(inputData['crypto']);
 
           ref.set(alerts);
+
+          final ref2 = FirebaseDatabase.instance.ref('alerts/predictions/${inputData['crypto']}');
+          ref2.update({"${FirebaseAuth.instance.currentUser?.uid}":null});
 
           Navigator.pop(context);
         },

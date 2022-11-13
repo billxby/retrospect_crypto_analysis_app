@@ -53,6 +53,7 @@ Future<String?> signupUser(String username, String password, String confirm) asy
       "credits": 0,
       "referredBy": "no one",
       "expire": 0,
+      "email": username,
     };
 
     db.collection("users").doc(user?.uid).set(createAccount);

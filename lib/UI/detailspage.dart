@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:number_slide_animation/number_slide_animation.dart';
 import 'package:numeral/numeral.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -34,6 +35,7 @@ List<double> numbers = <double> [1, 1000, 1000000];
 List<Widget> periods = <Widget> [Text("Day"), Text("Week"), Text("Month"), Text("Year"), Text("YTD")];
 List<Widget> periodsVol = <Widget> [Text("Week"), Text("Month"), Text("Year"), Text("YTD")];
 List<Widget> periodsScore = <Widget> [Text("Week"), Text("Month"), Text("Year")];
+List<Widget> periodsPredictions = <Widget> [Text("Month"), Text("Signals")];
 
 
 class DetailsPage extends StatefulWidget {
@@ -45,10 +47,11 @@ class DetailsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _DetailsPageState();
 }
 
-class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStateMixin {
+class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin  {
   late TrackballBehavior _trackballBehavior;
   late TrackballBehavior _trackballBehavior2;
   late TrackballBehavior _trackballBehavior3;
+  late TrackballBehavior _trackballBehavior4;
   late List<List<PriceData>> _cryptoData = [];
   late BannerAd _bannerAd;
   late BannerAd _endBannerAd;
@@ -57,7 +60,8 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
   List<bool> isSelectedVol = [false, true, false, false];
   List<bool> isSelectedScore = [true, false, false];
   List<bool> isSelectedMarketview = [true, false, false];
-  int selectedIdx = 2; int selectedIdxVol = 1; int selectedIdxScore = 0; int selectedIdxMarketview = 0;
+  List<bool> isSelectedPredictions = [true, false];
+  int selectedIdx = 2; int selectedIdxVol = 1; int selectedIdxScore = 0; int selectedIdxMarketview = 0; int selectedIdxPredictions = 0;
   final ValueNotifier<String> _priceText = ValueNotifier<String>("");
 
   Color twentyFourColor = Colors.white; Color scoreColor = Colors.white;
@@ -69,7 +73,7 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
   List<double> scoreGge = [], marketviewGge = [];
   String predUrl = "https://i.postimg.cc/tgYj7XSn/bull-v2-offset.png";
   String marketUrl = "https://i.postimg.cc/HkYX7KCC/smiley-v2.png";
-  List<String> baTw = []; List<String> baCm = []; List<int> stars = [];
+  List<String> baTw = []; List<String> baCm = []; List<String> stars = [];
   double dTwH = 0; double dTwL = 0; double dPrice = 0; bool isStarred = false; bool canSee = false; bool hasAlert = false;
 
   bool gotData = false; late TabController _tabController;
@@ -119,6 +123,22 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
       ),
     );
     _trackballBehavior3 = TrackballBehavior(
+      enable: true,
+      activationMode: ActivationMode.singleTap,
+      lineColor: Theme.of(context).colorScheme.secondary,
+      shouldAlwaysShow: true,
+      hideDelay: 2,
+      tooltipSettings: InteractiveTooltip(
+        enable: true,
+        color: Theme.of(context).colorScheme.primary,
+        // color: Colors.transparent,
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        format: '\$point.y  (point.x)',
+      ),
+    );
+    _trackballBehavior4 = TrackballBehavior(
       enable: true,
       activationMode: ActivationMode.singleTap,
       lineColor: Theme.of(context).colorScheme.secondary,
@@ -192,8 +212,8 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
     }
 
 
-    stars = localStorage.read("starred")?.cast<int>() ?? [];
-    if (stars.contains(widget.passedIndex)) {
+    stars = localStorage.read("starred_coins")?.cast<String>() ?? [];
+    if (stars.contains(TopCryptos[widget.passedIndex].id)) {
       isStarred = true;
     }
     else {
@@ -240,187 +260,17 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                   ],
                 ),
                 SizedBox(height: 265),
+                SizedBox(height: 265),
               ],
             );
           }
           return detailsPageScaffold(
             <Widget> [
               cryptoPriceChart(_trackballBehavior, _cryptoData[selectedIdx], false, screenWidth * 0.93),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget> [
-                  Center(
-                    child: Column(
-                      children: <Widget> [
-                        const Text(
-                          "Retro-Score History",
-                          style: TextStyle(
-                            height: 2, fontSize: 20, fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        selectedIdxScore != 0 ? (userHasPremium() ?
-                          cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxScore+9], false, screenWidth * 0.93, null, null) :
-                          Column(children: <Widget> [
-                            SizedBox(height: 60),
-                            Image.network(
-                              "https://i.postimg.cc/VkpYychz/Lock.png",
-                              height:60,
-                            ),
-                            const Text(
-                              "You discovered a Premium Feature!",
-                              style: TextStyle(
-                                height: 3,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            const Text(
-                              "Get Premium to access more Retro-Score History! \n Go to the Premium Page to Learn more.",
-                              style: TextStyle(
-                                height: 1,
-                                fontSize: 13,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 10,),
-                            if (!loggedIn)
-                              SizedBox(
-                                height: 30,
-                                width: 135,
-                                child: OutlinedButton(
-                                  onPressed: () async {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => LoginPage()),
-                                    ).then((_)=>setState((){}));
-                                    return;
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    primary: Colors.black,
-                                    onSurface: Colors.white,
-                                    backgroundColor: Colors.white,
-                                  ),
-                                  child: Text('Log In', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-                                ),
-                              ),
-                            if (loggedIn)
-                              SizedBox(
-                                height: 30,
-                                width: 135,
-                                child: OutlinedButton(
-                                  onPressed: () async {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => GetPremiumPage()),
-                                    ).then((_)=>setState((){}));
-                                    return;
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    primary: Colors.black,
-                                    onSurface: Colors.white,
-                                    backgroundColor: Colors.white,
-                                  ),
-                                  child: Text('Learn More', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-                                ),
-                              ),
-                            SizedBox(height: 30),
-                          ])
-                        ) : cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxScore+9], false, screenWidth * 0.93, null, null),
-                      ]
-                    )
-                  )
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget> [
-                  Center(
-                      child: Column(
-                          children: <Widget> [
-                            const Text(
-                              "MarketView History",
-                              style: TextStyle(
-                                height: 2, fontSize: 20, fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.left,
-                            ),
-                            selectedIdxMarketview != 0 ? (userHasPremium() ?
-                            cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxMarketview+12], false, screenWidth * 0.93, cGreen, cRed) :
-                            Column(children: <Widget> [
-                              SizedBox(height: 60),
-                              Image.network(
-                                "https://i.postimg.cc/VkpYychz/Lock.png",
-                                height:60,
-                              ),
-                              const Text(
-                                "You discovered a Premium Feature!",
-                                style: TextStyle(
-                                  height: 3,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              const Text(
-                                "Get Premium to access more Retro-Score History! \n Go to the Premium Page to Learn more.",
-                                style: TextStyle(
-                                  height: 1,
-                                  fontSize: 13,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: 10,),
-                              if (!loggedIn)
-                                SizedBox(
-                                  height: 30,
-                                  width: 135,
-                                  child: OutlinedButton(
-                                    onPressed: () async {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => LoginPage()),
-                                      ).then((_)=>setState((){}));
-                                      return;
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      primary: Colors.black,
-                                      onSurface: Colors.white,
-                                      backgroundColor: Colors.white,
-                                    ),
-                                    child: Text('Log In', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-                                  ),
-                                ),
-                              if (loggedIn)
-                                SizedBox(
-                                  height: 30,
-                                  width: 135,
-                                  child: OutlinedButton(
-                                    onPressed: () async {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => GetPremiumPage()),
-                                      ).then((_)=>setState((){}));
-                                      return;
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      primary: Colors.black,
-                                      onSurface: Colors.white,
-                                      backgroundColor: Colors.white,
-                                    ),
-                                    child: Text('Learn More', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-                                  ),
-                                ),
-                              SizedBox(height: 30),
-                            ])
-                            ) : cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxMarketview+12], false, screenWidth * 0.93, cGreen, cRed),
-                          ]
-                      )
-                  )
-                ],
-              ),
-              cryptoInfoChart("Volume", _trackballBehavior3, _cryptoData[selectedIdxVol+5], false, screenWidth * 0.93),
+              historyChart("Retro-Score", cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxScore+9], false, screenWidth * 0.93, null, null), selectedIdxScore),
+              historyChart("MarketView", cryptoAnalChart(_trackballBehavior2, _cryptoData[selectedIdxMarketview+12], false, screenWidth * 0.93, cGreen, cRed), selectedIdxMarketview),
+              cryptoPredictionHistoryChart(_trackballBehavior3, _cryptoData[2], false, screenWidth * 0.93, _cryptoData[15], selectedIdxPredictions),
+              cryptoInfoChart("Volume", _trackballBehavior4, _cryptoData[selectedIdxVol+5], false, screenWidth * 0.93),
             ]
           );
         });
@@ -454,16 +304,16 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
               padding: const EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
-                  List<int> stars = localStorage.read("starred")?.cast<int>() ?? [];
-                  if (stars.contains(widget.passedIndex)) {
-                    stars.remove(widget.passedIndex);
+                  stars = localStorage.read("starred_coins")?.cast<String>() ?? [];
+                  if (stars.contains(TopCryptos[widget.passedIndex].id)) {
+                    stars.remove(TopCryptos[widget.passedIndex].id);
                     Sort["Starred"]?.remove(widget.passedIndex);
                   }
                   else {
-                    stars.add(widget.passedIndex);
+                    stars.add(TopCryptos[widget.passedIndex].id);
                     Sort["Starred"]?.add(widget.passedIndex);
                   }
-                  localStorage.write("starred", stars);
+                  localStorage.write("starred_coins", stars);
 
                   setState(() {});
                 },
@@ -537,32 +387,61 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                                   fontSize: 20,
                                   letterSpacing: 1.5,
                                   height: 2,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                                 children: <TextSpan>[
                                   TextSpan(text: value.substring(value.indexOf(";")+1), style: TextStyle(fontSize: 14)),
                                 ],
                               ),
                             );
-                            return Text(
-                              " \$${value.substring(0, value.indexOf(";"))} USD",
-                              style: TextStyle(
-                                fontSize: 20,
-                                letterSpacing: 1.5,
-                                height: 2,
-                              ),
-                              textAlign: TextAlign.left,
-                              softWrap: false,
-                            );
                           }
                       ),
-                      Text(
-                        "  ${TopCryptos[widget.passedIndex].price_change_precentage_24h}%",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: twentyFourColor,
-                        ),
-                        textAlign: TextAlign.left,
-                        softWrap: false,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? " -" : " +"}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                          NumberSlideAnimation(
+                            number: TopCryptos[widget.passedIndex].price_change_precentage_24h.substring(TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? 1 : 0, TopCryptos[widget.passedIndex].price_change_precentage_24h.indexOf(".")),
+                            duration: const Duration(milliseconds: 600),
+                            curve: Curves.bounceIn,
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                              color: TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                            ),
+                          ),
+                          Text(
+                            ".",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                            ),
+                          ),
+                          Flexible(
+                            child: NumberSlideAnimation(
+                              number: TopCryptos[widget.passedIndex].price_change_precentage_24h.substring(TopCryptos[widget.passedIndex].price_change_precentage_24h.indexOf(".")+1, TopCryptos[widget.passedIndex].price_change_precentage_24h.length),
+                              duration: const Duration(milliseconds: 600),
+                              curve: Curves.bounceIn,
+                              textStyle: TextStyle(
+                                fontSize: 16,
+                                color: TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "%",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: TopCryptos[widget.passedIndex].price_change_precentage_24h.contains("-") ? cRed : cGreen,
+                            ),
+                          ),
+                        ],
                       ),
                       Center(
                         child: widgets[0],
@@ -718,8 +597,9 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
               ),
 
               SizedBox(
-                height: 450,
+                height: canSee ? 450 : 355,
                 child: TabBarView(
+                  physics: canSee ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
                   controller: _tabController,
                     children: [
                       Container(
@@ -784,6 +664,7 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                                             style: ElevatedButton.styleFrom(
                                               minimumSize: Size.zero,
                                               padding: EdgeInsets.zero,
+                                              elevation: 0,
                                             ),
                                             onPressed: () {
                                               _tabController.index = 1;
@@ -865,6 +746,7 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                                             style: ElevatedButton.styleFrom(
                                               minimumSize: Size.zero,
                                               padding: EdgeInsets.zero,
+                                              elevation: 0,
                                             ),
                                             onPressed: () {
                                               _tabController.index = 2;
@@ -1012,8 +894,8 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                                       color: Colors.blue,
                                     ),
                                   ),
-                                  const Text(
-                                    "Get Premium to access more analysis!\n\nYou still have access to:",
+                                  Text(
+                                    !loggedIn ? "Join Retro to get more cryptocurrency analysis! It's free. \n\n\n\n You still have access to:" : "Get Premium to access more analysis!\n\nYou still have access to:",
                                     style: TextStyle(
                                       height: 1,
                                       fontSize: 13,
@@ -1038,20 +920,20 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                                     width: 135,
                                     child: OutlinedButton(
                                         onPressed: () async {
-                                          bool worked = await redeemCreditsDetails(widget.passedIndex ?? 0);
+                                          if (loggedIn) {
+                                            bool worked = await redeemCreditsDetails(widget.passedIndex ?? 0);
 
-                                          if (worked) {
-                                            setState(() {});
-                                          }
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
+                                            if (worked) {
+                                              setState(() {});
+                                            }
+                                            showDialog(
+                                              context: context,
                                               builder: (context) => AlertDialog(
                                                 title: const Text('You don\'t have enough Credits'),
                                                 shape: const RoundedRectangleBorder(
                                                     borderRadius:
                                                     BorderRadius.all(Radius.circular(20.0))),
-                                                backgroundColor: Theme.of(context).colorScheme.secondary,
+                                                backgroundColor: Theme.of(context).colorScheme.primary,
                                                 content: const Text('You need at least 50 Credits to redeem that'),
                                                 actions: <Widget>[
                                                   TextButton(
@@ -1060,24 +942,34 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          );
+                                            );
+                                          }
+                                          else {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => LoginPage()),
+                                            ).then((_)=>setState((){}));
+                                          }
+
                                         },
-                                        style: OutlinedButton.styleFrom(
-                                          primary: Colors.black,
-                                          onSurface: Colors.white,
-                                          backgroundColor: Colors.white,
+                                        style: ButtonStyle(
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(18.0),
+                                                )
+                                            ),
+                                          backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).colorScheme.secondary),
                                         ),
-                                        child: Row(
-                                            children: const <Widget> [
-                                              Text('Unlock: 50 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
-                                              Icon(
-                                                Icons.donut_large,
-                                                size: 22,
-                                                color: Colors.black,
-                                              ),
-                                            ]
-                                        )
+                                        child: loggedIn ? Row(
+                                          children: <Widget> [
+                                            Text('Unlock: 50 ', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.primary)),
+                                            Icon(
+                                              Icons.donut_large,
+                                              size: 22,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          ],
+                                        ) : Text('Sign Up!', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.primary)),
                                     ),
                                   ),
                                 ],
@@ -1188,10 +1080,98 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                 ),
               ),
 
+              SizedBox(
+                height: 20,
+              ),
+
+              if (canSee)
+                Center(
+                  child: Container(
+                    height: 425,
+                    width: screenWidth * 0.95,
+                    child: Column(children: <Widget>[
+                      Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget> [
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Predictions History",
+                                    style: TextStyle(
+                                      height: 2, fontSize: 20, fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.vertical(
+                                                top: Radius.circular(20),
+                                              )
+                                          ),
+                                          builder: (context) => Center(
+                                            child: predictionsInfo(Theme.of(context).colorScheme.secondary),
+                                          )
+                                      );
+                                    },
+                                    icon: const Icon(Icons.info_outlined),
+                                    iconSize: 15,
+                                    padding: EdgeInsets.all(5),
+                                    constraints: BoxConstraints(maxHeight: 28, maxWidth: 16),
+                                  ),
+                                ]
+                              )
+                            ),
+                            Center(
+                              child: selectedIdxPredictions == 0 ? (loggedIn ? widgets[3] : paywallCharts("Predictions")) : (userHasPremium() ? widgets[3] : paywallCharts("Predictions Signals")),
+                            ),
+                            Center(
+                              child: ToggleButtons(
+                                direction: Axis.horizontal,
+                                onPressed: (int index) {
+                                  setState(() {
+                                    // The button that is tapped is set to true, and the others to false.
+                                    for (int i = 0; i < isSelectedPredictions.length; i++) {
+                                      isSelectedPredictions[i] = i == index;
+                                      if (isSelectedPredictions[i] == true) {
+                                        selectedIdxPredictions = i;
+                                      }
+                                    }
+                                  });
+                                },
+                                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                selectedBorderColor: Colors.transparent,
+                                selectedColor: Colors.black,
+                                fillColor: Colors.white,
+                                // color: Colors.white,
+                                borderWidth: 2,
+                                constraints: BoxConstraints(
+                                  minHeight: 40.0,
+                                  minWidth: screenWidth*0.15,
+                                ),
+                                isSelected: isSelectedPredictions,
+                                children: periodsPredictions,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    ]),
+                  )
+              ),
+
               const SizedBox(
                 height: 45,
               ),
 
+              //VOLUME
               Center(
                   child: Container(
                     height: 400,
@@ -1205,7 +1185,7 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget> [
                               Center(
-                                child: widgets[3],
+                                child: widgets[4]
                               ),
                               Center(
                                 child: Text(subtitle, textAlign: TextAlign.right, style: const TextStyle(fontSize: 10, color: Colors.grey)),
@@ -1268,6 +1248,10 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
     List<PriceData> marketviewDataW = [];
     List<PriceData> marketviewDataM = [];
     List<PriceData> marketviewDataY = [];
+    List<PriceData> predictionsDataW = [];
+    List<PriceData> predictionsDataM = [];
+    List<PriceData> predictionsDataY = [];
+
 
     final String url = "https://api.coingecko.com/api/v3/coins/${TopCryptos[widget.passedIndex].id}/market_chart?vs_currency=usd&days=365&interval=daily";
     final String url2 = "https://api.coingecko.com/api/v3/coins/${TopCryptos[widget.passedIndex].id}/market_chart?vs_currency=usd&days=7&interval=hourly";
@@ -1389,8 +1373,6 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
           }
         }
 
-        print("here 1");
-
         for (String key in data3.keys) {
           PriceData adding = PriceData(DateTime.fromMillisecondsSinceEpoch(int.parse(key)*1000),data3[key]['marketView'].toDouble());
           if (adding.time.compareTo(now.subtract(Duration(days: 7))) > 0) {
@@ -1404,7 +1386,18 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
           }
         }
 
-        print("here 2");
+        for (String key in data3.keys) {
+          PriceData adding = PriceData(DateTime.fromMillisecondsSinceEpoch(int.parse(key)*1000),double.parse(data3[key]['prediction']));
+          if (adding.time.compareTo(now.subtract(Duration(days: 7))) > 0) {
+            predictionsDataW.add(adding);
+          }
+          if (adding.time.compareTo(now.subtract(Duration(days: 31))) > 0) {
+            predictionsDataM.add(adding);
+          }
+          if (adding.time.compareTo(now.subtract(Duration(days: 365))) > 0) {
+            predictionsDataY.add(adding);
+          }
+        }
 
         cryptoData.add(priceDataD);
         cryptoData.add(priceDataW);
@@ -1421,6 +1414,9 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
         cryptoData.add(marketviewDataW);
         cryptoData.add(marketviewDataM);
         cryptoData.add(marketviewDataY);
+        // cryptoData.add(predictionsDataW);
+        cryptoData.add(predictionsDataM);
+        // cryptoData.add(predictionsDataY);
         break;
       }
       catch (e) {
@@ -1432,6 +1428,109 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
     }
 
     return cryptoData;
+  }
+
+  Container cryptoPredictionHistoryChart(TrackballBehavior trackballBehavior, List<PriceData> cryptoData, bool showAxis, double width, List<PriceData> predictionsHistory, int Mode) {
+
+    List<PriceDataColor> predictionsDataChart = [];
+    List<PlotBand> signals = [];
+    int gap = 0;
+
+    if (predictionsHistory.length > 28) {
+      gap = predictionsHistory.length - 28;
+    }
+
+    int prevPrediction = 0;
+    bool inATrade = false;
+    String start = DateFormat('MM-dd HH:00').format(cryptoData[0].time);
+    String end = DateFormat('MM-dd HH:00').format(cryptoData[0].time);
+
+    for (int i=gap;i<predictionsHistory.length;i++) {
+      predictionsDataChart.add(
+        PriceDataColor(cryptoData[i-gap].time, cryptoData[i-gap].price, predictionsHistory[i].price >= 0 ? (Mode != 1 ? Colors.greenAccent : Colors.lightBlueAccent) : (Mode != 1 ? Colors.redAccent : Colors.blueAccent))
+      );
+
+      if (Mode == 1) {
+        int currentPred = predictionsHistory[i].price > 1 ? 2 : (predictionsHistory[i].price < -0.5 ? -2 : (predictionsHistory[i].price >= 0 ? 1 : -1));
+        // print("prv is $prevPrediction and cur is $currentPred");
+
+
+        //Exit trade
+        if (((prevPrediction > 0 && currentPred < 0) || (prevPrediction < 0 && currentPred > 0)) && inATrade) {
+          end = DateFormat('MM-dd HH:00').format(cryptoData[i-gap].time);
+
+          signals.add(
+              PlotBand(
+                start: start,
+                end: end,
+                isVisible: true,
+                color: prevPrediction > 0 ? lightGreen : lightRed,
+              )
+          );
+          inATrade = false;
+        }
+        //Enter trade
+        if ((currentPred >= 2 && prevPrediction < 2) || (currentPred <= -2 && prevPrediction > -2)) {
+          // print("entered Trade");
+          start = DateFormat('MM-dd HH:00').format(cryptoData[i].time);
+          inATrade = true;
+        }
+
+        prevPrediction = currentPred;
+      }
+    }
+
+    print("Here");
+
+    if (inATrade) {
+      signals.add(
+        PlotBand(
+          start: start,
+          end: DateFormat('MM-dd HH:00').format(cryptoData[cryptoData.length-gap].time),
+          isVisible: true,
+          color: prevPrediction > 0 ? Colors.greenAccent : Colors.redAccent,
+        )
+      );
+      inATrade = false;
+    }
+
+    return Container(
+      height: 325,
+      width: width,
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 325,
+            width: width,
+            child: SfCartesianChart(
+              trackballBehavior: trackballBehavior,
+              primaryXAxis: CategoryAxis(
+                majorGridLines: const MajorGridLines(width: 0),
+                isVisible: showAxis,
+                plotBands: signals
+              ),
+              primaryYAxis: NumericAxis(
+                isVisible: showAxis,
+                majorGridLines: const MajorGridLines(width: 0),
+                rangePadding: ChartRangePadding.round,
+                // labelFormat: '\${value}',
+              ),
+              borderColor: Colors.transparent,
+              plotAreaBorderColor: Colors.transparent,
+              legend: Legend(isVisible: false),
+              series: <LineSeries<PriceDataColor, String>>[
+                LineSeries<PriceDataColor, String>(
+                  dataSource: predictionsDataChart,
+                  xValueMapper: (PriceDataColor prices, _) => DateFormat('MM-dd HH:00').format(prices.time),
+                  yValueMapper: (PriceDataColor prices, _) => prices.price,
+                  pointColorMapper: (PriceDataColor prices, _) => prices.pointColor,
+                ),
+              ]
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Container cryptoPriceChart(TrackballBehavior trackballBehavior, List<PriceData> cryptoData, bool showAxis, double width) {
@@ -1477,6 +1576,103 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
     );
   }
 
+  Column historyChart(String object, Widget chart, int selectedIdx) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget> [
+        Center(
+            child: Column(
+                children: <Widget> [
+                  Text(
+                    "$object History",
+                    style: const TextStyle(
+                      height: 2, fontSize: 20, fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  selectedIdx != 0 ? (selectedIdx == 1 ? (loggedIn ? chart : paywallCharts(object)) : (userHasPremium() ? chart : paywallCharts(object))) : chart,
+                ]
+            )
+        )
+      ],
+    );
+  }
+
+  Column paywallCharts(String object) {
+    return Column(children: <Widget> [
+      SizedBox(height: 60),
+      Image.network(
+        "https://i.postimg.cc/VkpYychz/Lock.png",
+        height:60,
+      ),
+      Text(
+        !loggedIn ? "Join Retro" : "You discovered a Premium Feature!",
+        style: const TextStyle(
+          height: 3,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Colors.blue,
+        ),
+      ),
+      Text(
+        !loggedIn ? "Sign Up to access monthly $object History!" : "Get Premium to access more $object History! \n Go to the Premium Page to Learn more.",
+        style: const TextStyle(
+          height: 1,
+          fontSize: 13,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 10,),
+      if (!loggedIn)
+        SizedBox(
+          height: 30,
+          width: 120,
+          child: OutlinedButton(
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              ).then((_)=>setState((){}));
+              return;
+            },
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  )
+              ),
+              backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).colorScheme.secondary),
+            ),
+            child: Text('Sign Up!', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.primary)),
+          ),
+        ),
+      if (loggedIn)
+        SizedBox(
+          height: 30,
+          width: 135,
+          child: OutlinedButton(
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => GetPremiumPage()),
+              ).then((_)=>setState((){}));
+              return;
+            },
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  )
+              ),
+              backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).colorScheme.secondary),
+            ),
+            child: Text('Learn More', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,)),
+          ),
+        ),
+      SizedBox(height: 80),
+    ]);
+  }
+
 }
 
 
@@ -1485,4 +1681,12 @@ class PriceData {
 
   final DateTime time;
   final double price;
+}
+
+class PriceDataColor {
+  PriceDataColor(this.time, this.price, this.pointColor);
+
+  final DateTime time;
+  final double price;
+  final Color pointColor;
 }

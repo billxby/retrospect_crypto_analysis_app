@@ -26,20 +26,13 @@ class _IntroPageState extends State<IntroPage> {
   final localStorage = GetStorage();
 
   void _EndWelcomePage(context) {
-
     Navigator.pop(context);
-    if (localStorage.read("displayed") == true){
-      return;
-    }
-
-    localStorage.write("displayed", true);
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => MainPages())
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    Color pageBackgroundColor = localStorage.read("darkTheme") ? Colors.black12 : Colors.white;
+
     return Scaffold(
       body: Center(
         child: IntroductionScreen(
@@ -58,34 +51,34 @@ class _IntroPageState extends State<IntroPage> {
           pages: [
             PageViewModel(
               image: Image.network(
-                  'https://i.postimg.cc/V6PKzB1b/App-Preview-Main-Crop.png',
+                  localStorage.read("darkTheme") ? 'https://i.postimg.cc/V6PKzB1b/App-Preview-Main-Crop.png' : "https://i.postimg.cc/GtFq1p2c/App-Preview-Main-Crop-Light.png",
               ),
               title: "Welcome to Retrospect!",
               body: "Your one stop for crypto analysis. \n \n Retrospect analyzes over 500 different cryptocurrencies to give predictions and ratings based on social metrics.",
               footer: Text("Let's get started!"),
-              decoration: const PageDecoration(
-                pageColor: Colors.black12,
+              decoration: PageDecoration(
+                pageColor: pageBackgroundColor
               )
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/QxPnXnx8/App-Preview-Main-2-Crop.png'
+                    localStorage.read("darkTheme") ? 'https://i.postimg.cc/QxPnXnx8/App-Preview-Main-2-Crop.png' : "https://i.postimg.cc/x8Dt7m9x/App-Preview-Main-2-Crop-Light.png"
                 ),
                 title: "Metrics",
                 body: "Retrospect has 3 different metrics: \n RETRO-SCORE© (Quality), Market View score(Sentiment), and predicted 24h change",
                 footer: const Text("Learn more by clicking on title \"Analysis\""),
-                decoration: const PageDecoration(
-                  pageColor: Colors.black12,
+                decoration: PageDecoration(
+                  pageColor: pageBackgroundColor
                 )
             ),
             PageViewModel(
                 image: Image.network(
-                    'https://i.postimg.cc/zvqfpzKG/Settings-Page.png'
+                    localStorage.read("darkTheme") ? 'https://i.postimg.cc/zvqfpzKG/Settings-Page.png' : "https://i.postimg.cc/66nHZMhD/Settings-Page-Light.png"
                 ),
                 title: "Settings",
                 body: "Go to the Settings Page to Log In and configure your app!",
-                decoration: const PageDecoration(
-                  pageColor: Colors.black12,
+                decoration: PageDecoration(
+                  pageColor: pageBackgroundColor
                 )
             ),
             PageViewModel(
@@ -94,10 +87,12 @@ class _IntroPageState extends State<IntroPage> {
                   height: 200,
                 ),
                 title: "Premium",
-                body: "Premium gives you more than 5 analysis/day, alerts, and price history for better trading! \n \n You don't need premium to create an account.",
-                footer: const Text("Learn more by clicking Upgrade"),
+                body: "Premium gives you more than 7 analysis/day, alerts, and price history for better trading! \n \n You don't need premium to create an account.",
+                footer: const Text("Learn more by clicking Upgrade", style: TextStyle(color: Colors.white)),
                 decoration: const PageDecoration(
-                  pageColor: Colors.black12,
+                  pageColor: Colors.black,
+                  titleTextStyle: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  bodyTextStyle: TextStyle(color: Colors.white, fontSize: 16),
                 )
             ),
           ],

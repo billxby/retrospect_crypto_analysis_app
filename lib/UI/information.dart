@@ -160,6 +160,163 @@ SingleChildScrollView analysisInfo(Color defaultColor) {
   );
 }
 
+SingleChildScrollView predictionsInfo(Color defaultColor) {
+  return SingleChildScrollView(
+    child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: Container(
+                height: 200,
+                width: screenWidth * 0.93,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "Predictions History & Signals",
+                        style: TextStyle(
+                          height: 2, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.5,),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          children: <Widget> [
+                            RichText(
+                                text: TextSpan(
+                                    text: "Predictions",
+                                    style: TextStyle(
+                                      height: 2,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(text:" History", style: TextStyle(
+                                        color: defaultColor,
+                                      )),
+                                    ]
+                                )
+                            ),
+                          ]
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "Past estimations of price movements made by our ML algorithm. When the line is  ",
+                          children: <TextSpan>[
+                            TextSpan(text: 'Green', style: TextStyle(fontWeight: FontWeight.bold, color: cGreen)),
+                            const TextSpan(text: ', our algorithm rated future price movements as '),
+                            TextSpan(text: 'Bullish', style: TextStyle(fontWeight: FontWeight.bold, color: cGreen)),
+                            const TextSpan(text: '. When the line is '),
+                            TextSpan(text: 'Red', style: TextStyle(fontWeight: FontWeight.bold, color: cRed)),
+                            const TextSpan(text: ', our algorithm rated future price movements as '),
+                            TextSpan(text: 'Bearish', style: TextStyle(fontWeight: FontWeight.bold, color: cRed)),
+                            const TextSpan(text: '. Future price predictions do not always indicate that a trade should be made!'),
+                          ],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+                height: 150,
+                width: screenWidth * 0.93,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: const <Widget>[
+                          Text(
+                            "Predictions ",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "Signals ",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.lightBlue,
+                            ),
+                          ),
+                          Text(
+                            "History ",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "This indicates trades our ML algorithm have recommended. To get alerted on these trades and see them, you have to be a  ",
+                          children: <TextSpan>[
+                            TextSpan(text: 'Premium Member', style: TextStyle(color: Colors.blueAccent)),
+                            const TextSpan(text: '. This will guide your trading experience and give you recommendations on the next move. Pair this with Technical Analysis and you\'re set for life!'),
+                          ],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ])),
+          ),
+          Center(
+            child: Container(
+                height: 525,
+                width: screenWidth * 0.93,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      RichText(
+                        text: TextSpan(
+                          text: "Here is how you can use the signals feature. \n",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                      Image.asset(
+                        "images/tutorials/Signals Example.png"
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "\nEach  ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: defaultColor,
+                          ),
+                          children: <TextSpan>[
+                            TextSpan(text: 'PlotBand', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const TextSpan(text: ' indicates a past signal to buy or sell. This chart shows past signals in the month and wether you should buy or sell the asset. \n\nYou can also enable our exclusive '),
+                            TextSpan(text: 'alerts', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const TextSpan(text: ' for new alerts on cryptocurrencies.'),
+                          ],
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+
+                    ]
+                )
+            ),
+          ),
+        ]),
+  );
+}
+
 SingleChildScrollView marketStatsInfo(Color defaultColor) {
   return SingleChildScrollView(
     child: Column(

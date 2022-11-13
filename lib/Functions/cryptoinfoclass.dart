@@ -28,6 +28,7 @@ class CryptoInfo {
   final String score;
   final String realVolume;
   final String realScore;
+  final String realPrediction;
 
   CryptoInfo({
     required this.market_cap_rank,
@@ -50,6 +51,7 @@ class CryptoInfo {
     required this.score,
     required this.realVolume,
     required this.realScore,
+    required this.realPrediction,
   });
 
   factory CryptoInfo.fromJson(Map<String, dynamic> predictions, Map<String, dynamic> data) {
@@ -155,6 +157,7 @@ class CryptoInfo {
       score: score,
       realVolume: realVolume,
       realScore: realScore,
+      realPrediction: predictions['prediction'].toString(),
     );
   }
 }

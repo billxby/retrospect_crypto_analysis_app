@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(height: 70),
           Text("Welcome!", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
           Image.asset(
-            "images/Full Logo.png",
+            localStorage.read("darkTheme") ? "images/Full Logo Dark.png" : "images/Full Logo.png",
             width: screenWidth*0.6,
           ),
           const SizedBox(
@@ -103,8 +103,15 @@ class _LoginPageState extends State<LoginPage> {
             width: screenWidth*0.8,
             child: TextFormField(
               controller: _logInUsernameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
+                focusColor: Theme.of(context).colorScheme.secondary,
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                ),
               ),
             ),
           ),
@@ -181,8 +188,8 @@ class _LoginPageState extends State<LoginPage> {
               }
             },
             style: ButtonStyle(
-              overlayColor: MaterialStateColor.resolveWith((states) => Colors.black12),
-              backgroundColor: MaterialStatePropertyAll<Color>((emailValid == true) && (passwordValid==true) && (confirmPasswordValid==true) ? Colors.white : Colors.grey),
+              overlayColor: MaterialStateColor.resolveWith((states) => Theme.of(context).colorScheme.secondaryVariant),
+              backgroundColor: MaterialStatePropertyAll<Color>((emailValid == true) && (passwordValid==true) && (confirmPasswordValid==true) ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.error),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
@@ -192,9 +199,9 @@ class _LoginPageState extends State<LoginPage> {
             child: SizedBox(
               width: screenWidth*0.7,
               height: 50,
-              child: const Text(
+              child: Text(
                 "Sign Up",
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal, fontSize: 20, height: 1.8,), textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.normal, fontSize: 20, height: 1.8,), textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -208,20 +215,21 @@ class _LoginPageState extends State<LoginPage> {
               });
             },
             style: ButtonStyle(
-              overlayColor: MaterialStateColor.resolveWith((states) => Colors.white24),
-              backgroundColor: const MaterialStatePropertyAll<Color>(Colors.transparent),
+              overlayColor: MaterialStateColor.resolveWith((states) => Theme.of(context).colorScheme.secondaryVariant),
+              backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).colorScheme.secondaryVariant),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                   )
               ),
+              elevation: const MaterialStatePropertyAll<double>(0),
             ),
             child: SizedBox(
               width: screenWidth*0.7,
               height: 40,
-              child: const Text(
+              child: Text(
                 "Back",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 18, height: 1.8,), textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.normal, fontSize: 18, height: 1.8,), textAlign: TextAlign.center,
               ),
             ),
           )
@@ -236,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
         children: <Widget> [
           SizedBox(height: 70),
           Image.asset(
-            "images/Full Logo.png",
+            localStorage.read("darkTheme") ? "images/Full Logo Dark.png" : "images/Full Logo.png",
             width: screenWidth*0.6,
           ),
           const SizedBox(
@@ -246,8 +254,15 @@ class _LoginPageState extends State<LoginPage> {
             width: screenWidth*0.8,
             child: TextFormField(
               controller: _logInUsernameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
+                focusColor: Theme.of(context).colorScheme.secondary,
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                ),
               ),
             ),
           ),
@@ -336,8 +351,8 @@ class _LoginPageState extends State<LoginPage> {
               }
             },
             style: ButtonStyle(
-              overlayColor: MaterialStateColor.resolveWith((states) => Colors.black12),
-              backgroundColor: MaterialStatePropertyAll<Color>((emailValid == true) && (passwordValid==true) ? Colors.white : Colors.grey),
+              overlayColor: MaterialStateColor.resolveWith((states) => Theme.of(context).colorScheme.secondaryVariant),
+              backgroundColor: MaterialStatePropertyAll<Color>((emailValid == true) && (passwordValid==true) ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.error),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
@@ -347,9 +362,9 @@ class _LoginPageState extends State<LoginPage> {
             child: SizedBox(
               width: screenWidth*0.7,
               height: 50,
-              child: const Text(
+              child: Text(
                 "Log In",
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal, fontSize: 20, height: 1.8,), textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.normal, fontSize: 20, height: 1.8,), textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -363,20 +378,21 @@ class _LoginPageState extends State<LoginPage> {
               });
             },
             style: ButtonStyle(
-              overlayColor: MaterialStateColor.resolveWith((states) => Colors.white24),
-              backgroundColor: const MaterialStatePropertyAll<Color>(Colors.transparent),
+              overlayColor: MaterialStateColor.resolveWith((states) => Theme.of(context).colorScheme.secondaryVariant),
+              backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).colorScheme.secondaryVariant),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                   )
               ),
+              elevation: const MaterialStatePropertyAll<double>(0),
             ),
             child: SizedBox(
               width: screenWidth*0.7,
               height: 40,
-              child: const Text(
+              child: Text(
                 "Register",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 18, height: 1.8,), textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.normal, fontSize: 18, height: 1.8,), textAlign: TextAlign.center,
               ),
             ),
           )
@@ -398,8 +414,15 @@ class _LoginPageState extends State<LoginPage> {
             width: screenWidth*0.8,
             child: TextFormField(
               controller: _logInUsernameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
+                focusColor: Theme.of(context).colorScheme.secondary,
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                ),
               ),
             ),
           ),
@@ -490,6 +513,13 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: showPasswords[showIdx],
         decoration: InputDecoration(
           labelText: text,
+          focusColor: Theme.of(context).colorScheme.secondary,
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+          ),
           suffixIcon: TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateColor.resolveWith((states) => Colors.transparent),

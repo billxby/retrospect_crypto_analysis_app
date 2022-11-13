@@ -60,8 +60,8 @@ Future<bool> fetchDatabase() async {
       Sort["↓24h"] = [];
       Sort["↑Vol"] = [];
       Sort["↓Vol"] = [];
-      Sort["↑Rscr"] = [];
-      Sort["↓Rscr"] = [];
+      Sort["↑Pred"] = [];
+      Sort["↓Pred"] = [];
       Sort["Starred"] = [];
 
       int count = 0;
@@ -70,9 +70,6 @@ Future<bool> fetchDatabase() async {
       CryptosList = [];
       CryptosIndex = {};
       globalIndex = 0;
-
-      // print(TopCryptos);
-      // print(CryptosIndex);
 
       for (String crypto in data['predictions'].keys) {
         final Res = CryptoInfo.fromJson(data['predictions'][crypto], data['cryptos'][crypto]);
@@ -84,14 +81,6 @@ Future<bool> fetchDatabase() async {
         Sort["↑A-Z"]?.add(i);
         Sort["↓A-Z"]?.add(count-i-1);
       }
-
-      // for (int i = 0; i < cryptosCap; i++) {
-      //   late Future<CryptoInfo> Responses;
-      //   Responses = getData(i);
-      //   TopCryptos.add(await Responses);
-      //   Sort["↑A-Z"]?.add(i);
-      //   Sort["↓A-Z"]?.add(cryptosCap-i-1);
-      // }
 
       break;
     } catch (e) {
@@ -116,36 +105,16 @@ Future<bool> fetchDatabase() async {
     return worked;
   }
 
-  // print(TopCryptos);
-  // print(CryptosIndex);
 
   // Sort cryptos by marketCap and Change
   List<CryptoInfo> copy = List.from(TopCryptos);
 
-  List<int> stars = localStorage.read("starred")?.cast<int>() ?? [];
-
-  Sort["Starred"] = [];
-
-  for (int idx in stars) {
-    Sort["Starred"]?.add(idx);
-  }
-
-  // print("------------------------------");
-
-  // for (int i=0;i<Sort["Starred"]?.length;i++) {
-  //   print(Sort["Starred"]![i]);
-  // }
-
-  // print(Sort["↓Mrkt"]);
 
   copy.sort((a,b) => (int.tryParse(a.market_cap_rank) ?? 1000).compareTo((int.tryParse(b.market_cap_rank) ?? 1000)));
   for (CryptoInfo crypto in copy) {
     Sort["↓Mrkt"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
-  // print(Sort["↓Mrkt"]);
-  //
-  // print("-----------------------");
 
   copy.sort((a,b) => (int.tryParse(b.market_cap_rank) ?? 1000).compareTo((int.tryParse(a.market_cap_rank) ?? 1000)));
   for (CryptoInfo crypto in copy) {
@@ -172,15 +141,30 @@ Future<bool> fetchDatabase() async {
     Sort["↓Vol"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
-  copy.sort((a,b) => (double.tryParse(a.realScore) ?? 0).compareTo(double.tryParse(b.realScore) ?? 0));
+  copy.sort((a,b) => (double.tryParse(a.realPrediction) ?? 0).compareTo(double.tryParse(b.realPrediction) ?? 0));
   for (CryptoInfo crypto in copy) {
-    Sort["↑Rscr"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↑Pred"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
 
-  copy.sort((a,b) => (double.tryParse(b.realScore) ?? 0).compareTo(double.tryParse(a.realScore) ?? 0));
+  copy.sort((a,b) => (double.tryParse(b.realPrediction) ?? 0).compareTo(double.tryParse(a.realPrediction) ?? 0));
   for (CryptoInfo crypto in copy) {
-    Sort["↓Rscr"]?.add(CryptosIndex[crypto.id] ?? 0);
+    Sort["↓Pred"]?.add(CryptosIndex[crypto.id] ?? 0);
   }
+
+  List<String> stars = localStorage.read("starred_coins")?.cast<String>() ?? [];
+
+  Sort["Starred"] = [];
+
+  for (String crypto in stars) {
+    if (CryptosIndex.containsKey(crypto)) {
+      Sort["Starred"]?.add(CryptosIndex[crypto]!);
+    }
+    else {
+      stars.remove(crypto);
+    }
+  }
+
+  localStorage.write("starred_coins", stars);
 
   return worked;
 }

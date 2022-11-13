@@ -148,7 +148,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                       child: Column(
                                         children: const <Widget> [
                                           Text("\u2022 Unlimited Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
-                                          Text("\u2022 20 Alerts to Stay on Top of the Market\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                          Text("\u2022 100 Alerts to Stay on Top of the Market\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                           Text("\u2022 Keep Track of Cryptos Rating over 365 days\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                           Text("\u2022 Exclusive Discord Roles & Trading Channels \n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                           Text("\u2022 Fast Support & Assistance", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
@@ -202,8 +202,9 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                           width: screenWidth*0.55,
                                           child: Column(
                                               children: const <Widget> [
-                                                Text("\u2022 5 Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
-                                                Text("\u2022 Keep Track of Cryptos Rating for 7 days\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                                Text("\u2022 7 Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                                Text("\u2022 Keep Track of Cryptos Rating for 31 days\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                                Text("\u2022 5 Alerts to Stay on Top of the Market\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                                 Text("\u2022 Discord Support & Assistance \n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                               ]
                                           )
@@ -251,8 +252,14 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                         width: screenWidth*0.8,
                                         child: TextFormField(
                                           controller: promoCode,
-                                          decoration: const InputDecoration(
+                                          decoration: InputDecoration(
                                             border: UnderlineInputBorder(),
+                                            enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
+                                            ),
                                             labelText: 'Enter Code',
                                             labelStyle: TextStyle(color: Colors.white),
                                           ),
