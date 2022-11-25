@@ -63,6 +63,7 @@ AlertDialog alertPage(BuildContext context, Map<String, String> inputData) {
           ),
           const SizedBox(height: 15),
           Text(alerts.containsKey(inputData['crypto']) ? "Alert when ${(inputData['crypto'] ?? "none").capitalizeFirst} is ${alerts[inputData['crypto']]}" : "No alert set for ${(inputData['crypto'] ?? "none").capitalizeFirst}", textAlign: TextAlign.center),
+          const Text("You will keep getting alerted until you remove your alert", style: TextStyle(fontSize: 10)),
         ],
       ),
     ),

@@ -1365,7 +1365,7 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
           if (adding.time.compareTo(now.subtract(Duration(days: 7))) > 0) {
             scoreDataW.add(adding);
           }
-          if (adding.time.compareTo(now.subtract(Duration(days: 31))) > 0) {
+          if (adding.time.compareTo(now.subtract(Duration(days: 28))) > 0) {
             scoreDataM.add(adding);
           }
           if (adding.time.compareTo(now.subtract(Duration(days: 365))) > 0) {
@@ -1378,7 +1378,7 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
           if (adding.time.compareTo(now.subtract(Duration(days: 7))) > 0) {
             marketviewDataW.add(adding);
           }
-          if (adding.time.compareTo(now.subtract(Duration(days: 31))) > 0) {
+          if (adding.time.compareTo(now.subtract(Duration(days: 28))) > 0) {
             marketviewDataM.add(adding);
           }
           if (adding.time.compareTo(now.subtract(Duration(days: 365))) > 0) {
@@ -1391,7 +1391,7 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
           if (adding.time.compareTo(now.subtract(Duration(days: 7))) > 0) {
             predictionsDataW.add(adding);
           }
-          if (adding.time.compareTo(now.subtract(Duration(days: 31))) > 0) {
+          if (adding.time.compareTo(now.subtract(Duration(days: 28))) > 0) {
             predictionsDataM.add(adding);
           }
           if (adding.time.compareTo(now.subtract(Duration(days: 365))) > 0) {
@@ -1436,18 +1436,16 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
     List<PlotBand> signals = [];
     int gap = 0;
 
-    if (predictionsHistory.length > 28) {
-      gap = predictionsHistory.length - 28;
-    }
 
     int prevPrediction = 0;
     bool inATrade = false;
-    String start = DateFormat('MM-dd HH:00').format(cryptoData[0].time);
-    String end = DateFormat('MM-dd HH:00').format(cryptoData[0].time);
+    String start = DateFormat('MM-dd HH:00').format(predictionsHistory[0].time);
+    String end = DateFormat('MM-dd HH:00').format(predictionsHistory[0].time);
+
 
     for (int i=gap;i<predictionsHistory.length;i++) {
       predictionsDataChart.add(
-        PriceDataColor(cryptoData[i-gap].time, cryptoData[i-gap].price, predictionsHistory[i].price >= 0 ? (Mode != 1 ? Colors.greenAccent : Colors.lightBlueAccent) : (Mode != 1 ? Colors.redAccent : Colors.blueAccent))
+        PriceDataColor(predictionsHistory[i-gap].time, cryptoData[i-gap].price, predictionsHistory[i].price >= 0 ? (Mode != 1 ? Colors.greenAccent : Colors.lightBlueAccent) : (Mode != 1 ? Colors.redAccent : Colors.blueAccent))
       );
 
       if (Mode == 1) {
@@ -1457,7 +1455,8 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
 
         //Exit trade
         if (((prevPrediction > 0 && currentPred < 0) || (prevPrediction < 0 && currentPred > 0)) && inATrade) {
-          end = DateFormat('MM-dd HH:00').format(cryptoData[i-gap].time);
+          // print("Closing trade");
+          end = DateFormat('MM-dd HH:00').format(predictionsHistory[i-gap].time);
 
           signals.add(
               PlotBand(
@@ -1472,7 +1471,7 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
         //Enter trade
         if ((currentPred >= 2 && prevPrediction < 2) || (currentPred <= -2 && prevPrediction > -2)) {
           // print("entered Trade");
-          start = DateFormat('MM-dd HH:00').format(cryptoData[i].time);
+          start = DateFormat('MM-dd HH:00').format(predictionsHistory[i].time);
           inATrade = true;
         }
 
@@ -1480,13 +1479,11 @@ class _DetailsPageState extends State<DetailsPage> with TickerProviderStateMixin
       }
     }
 
-    print("Here");
-
     if (inATrade) {
       signals.add(
         PlotBand(
           start: start,
-          end: DateFormat('MM-dd HH:00').format(cryptoData[cryptoData.length-gap].time),
+          end: DateFormat('MM-dd HH:00').format(predictionsHistory[predictionsHistory.length-1].time),
           isVisible: true,
           color: prevPrediction > 0 ? Colors.greenAccent : Colors.redAccent,
         )

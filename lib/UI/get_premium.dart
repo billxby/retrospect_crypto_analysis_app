@@ -110,16 +110,16 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                     ),
                     Text("Compare Plans", style: TextStyle(fontSize: 22, height: 2, color: Colors.white)),
                     SizedBox(
-                      height: screenHeight*0.52,
+                      height: 454,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                             children: [
                               SizedBox(
-                                width: screenWidth*0.1,
+                                width: 30,
                               ),
                               Container(
-                                width: screenWidth*0.7,
+                                width: 300,
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.transparent,
@@ -144,12 +144,13 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                     ),
                                     SizedBox(height: 20),
                                     SizedBox(
-                                      width: screenWidth*0.55,
+                                      width: 220,
                                       child: Column(
                                         children: const <Widget> [
                                           Text("\u2022 Unlimited Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                           Text("\u2022 100 Alerts to Stay on Top of the Market\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                           Text("\u2022 Keep Track of Cryptos Rating over 365 days\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
+                                          Text("\u2022 Cryptocurrency Signals\n", style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
                                           Text("\u2022 Exclusive Discord Roles & Trading Channels \n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                           Text("\u2022 Fast Support & Assistance", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
                                         ]
@@ -175,10 +176,10 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                 )
                               ),
                               SizedBox(
-                                width: screenWidth*0.07,
+                                width: 30,
                               ),
                               Container(
-                                width: screenWidth*0.7,
+                                width: 300,
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.transparent,
@@ -199,7 +200,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                                       ),
                                       SizedBox(height: 20),
                                       SizedBox(
-                                          width: screenWidth*0.55,
+                                          width: 220,
                                           child: Column(
                                               children: const <Widget> [
                                                 Text("\u2022 7 Cryptocurrencies Analysis each day\n", style: TextStyle(fontSize: 15, color: Colors.white), textAlign: TextAlign.left,),
@@ -301,7 +302,7 @@ class _GetPremiumPageState extends State<GetPremiumPage> {
                               ),
                           );
                         },
-                        child: Text('Promo Code', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                        child: Text('Promo Code', style: TextStyle(color: Colors.white),),
                       ),
                     ),
                     const SizedBox(height: 20,),

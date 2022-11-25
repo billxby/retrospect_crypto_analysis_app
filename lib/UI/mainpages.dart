@@ -598,6 +598,7 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
       body: SingleChildScrollView(
           child: Column(
             children: <Widget> [
+
               SizedBox(height: 30),
               Row(
                   children: <Widget> [
@@ -615,6 +616,57 @@ class _MainPagesState extends State<MainPages> with WidgetsBindingObserver {
               SizedBox(
                 height: 20,
               ),
+              if (app_version != new_version)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: screenWidth * 0.85+0.8,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.transparent,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 2,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                        color: Colors.blueAccent,
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(width: screenWidth*0.07),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Spacer(),
+                              Text("Update Available!", style: TextStyle(fontSize: 18, height: 1.2, fontWeight: FontWeight.bold), textAlign: TextAlign.start,),
+                              SizedBox(
+                                width: screenWidth*0.65,
+                                child: Text("A new update is available. Update your app for the latest features 🤑", softWrap: true,),
+                              ),
+                              Spacer(),
+                              ElevatedButton(
+                                child: const Text('Update!', style: TextStyle(color: Colors.white)),
+                                style: roundButton(Colors.black),
+                                onPressed: () {
+                                  launch("https://play.google.com/store/apps/details?id=com.retrospectapps.retrospect");
+                                },
+                              ),
+                            ],
+                          )
+                        ],
+                      )
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
               Center(
                 child: Container(
                   height: 445,

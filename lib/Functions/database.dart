@@ -72,8 +72,14 @@ Future<bool> fetchDatabase() async {
       globalIndex = 0;
 
       for (String crypto in data['predictions'].keys) {
-        final Res = CryptoInfo.fromJson(data['predictions'][crypto], data['cryptos'][crypto]);
-        TopCryptos.add(await Res);
+        try {
+          final Res = CryptoInfo.fromJson(data['predictions'][crypto], data['cryptos'][crypto]);
+          TopCryptos.add(await Res);
+        }
+        catch (e) {
+          print("$crypto is no longer supported");
+        }
+
         count+=1;
       }
 

@@ -88,7 +88,7 @@ int sortByIdx = 1;
 bool worked = false;
 String currentPromo = "none";
 String offerMsg = "none";
-String app_version = "0.3.4";
+String app_version = "0.4.0";
 String new_version = app_version;
 double screenWidth = 0.0;
 double screenHeight = 0.0;
@@ -238,7 +238,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Retrospect',
       theme: Provider.of<ThemeProvider>(context).currentTheme,
-      home: app_version == new_version ? localStorage.read("displayed") ? const MainPages() : WelcomePage() : const UpdateApp(),
+      home: localStorage.read("displayed") ? const MainPages() : WelcomePage(),
     ));
   }
 }

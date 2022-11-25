@@ -103,8 +103,12 @@ class _LoginPageState extends State<LoginPage> {
             width: screenWidth*0.8,
             child: TextFormField(
               controller: _logInUsernameController,
+              cursorColor: Theme.of(context).colorScheme.secondary,
               decoration: InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 focusColor: Theme.of(context).colorScheme.secondary,
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
@@ -254,8 +258,12 @@ class _LoginPageState extends State<LoginPage> {
             width: screenWidth*0.8,
             child: TextFormField(
               controller: _logInUsernameController,
+              cursorColor: Theme.of(context).colorScheme.secondary,
               decoration: InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 focusColor: Theme.of(context).colorScheme.secondary,
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
@@ -414,8 +422,12 @@ class _LoginPageState extends State<LoginPage> {
             width: screenWidth*0.8,
             child: TextFormField(
               controller: _logInUsernameController,
+              cursorColor: Theme.of(context).colorScheme.secondary,
               decoration: InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 focusColor: Theme.of(context).colorScheme.secondary,
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
@@ -511,8 +523,12 @@ class _LoginPageState extends State<LoginPage> {
       child: TextFormField(
         controller: controller,
         obscureText: showPasswords[showIdx],
+        cursorColor: Theme.of(context).colorScheme.secondary,
         decoration: InputDecoration(
           labelText: text,
+          labelStyle: TextStyle(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
           focusColor: Theme.of(context).colorScheme.secondary,
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary,),
@@ -531,7 +547,7 @@ class _LoginPageState extends State<LoginPage> {
             },
             child: Text(
               showPasswords[showIdx] ? "show" : "hide",
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.normal, height: 3),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.normal, height: 3),
             ),
           ),
         ),
