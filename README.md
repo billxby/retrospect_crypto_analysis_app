@@ -29,7 +29,12 @@
   </p>
 </div>
 
+## THIS PROJECT HAS BEEN DISCONTINUED AFTER TWITTER (now X) UPDATED THEIR API POLICIES
+This significantly decreased the number of calls per month and made the entire logic this AI is built on impossible. 
+<a href="https://aircconline.com/csit/abstract/v13n2/csit130206.html">The Paper</a> explaining how Retrospect works can be found <a href="https://aircconline.com/csit/abstract/v13n2/csit130206.html">here</a>. 
+<a href="https://www.researchgate.net/publication/368384244_A_Cryptocurrency_Analysis_Tool_based_on_Social_Metrics">ResearchGate link</a>
 
+The most recent version of the app, previously published on Google Play (now unpublished) can be found by visiting this repository: https://github.com/Coini-Studios/Retrospect 
 
 <!-- TABLE OF CONTENTS -->
 <details>
